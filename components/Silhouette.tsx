@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import styles from "./Silhouette.module.css";
 
@@ -13,18 +14,49 @@ type SilhouetteProps = {
  * A silhouette portrait from the pool, height-driven (~70vh desktop, ~55vh
  * mobile) and anchored to the bottom of its frame. The halo renders behind
  * it in code — never baked into the image. Lazy by default (`preload` off).
+ * If the image fails to load (flaky mobile network, etc.) a soft ink
+ * placeholder takes its place rather than leaving the frame empty.
  */
 export default function Silhouette({ src, className }: SilhouetteProps) {
+  const [failed, setFailed] = useState(false);
+  const showImage = src && !failed;
+
   return (
     <div className={`${styles.frame} ${className ?? ""}`}>
-      {src && (
+      {showImage ? (
         <Image
           src={src}
           alt=""
           fill
           sizes="(max-width: 767px) 62vw, 34vw"
           className={styles.image}
+          onError={() => setFailed(true)}
         />
+      ) : (
+        <svg
+          viewBox="0 0 400 520"
+          className={styles.placeholder}
+          aria-hidden="true"
+        >
+          <path
+            d="M 92 520
+               C 88 430, 96 372, 118 330
+               C 96 300, 84 262, 92 218
+               C 100 150, 152 108, 210 106
+               C 258 104, 296 132, 308 176
+               C 314 196, 312 210, 306 220
+               C 318 232, 326 244, 324 252
+               C 322 258, 314 262, 306 262
+               C 312 272, 312 280, 306 284
+               C 312 290, 312 300, 304 306
+               C 308 318, 302 330, 288 336
+               C 276 352, 258 362, 240 366
+               C 246 396, 262 420, 292 438
+               C 330 462, 366 486, 378 520
+               Z"
+            fill="currentColor"
+          />
+        </svg>
       )}
     </div>
   );

@@ -20,3 +20,12 @@
   object-fit: contain;
   object-position: bottom center;
 }
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--ink);
+  opacity: 0.14;
+}
