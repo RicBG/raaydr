@@ -1,0 +1,79 @@
+.pill {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--deep);
+  border-radius: 999px;
+  padding: 0.2em 0.3em 0.2em 1em;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--deep-ink);
+  padding: 0.7em 0.4em 0.7em 0;
+  transition: transform 0.2s ease;
+}
+
+.pill:hover .link {
+  transform: translateY(-2px);
+}
+
+.blip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  flex: none;
+}
+
+.dismiss {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: color-mix(in srgb, var(--deep-ink) 55%, transparent);
+  font-size: 18px;
+  line-height: 1;
+  border-radius: 50%;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.dismiss:hover {
+  color: var(--deep-ink);
+  background: color-mix(in srgb, var(--deep-ink) 12%, transparent);
+}
+
+@media (max-width: 640px) {
+  .pill {
+    right: 50%;
+    bottom: 20px;
+    transform: translate(50%, 12px);
+  }
+
+  .visible {
+    transform: translate(50%, 0);
+  }
+}

@@ -1,0 +1,22 @@
+/* Height-driven: the figure fills ~70vh on desktop, ~55vh on mobile, and is
+   anchored to the bottom of its frame. Width follows the 3:4 source ratio so
+   the box never shifts. */
+.frame {
+  position: relative;
+  height: 55vh;
+  height: 55svh;
+  aspect-ratio: 3 / 4;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .frame {
+    height: 70vh;
+    height: 70svh;
+  }
+}
+
+.image {
+  object-fit: contain;
+  object-position: bottom center;
+}

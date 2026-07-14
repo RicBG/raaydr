@@ -1,0 +1,228 @@
+.calculator {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+  margin: clamp(48px, 6vw, 88px) 0;
+}
+
+/* ---------- Controls ---------- */
+
+.controls {
+  display: grid;
+  gap: clamp(32px, 4vw, 48px);
+}
+
+.control {
+  display: grid;
+  gap: 14px;
+}
+
+.controlHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.controlHead label {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.labelWithGlyph {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.attentionGlyph {
+  flex: none;
+  color: currentColor;
+}
+
+.controlHead output {
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 24px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.slider::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--green);
+  border: 2px solid var(--deep);
+  transition: transform 0.15s ease;
+}
+
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--green);
+  border: 2px solid var(--deep);
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.ticks {
+  position: relative;
+  height: 16px;
+  margin-top: -4px;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 66%, transparent);
+}
+
+.ticks span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.rangeEnds {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -4px;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 66%, transparent);
+}
+
+.volumeCaption {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---------- Results ---------- */
+
+.results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2vw, 28px);
+  align-items: stretch;
+}
+
+.panel {
+  position: relative;
+  border-radius: 20px;
+  padding: clamp(24px, 3vw, 40px) clamp(20px, 2.6vw, 34px);
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  background-image: url("/textures/dot-grid-tile.svg");
+  background-repeat: repeat;
+  background-size: 96px 96px;
+}
+
+.spotify {
+  background-color: color-mix(in srgb, currentColor 5%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  color: color-mix(in srgb, currentColor 70%, transparent);
+}
+
+.raaydr {
+  background-color: color-mix(in srgb, currentColor 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--green) 40%, transparent);
+  box-shadow: 0 0 90px -24px color-mix(in srgb, var(--green) 55%, transparent);
+}
+
+.panelName {
+  font-weight: 500;
+  font-size: 15px;
+  display: grid;
+  gap: 2px;
+}
+
+.panelSub {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 72%, transparent);
+}
+
+.figure {
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin-top: 10px;
+}
+
+.per {
+  font-size: 0.42em;
+  font-weight: 400;
+  margin-left: 0.3em;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 72%, transparent);
+}
+
+.annual {
+  font-size: 14px;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 72%, transparent);
+}
+
+.milestone {
+  font-size: 13px;
+  min-height: 1.4em;
+}
+
+.milestoneWord {
+  display: inline-block;
+  animation: milestoneIn 0.3s ease both;
+}
+
+@keyframes milestoneIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.match {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  font-size: 12px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 72%, transparent);
+}
+
+/* ---------- Stacking ---------- */
+
+@media (max-width: 960px) {
+  .calculator {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .results {
+    grid-template-columns: 1fr;
+  }
+}

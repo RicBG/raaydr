@@ -1,0 +1,107 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ctaCopy } from "@/lib/siteConfig";
+import styles from "./Nav.module.css";
+
+const links = [
+  { href: "/artists", label: "For Artists" },
+  { href: "/producers-songwriters", label: "For Producers & Songwriters" },
+  { href: "/tastemakers", label: "For Tastemakers" },
+  { href: "/for-listeners", label: "For Listeners" },
+  { href: "/about", label: "About" },
+];
+
+export default function Nav() {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const pathname = usePathname();
+  const ctaHref = pathname === "/" ? "#join" : "/#join";
+
+  // Hide on scroll down, reveal on scroll up; blurred canvas background once
+  // past the hero.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > window.innerHeight * 0.85);
+      const delta = y - lastY;
+      if (Math.abs(delta) > 8) {
+        setHidden(delta > 0 && y > 160);
+        lastY = y;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.documentElement.style.overflow = "";
+    };
+  }, [open]);
+
+  return (
+    <header
+      className={`${styles.nav} ${scrolled ? styles.scrolled : ""} ${
+        hidden && !open ? styles.hidden : ""
+      } ${open ? styles.menuOpen : ""}`}
+    >
+      <div className={`container ${styles.inner}`}>
+        <Link href="/" className={styles.wordmark}>
+          {/* The green blip is part of the mark; never crop it. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo/raaydr-wordmark-blip-ink.svg"
+            alt="RAAYDR"
+            className={styles.wordmarkImg}
+          />
+        </Link>
+
+        <nav className={styles.links} aria-label="Primary">
+          {links.map((l) => (
+            <Link key={l.href} href={l.href} className={styles.pillLink}>
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className={styles.actions}>
+          <a href={ctaHref} className={`btn ${styles.cta}`}>
+            {ctaCopy().primary}
+          </a>
+          <button
+            type="button"
+            className={styles.menuButton}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            onClick={() => setOpen((v) => !v)}
+          >
+            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+            <span className={`${styles.burger} ${open ? styles.burgerOpen : ""}`} />
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="mobile-menu"
+        className={`${styles.mobileMenu} ${open ? styles.mobileMenuOpen : ""}`}
+      >
+        <nav aria-label="Primary, mobile">
+          {links.map((l) => (
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>
+              {l.label}
+            </Link>
+          ))}
+          <a href={ctaHref} className="btn" onClick={() => setOpen(false)}>
+            {ctaCopy().primary}
+          </a>
+        </nav>
+      </div>
+    </header>
+  );
+}

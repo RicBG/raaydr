@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "raaydr-dev",
+      "runtimeExecutable": "/Users/ric/.nvm/versions/node/v24.18.0/bin/npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/ric/Claude Code/raaydr",
+      "port": 3000
+    }
+  ]
+}

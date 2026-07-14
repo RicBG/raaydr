@@ -1,0 +1,14 @@
+.pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(52vmin, 460px);
+  aspect-ratio: 1;
+  margin: calc(min(52vmin, 460px) / -2) 0 0 calc(min(52vmin, 460px) / -2);
+  border: 1px solid;
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(2px);
+  pointer-events: none;
+  will-change: transform, opacity;
+}

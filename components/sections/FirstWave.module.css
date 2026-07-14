@@ -1,0 +1,56 @@
+.section {
+  position: relative;
+  z-index: 0;
+  padding: clamp(120px, 16vw, 220px) 0;
+  overflow: hidden;
+}
+
+.ringLayer {
+  position: absolute;
+  inset: 0;
+}
+
+/* Bottom-left of pricing, not mirrored — rings radiate from that corner. */
+.ringsCorner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: min(32vw, 320px);
+  height: auto;
+  transform: scaleY(-1);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.inner {
+  position: relative;
+  display: grid;
+  gap: 26px;
+  justify-items: center;
+  text-align: center;
+}
+
+.headline {
+  max-width: 14ch;
+}
+
+.body {
+  max-width: 46ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+}
+
+.form {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  margin-top: 10px;
+}
+
+.form > * {
+  text-align: left;
+}
+
+.micro {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+}

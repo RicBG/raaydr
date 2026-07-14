@@ -1,0 +1,105 @@
+.form {
+  display: grid;
+  gap: 18px;
+  max-width: 560px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.emailField {
+  flex: 1 1 240px;
+  display: grid;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.email {
+  width: 100%;
+  height: 52px;
+  padding: 0 18px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--stone) 55%, transparent);
+  transition: border-color 0.25s ease;
+}
+
+.email::placeholder {
+  color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.email:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.roles {
+  border: none;
+}
+
+.roles legend {
+  margin-bottom: 8px;
+}
+
+.segments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.segment {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.75em 1.2em;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.segment:hover {
+  border-color: color-mix(in srgb, currentColor 45%, transparent);
+}
+
+.segment:has(input:focus-visible) {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+.segmentOn {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--canvas);
+}
+
+.error {
+  font-size: 14px;
+  color: color-mix(in srgb, var(--coral) 80%, var(--ink));
+}
+
+.success {
+  display: grid;
+  gap: 6px;
+  max-width: 46ch;
+}
+
+.successTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 26px;
+}

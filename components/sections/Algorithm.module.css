@@ -1,0 +1,30 @@
+.section {
+  position: relative;
+  z-index: 0;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: clamp(96px, 14vw, 200px) 0;
+}
+
+.inner {
+  display: grid;
+  gap: 28px;
+}
+
+.heading {
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  max-width: 18ch;
+}
+
+.body {
+  max-width: 52ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+  line-height: 1.55;
+}
+
+.mathsLink {
+  font-weight: 500;
+  font-size: 15px;
+  justify-self: start;
+}

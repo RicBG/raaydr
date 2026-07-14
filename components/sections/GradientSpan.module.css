@@ -1,0 +1,27 @@
+.wrapper {
+  position: relative;
+  z-index: 0;
+  /* No explicit height: the natural height of the wrapped section is the
+     scroll distance the gradient spans. */
+}
+
+.gradientLayer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Static stand-in for the reduced-motion path — no animation, but the same
+   canvas + violet mix as the live gradient so there's no visible seam
+   between the two states. */
+.gradientFallback {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      120% 120% at 80% 25%,
+      rgba(140, 122, 230, 0.14) 0%,
+      rgba(140, 122, 230, 0) 50%
+    ),
+    #f5f2ec;
+}

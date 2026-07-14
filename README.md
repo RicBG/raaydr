@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RAAYDR — marketing site
 
-## Getting Started
+Scroll-driven marketing site for RAAYDR, an independent music streaming
+platform where your money follows the artists you actually listen to. Next.js (App
+Router) + TypeScript, GSAP ScrollTrigger for all scroll choreography, Lenis
+for smooth scrolling, CSS Modules with custom properties. No Tailwind, no
+component libraries.
 
-First, run the development server:
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm test           # vitest — calculator formula tests
+npm run build      # production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Launch day: waitlist → live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+One line in [lib/siteConfig.ts](lib/siteConfig.ts):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```ts
+mode: "waitlist",   // flip to "live"
+```
 
-## Learn More
+Every CTA label and the closing section's copy swap automatically. Pricing,
+the artist split, and the calculator economics all live in the same object.
 
-To learn more about Next.js, take a look at the following resources:
+## Waitlist storage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The form posts to `POST /api/waitlist` (email + role, role required), which
+inserts into a Supabase table. Set the env vars (see [.env.example](.env.example)):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
-## Deploy on Vercel
+Table schema:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```sql
+create table waitlist (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  role text not null,
+  created_at timestamptz not null default now()
+);
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Duplicate emails are treated as success ("already on the list"). With no env
+vars set, dev builds log signups to the server console; production returns 503.
+
+## Silhouettes
+
+Drop transparent PNGs into `public/silhouettes/` (side profile facing right,
+~1600px tall). The pool is read from the folder at build time — adding a
+seventh or tenth image is a zero code change; redeploy and it's in rotation.
+Faces are shuffled once per page load and dealt out so no visitor sees the
+same face twice in one visit. Until assets land, a soft ink placeholder
+occupies the exact same box. The halo behind each is always rendered in code.
+
+## The signal (core motif)
+
+- **Ring** ([components/Ring.tsx](components/Ring.tsx)) — blurred conic
+  gradient ring, one revolution ≈ 90s via rAF; scroll velocity accelerates the
+  spin and breathes the scale 0.9–1.15. Hero + closing CTA.
+- **Halo** — the same renderer in single colour mode; colour comes from the
+  `--halo-color` CSS variable so GSAP can tween it between audiences (the
+  signature transition of the silhouette section).
+- **Pulse** ([components/Pulse.tsx](components/Pulse.tsx)) — radar sweep fired
+  once per section entry; never on mobile, never under reduced motion.
+
+## Reduced motion
+
+Every scroll animation collapses to simple 0.3s fades via `gsap.matchMedia`:
+no pinning, static ring, stacked silhouettes, calculator numbers set directly.
+
+## Deploy
+
+Built for Vercel. Set the two Supabase env vars in project settings. The OG
+placeholder lives at `public/og.png`.

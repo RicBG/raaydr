@@ -1,0 +1,60 @@
+.wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* Half the reference size (min(72vw, 800px)) and half its blur(70px); the
+   2x transform upscale in Ring.tsx restores both. Transform-only animation on
+   its own composited layer. */
+.ring {
+  width: min(36vw, 400px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--coral),
+    var(--amber),
+    var(--green),
+    var(--orchid),
+    var(--violet),
+    var(--coral)
+  );
+  /* 30px at half size = 60px effective after the 2x upscale — the floor of
+     the spec's 60–100px range, chosen for the Lighthouse budget. */
+  filter: blur(30px) saturate(1.1);
+  opacity: 0.55;
+  -webkit-mask: radial-gradient(
+    circle,
+    transparent 34%,
+    #000 46%,
+    #000 62%,
+    transparent 74%
+  );
+  mask: radial-gradient(
+    circle,
+    transparent 34%,
+    #000 46%,
+    #000 62%,
+    transparent 74%
+  );
+  transform: scale(2); /* static fallback; the rAF loop takes over */
+  will-change: transform;
+}
+
+.halo {
+  width: min(30vmin, 260px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(30px);
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--halo-color, var(--green)) 85%, transparent) 0%,
+    color-mix(in srgb, var(--halo-color, var(--green)) 40%, transparent) 48%,
+    transparent 74%
+  );
+  transform: scale(2);
+  will-change: transform;
+}

@@ -1,0 +1,101 @@
+.hero {
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding-top: 96px;
+  overflow: hidden;
+  position: relative;
+}
+
+.middle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+.ringLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.center {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: clamp(28px, 4vh, 44px);
+}
+
+.heroCta {
+  font-size: 15px;
+}
+
+.bottom {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 4vw, 64px);
+  align-items: end;
+  padding-top: 28px;
+  padding-bottom: clamp(28px, 4vh, 48px);
+}
+
+.bottom::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  height: 1px;
+  background: var(--stone);
+}
+
+.bottomLeft {
+  display: grid;
+  gap: 14px;
+}
+
+.intro {
+  max-width: 40ch;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.bottomRight {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.7em 1.25em;
+  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  border-radius: 999px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.tag:hover {
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+  background: color-mix(in srgb, var(--stone) 55%, transparent);
+}
+
+@media (max-width: 720px) {
+  .bottom {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .bottomRight {
+    justify-content: flex-start;
+  }
+}

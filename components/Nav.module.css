@@ -1,0 +1,177 @@
+.nav {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 50;
+  transition:
+    background-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hidden {
+  transform: translateY(-100%);
+}
+
+.scrolled {
+  background: color-mix(in srgb, var(--canvas) 78%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 var(--stone);
+}
+
+/* While the mobile menu is open the header must be solid, and must not carry
+   a backdrop-filter: that property turns the header into the containing
+   block for the fixed menu overlay and breaks its positioning. */
+.menuOpen {
+  background: var(--canvas);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 76px;
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+}
+
+.wordmarkImg {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.links {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pillLink {
+  line-height: 1;
+  padding: 0.65em 1.1em;
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  border-radius: 999px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.pillLink:hover {
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+  background: color-mix(in srgb, var(--stone) 55%, transparent);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cta {
+  font-size: 14px;
+  padding: 0.85em 1.5em;
+}
+
+.menuButton {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.burger,
+.burger::before,
+.burger::after {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--ink);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.burger {
+  position: relative;
+}
+
+.burger::before,
+.burger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.burger::before {
+  top: -7px;
+}
+
+.burger::after {
+  top: 7px;
+}
+
+.burgerOpen {
+  background: transparent;
+}
+
+.burgerOpen::before {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.burgerOpen::after {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.mobileMenu {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  .links,
+  .actions .cta {
+    display: none;
+  }
+
+  .menuButton {
+    display: flex;
+  }
+
+  .mobileMenu {
+    display: block;
+    position: fixed;
+    inset: 76px 0 0 0;
+    background: var(--canvas);
+    padding: var(--gutter);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      visibility 0.3s;
+  }
+
+  .mobileMenuOpen {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .mobileMenu nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 28px;
+    padding-top: 24px;
+  }
+}

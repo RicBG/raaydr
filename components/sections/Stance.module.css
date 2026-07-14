@@ -1,0 +1,25 @@
+.section {
+  --section-bg: var(--canvas);
+  --section-ink: var(--ink);
+
+  position: relative;
+  background: var(--section-bg);
+  color: var(--section-ink);
+  padding: clamp(120px, 16vw, 240px) 0;
+}
+
+.inner {
+  display: grid;
+  gap: 32px;
+}
+
+.statement {
+  max-width: 22ch;
+  font-size: clamp(2.4rem, 5.8vw, 5rem);
+}
+
+.support {
+  max-width: 52ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+  color: color-mix(in srgb, var(--section-ink) 78%, transparent);
+}

@@ -32,9 +32,13 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
+
+# campaign stills for social — not used by the site, not deployed
+/public/photoreal
 
 # typescript
 *.tsbuildinfo

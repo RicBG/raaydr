@@ -1,0 +1,123 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef } from "react";
+import { gsap } from "@/lib/gsap";
+import { ctaCopy } from "@/lib/siteConfig";
+import Ring from "@/components/Ring";
+import styles from "./Hero.module.css";
+
+const tags = [
+  { label: "Artists", href: "/artists" },
+  { label: "Tastemakers", href: "/tastemakers" },
+  { label: "Listeners", href: "#join" },
+];
+
+export default function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const centerRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const ring = ringRef.current;
+    const center = centerRef.current;
+    const bottom = bottomRef.current;
+    if (!section || !ring || !center || !bottom) return;
+
+    const mm = gsap.matchMedia();
+
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      // Load: the CTA and bottom info bar rise and fade in.
+      gsap.from([center.querySelector(`.${styles.heroCta}`), bottom], {
+        y: 24,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        stagger: 0.1,
+        delay: 0.25,
+      });
+
+      // Scroll: the CTA runs ahead at 1.15x, the ring lags at 0.85x, so
+      // they separate in depth.
+      const distance = () => window.innerHeight;
+      gsap.to(center, {
+        y: () => -0.15 * distance(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+      gsap.to(ring, {
+        y: () => 0.15 * distance(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    });
+
+    mm.add("(prefers-reduced-motion: reduce)", () => {
+      gsap.fromTo(
+        [center, bottom],
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3 }
+      );
+    });
+
+    return () => mm.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="hero"
+      className={styles.hero}
+      aria-label="RAAYDR"
+    >
+      <h1 className="sr-only">RAAYDR</h1>
+
+      <div className={`container ${styles.middle}`}>
+        <div ref={ringRef} className={styles.ringLayer}>
+          <Ring mode="spectrum" />
+        </div>
+
+        <div ref={centerRef} className={styles.center}>
+          <a href="#join" className={`btn ${styles.heroCta}`}>
+            {ctaCopy().primary} <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+      </div>
+
+      <div ref={bottomRef} className={`container ${styles.bottom}`}>
+        <div className={styles.bottomLeft}>
+          <p className="eyebrow">Independent music · Funded by you</p>
+          <p className={styles.intro}>
+            The music industry forgot who makes the music. On RAAYDR, your
+            money follows your ears. Traceable, every month.
+          </p>
+        </div>
+        <div className={styles.bottomRight}>
+          {tags.map((tag) =>
+            tag.href.startsWith("#") ? (
+              <a key={tag.label} href={tag.href} className={styles.tag}>
+                {tag.label}
+              </a>
+            ) : (
+              <Link key={tag.label} href={tag.href} className={styles.tag}>
+                {tag.label}
+              </Link>
+            )
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}

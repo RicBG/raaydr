@@ -1,0 +1,15 @@
+.page {
+  padding: calc(76px + clamp(56px, 8vw, 120px)) 0 clamp(96px, 12vw, 160px);
+}
+
+.title {
+  margin-top: 20px;
+  max-width: 16ch;
+}
+
+.body {
+  display: grid;
+  gap: 1.4em;
+  max-width: 62ch;
+  margin: clamp(40px, 5vw, 64px) 0;
+}

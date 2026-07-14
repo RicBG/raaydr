@@ -1,0 +1,145 @@
+.section {
+  position: relative;
+  padding-top: clamp(96px, 14vw, 200px);
+}
+
+.headerWrap {
+  margin-bottom: clamp(40px, 5vw, 72px);
+}
+
+.header {
+  display: grid;
+  gap: 20px;
+}
+
+/* ---------- Stacked layout: mobile and reduced motion (the default) ---------- */
+
+.stage {
+  position: relative;
+}
+
+.sharedHalo {
+  display: none;
+}
+
+.stageInner {
+  display: grid;
+  gap: clamp(72px, 10vw, 120px);
+  padding-bottom: clamp(96px, 14vw, 200px);
+}
+
+.moment {
+  display: grid;
+  gap: 28px;
+  justify-items: center;
+  text-align: center;
+}
+
+.figure {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.momentHalo {
+  position: absolute;
+  inset: -6% -30% auto;
+  height: 70%;
+  --halo-color: var(--moment-color);
+}
+
+.portrait {
+  position: relative;
+}
+
+.copy {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+  max-width: 44ch;
+}
+
+.audienceName {
+  font-size: clamp(1.9rem, 4.2vw, 3.4rem);
+}
+
+.message {
+  font-size: clamp(1.02rem, 1.5vw, 1.2rem);
+  color: color-mix(in srgb, var(--ink) 80%, transparent);
+}
+
+.explore {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* ---------- Pinned overlay layout: desktop with motion ---------- */
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .section {
+    height: 100svh;
+    padding-top: clamp(72px, 8vh, 120px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .headerWrap {
+    margin-bottom: 0;
+    flex: none;
+  }
+
+  .stage {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .sharedHalo {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 55%;
+  }
+
+  .momentHalo {
+    display: none;
+  }
+
+  .stageInner {
+    position: relative;
+    height: 100%;
+    padding-bottom: 0;
+    display: block;
+  }
+
+  .moment {
+    position: absolute;
+    inset: 0 var(--gutter);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(32px, 5vw, 80px);
+    align-items: center;
+    justify-items: stretch;
+    text-align: left;
+    will-change: transform, opacity;
+  }
+
+  /* Figure anchored to the bottom of the pinned stage; the frame caps at
+     70svh but never overflows the stage. */
+  .figure {
+    height: 100%;
+    align-items: flex-end;
+    justify-self: stretch;
+  }
+
+  .figure .portrait {
+    height: min(70svh, 100%);
+  }
+
+  .copy {
+    justify-items: start;
+    max-width: 40ch;
+  }
+}
