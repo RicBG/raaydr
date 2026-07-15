@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { ctaCopy } from "@/lib/siteConfig";
+import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Ring from "@/components/Ring";
+import RaaydrOrb from "@/components/RaaydrOrb";
 import styles from "./Hero.module.css";
 
 const tags = [
@@ -18,6 +20,7 @@ export default function Hero() {
   const ringRef = useRef<HTMLDivElement>(null);
   const centerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -86,7 +89,21 @@ export default function Hero() {
 
       <div className={`container ${styles.middle}`}>
         <div ref={ringRef} className={styles.ringLayer}>
-          <Ring mode="spectrum" />
+          {reducedMotion ? (
+            // Static fallback: the code-drawn ring renders without its rAF
+            // loop under reduced motion; the orb has no static mode.
+            <Ring mode="spectrum" />
+          ) : (
+            <div className={styles.orbWrap}>
+              <RaaydrOrb
+                hue={250}
+                hoverIntensity={0.25}
+                ambientRotation
+                ambientRotationSpeed={6}
+                backgroundColor="#F5F2EC"
+              />
+            </div>
+          )}
         </div>
 
         <div ref={centerRef} className={styles.center}>

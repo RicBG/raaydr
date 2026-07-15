@@ -23,6 +23,16 @@
   pointer-events: none;
 }
 
+/* Same footprint the code-drawn ring occupies. Pointer events re-enabled on
+   the orb itself (its parent layer is pointer-events: none) so its
+   mouse-proximity ripple works; the CTA sits above at z-index 2 and keeps
+   all its clicks. */
+.orbWrap {
+  width: min(72vw, 800px);
+  aspect-ratio: 1;
+  pointer-events: auto;
+}
+
 .center {
   position: relative;
   z-index: 2;
