@@ -23,14 +23,24 @@
   pointer-events: none;
 }
 
-/* Same footprint the code-drawn ring occupies. Pointer events re-enabled on
+/* The halo peeks up from below: the square is ~1.5x the section width,
+   anchored so most of it hangs below the hero — only the top arc shows,
+   clipped by the section's overflow: hidden. Pointer events re-enabled on
    the orb itself (its parent layer is pointer-events: none) so its
    mouse-proximity ripple works; the CTA sits above at z-index 2 and keeps
    all its clicks. */
 .orbWrap {
-  width: min(72vw, 800px);
+  position: absolute;
+  left: 50%;
+  bottom: -110vw;
+  transform: translateX(-50%);
+  width: 150vw;
   aspect-ratio: 1;
   pointer-events: auto;
+  /* The glow still carries faint energy at the canvas's top edge; feather
+     it so the crop line never reads as a hard line. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
 }
 
 .center {

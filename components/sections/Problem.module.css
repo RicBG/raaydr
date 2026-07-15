@@ -1,6 +1,9 @@
+/* Opaque background + positive z-index: the hero pins beneath this section,
+   so it must fully cover the locked hero as it slides up over it. */
 .section {
   position: relative;
-  z-index: 0;
+  z-index: 1;
+  background: var(--canvas);
   padding: clamp(96px, 14vw, 200px) 0;
 }
 

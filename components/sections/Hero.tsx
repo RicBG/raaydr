@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
+import { useEffect, useRef, useState } from "react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { ctaCopy } from "@/lib/siteConfig";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Ring from "@/components/Ring";
@@ -21,6 +21,28 @@ export default function Hero() {
   const centerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
+
+  // The orb shader blends its edges against a flat colour, so it must be
+  // told exactly what is painted behind it. Measured at runtime — walk up
+  // from the hero to the first ancestor with a real background — rather
+  // than assuming the nominal token, so a future background change can't
+  // reintroduce a visible canvas seam. (Measured today: body,
+  // rgb(245, 242, 236).)
+  const [orbBg, setOrbBg] = useState("#F5F2EC");
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      let el: HTMLElement | null = sectionRef.current;
+      while (el) {
+        const bg = getComputedStyle(el).backgroundColor;
+        if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") {
+          setOrbBg(bg);
+          return;
+        }
+        el = el.parentElement;
+      }
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -42,8 +64,19 @@ export default function Hero() {
         delay: 0.25,
       });
 
-      // Scroll: the CTA runs ahead at 1.15x, the ring lags at 0.85x, so
-      // they separate in depth.
+      // Pin the hero for one viewport of scroll; the next section (which
+      // carries its own background and a higher z-index) slides up and over
+      // the locked hero.
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: "+=100%",
+        pin: true,
+        pinSpacing: true,
+      });
+
+      // Depth while pinned: the CTA drifts up, the halo sinks, scrubbed
+      // across the same range as the pin.
       const distance = () => window.innerHeight;
       gsap.to(center, {
         y: () => -0.15 * distance(),
@@ -51,7 +84,7 @@ export default function Hero() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "bottom top",
+          end: "+=100%",
           scrub: true,
         },
       });
@@ -61,7 +94,7 @@ export default function Hero() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "bottom top",
+          end: "+=100%",
           scrub: true,
         },
       });
@@ -100,7 +133,7 @@ export default function Hero() {
                 hoverIntensity={0.25}
                 ambientRotation
                 ambientRotationSpeed={6}
-                backgroundColor="#F5F2EC"
+                backgroundColor={orbBg}
               />
             </div>
           )}

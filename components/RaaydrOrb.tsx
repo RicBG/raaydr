@@ -217,7 +217,12 @@ export default function RaaydrOrb({
     const container = ctnDom.current;
     if (!container) return;
 
-    const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
+    // premultipliedAlpha must be true: the fragment shader already outputs
+    // premultiplied colour (gl_FragColor = vec4(col.rgb * col.a, col.a)).
+    // Declaring false makes the browser multiply by alpha a second time,
+    // darkening near-background pixels ~4% — which showed as a faint grey
+    // rectangle around the canvas against the page.
+    const renderer = new Renderer({ alpha: true, premultipliedAlpha: true });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     container.appendChild(gl.canvas);
