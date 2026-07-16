@@ -14,10 +14,10 @@ export default function Home() {
     <main>
       <Hero />
       <Problem />
+      <HowItWorks />
       <GradientSpan>
         <Algorithm />
       </GradientSpan>
-      <HowItWorks />
       <FindYourPlace />
       <RealNumbers />
       <Stance />
