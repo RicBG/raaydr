@@ -34,23 +34,41 @@ export default function Problem() {
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      // The card physically rises into place: "top bottom" → "top top" is
-      // already the section's exact natural, gap-free entrance window (the
-      // hero's pin-spacer accounts for its own pin duration, so the section
-      // arrives the instant the hero's recede finishes). A full yPercent:100
-      // lag would double that travel distance and open a dead gap of plain
-      // canvas between the hero ending and the card appearing — so this
-      // stays a modest extra pull on top of the natural entrance, not a
-      // replacement for it.
+      // A full yPercent:100 traversal needs runway: starting it at the
+      // section's own natural "top bottom" (i.e. exactly when the hero's
+      // pin ends) gives it only one viewport-height of scroll to close a
+      // full viewport-height of handicap, which mathematically cannot
+      // finish before "top top" without the card sitting static and fully
+      // hidden for a stretch first — a dead gap of plain canvas. Starting
+      // instead one viewport-height earlier (overlapping the hero's entire
+      // recede) gives it that runway, so most of the handicap resolves
+      // while the hero is still on screen. Ending at "top 65%" rather than
+      // "top top" means it finishes settling shortly after the card starts
+      // crossing into view instead of needing the full one-viewport
+      // entrance window — the remaining approach to "top top" then plays
+      // out as plain scroll, no residual dead space.
+      //
+      // The offset must land on the "top" (trigger-side) keyword, not
+      // "bottom" (scroller-side) — "top bottom-=vh" silently breaks GSAP's
+      // parser (verified: it collapses start to equal end), whereas
+      // "top-=vh bottom" computes correctly. And it's a function, not a
+      // fixed px number, so it stays correct if the viewport is resized.
       const trigger = ScrollTrigger.create({
         trigger: section,
-        start: "top bottom",
-        end: "top top",
+        start: () => `top-=${window.innerHeight} bottom`,
+        end: "top 65%",
         scrub: true,
         animation: gsap.fromTo(
           section,
-          { yPercent: 25 },
-          { yPercent: 0, ease: "none" }
+          { yPercent: 100 },
+          // immediateRender:false is required here: fromTo() otherwise
+          // snaps the element to yPercent:100 synchronously the instant
+          // it's constructed, and since this tween's own target IS the
+          // trigger, ScrollTrigger.create() then measures that already-
+          // offset position as if it were the natural layout — silently
+          // corrupting start/end (verified: it inflated them by almost
+          // exactly one section-height).
+          { yPercent: 0, ease: "none", immediateRender: false }
         ),
       });
 
