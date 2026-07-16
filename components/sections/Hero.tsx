@@ -7,7 +7,6 @@ import { ctaCopy } from "@/lib/siteConfig";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Ring from "@/components/Ring";
 import RaaydrOrb from "@/components/RaaydrOrb";
-import OrbParticles from "@/components/OrbParticles";
 import styles from "./Hero.module.css";
 
 const tags = [
@@ -122,7 +121,6 @@ export default function Hero() {
                   ambientRotationSpeed={6}
                   backgroundColor={orbBg}
                 />
-                <OrbParticles />
               </div>
             )}
           </div>
