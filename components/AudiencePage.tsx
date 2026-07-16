@@ -9,6 +9,9 @@ import { useReveal } from "@/lib/useReveal";
 import Ring from "@/components/Ring";
 import Silhouette from "@/components/Silhouette";
 import HaloVideo from "@/components/HaloVideo";
+import PageSpectraNoise, {
+  type RaaydrAudience,
+} from "@/components/PageSpectraNoise";
 import WaitlistForm, { type ROLES } from "@/components/WaitlistForm";
 import styles from "./AudiencePage.module.css";
 
@@ -21,9 +24,11 @@ type AudiencePageProps = {
   points: Point[];
   /** The audience colour — carried by the halo, never by flat UI. */
   color: string;
-  /** Media stem for the living halo film (e.g. "artists"). Falls back to a
-   *  static silhouette + code halo when absent. */
-  halo?: string;
+  /** Media stem for the living halo film (e.g. "artists") — also drives the
+   *  top-of-page noise band's colour, since both key off the same audience
+   *  identifier. Falls back to a static silhouette + code halo (and skips
+   *  the noise band, with no audience to colour it) when absent. */
+  halo?: RaaydrAudience;
   /** Preselect the waitlist role for this audience. */
   role?: (typeof ROLES)[number];
 };
@@ -62,6 +67,12 @@ export default function AudiencePage({
       className={styles.page}
       style={{ "--halo-color": color } as React.CSSProperties}
     >
+      {halo && (
+        <div className={styles.noiseBand}>
+          <PageSpectraNoise audience={halo} />
+        </div>
+      )}
+
       <section className={styles.hero}>
         <div className={`container ${styles.heroGrid}`}>
           <div ref={headerRef} className={styles.heroCopy}>

@@ -2,6 +2,10 @@
   padding-top: 76px;
 }
 
+.noiseBand {
+  height: 200px;
+}
+
 .hero {
   padding: clamp(56px, 8vw, 120px) 0 clamp(40px, 6vw, 80px);
   overflow: hidden;

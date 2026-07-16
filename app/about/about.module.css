@@ -1,5 +1,13 @@
 .page {
-  padding: calc(76px + clamp(56px, 8vw, 120px)) 0 clamp(96px, 12vw, 160px);
+  padding-top: 76px;
+}
+
+.noiseBand {
+  height: 200px;
+}
+
+.content {
+  padding: clamp(56px, 8vw, 120px) 0 clamp(96px, 12vw, 160px);
 }
 
 .title {
