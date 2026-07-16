@@ -1,28 +1,29 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
+import { useRef } from "react";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useParallax } from "@/lib/useParallax";
 import Pulse from "@/components/Pulse";
+import ScrollTextReveal from "@/components/ScrollTextReveal";
 import styles from "./Problem.module.css";
 
-const manifestoOne = [
+// One continuous locked paragraph (copy text unchanged from the previous
+// per-line layout — only concatenated into a single block so
+// ScrollTextReveal can light it up word-by-word as it scrolls).
+const paragraph = [
   "You pay £10.99 a month.",
   "Do you know where it goes?",
   "Into a pool. Divided by total streams.",
   "The artists with the most plays take the biggest share.",
   "Not the artists you actually listened to.",
   "The machine rewards the machine.",
-];
-
-const manifestoTwo = [
+  "1,000 streams on Spotify pays for a coffee.",
   "Your favourite independent artist sees fractions of a penny.",
   "The producer who made the beat? Often nothing.",
   "The songwriter? Don't even ask.",
   "That's not a music industry. That's extraction.",
   "We're done pretending it has to be this way.",
-];
+].join(" ");
 
 export default function Problem() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -30,47 +31,6 @@ export default function Problem() {
   const eyebrowRef = useRef<HTMLParagraphElement>(null);
   useMaskedReveal(headingRef);
   useParallax(eyebrowRef, 0.95, 200);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const lines = section.querySelectorAll("[data-manifesto-line]");
-    const mm = gsap.matchMedia();
-
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      // Sparse and editorial: each line holds its own generous stretch of
-      // scroll (see .lineBeat's min-height), and rises/fades in once as it
-      // nears the viewport centre — only ever one or two on screen at a
-      // time, never the dense stacked block this used to be.
-      lines.forEach((line) => {
-        gsap.fromTo(
-          line,
-          { opacity: 0, y: 28 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-            ease: "power3.out",
-            scrollTrigger: { trigger: line, start: "top 70%" },
-          }
-        );
-      });
-    });
-
-    mm.add("(prefers-reduced-motion: reduce)", () => {
-      gsap.fromTo(
-        lines,
-        { opacity: 0 },
-        {
-          opacity: 1,
-          duration: 0.3,
-          scrollTrigger: { trigger: section, start: "top 80%" },
-        }
-      );
-    });
-
-    return () => mm.revert();
-  }, []);
 
   return (
     <section
@@ -87,7 +47,7 @@ export default function Problem() {
         aria-hidden="true"
         className={styles.sweepCorner}
       />
-      <div className="container">
+      <div className={`container ${styles.inner}`}>
         <div className={styles.header}>
           <p ref={eyebrowRef} className="eyebrow">
             01 / The problem
@@ -101,26 +61,14 @@ export default function Problem() {
           </h2>
         </div>
 
-        <div className={styles.beats}>
-          {manifestoOne.map((line) => (
-            <p key={line} className={styles.lineBeat} data-manifesto-line>
-              {line}
-            </p>
-          ))}
-
-          <p
-            className={`mono-figure ${styles.pullStat} ${styles.lineBeat}`}
-            data-manifesto-line
-          >
-            1,000 streams on Spotify pays for a coffee.
-          </p>
-
-          {manifestoTwo.map((line) => (
-            <p key={line} className={styles.lineBeat} data-manifesto-line>
-              {line}
-            </p>
-          ))}
-        </div>
+        <ScrollTextReveal
+          text={paragraph}
+          revealMode="words"
+          startOffset={90}
+          endOffset={30}
+          dimOpacity={0.2}
+          className={styles.revealBlock}
+        />
       </div>
     </section>
   );

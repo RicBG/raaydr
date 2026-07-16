@@ -9,16 +9,27 @@
 .content {
   min-height: 100svh;
   display: grid;
-  grid-template-rows: 1fr auto;
   padding-top: 96px;
   will-change: transform, opacity, filter;
 }
 
+/* The orb's geometry (size + vertical offset) lives here as custom
+   properties so .orbWrap and .textStack share one source of truth and
+   stay perfectly concentric — the orb's own numbers are untouched, only
+   de-duplicated. */
 .middle {
+  --orb-size: 61vw;
+  --orb-top: 0px;
   position: relative;
   display: grid;
   place-items: center;
   min-height: 0;
+}
+
+@media (min-width: 921px) {
+  .middle {
+    --orb-top: -90px;
+  }
 }
 
 .ringLayer {
@@ -38,9 +49,9 @@
 .orbWrap {
   position: absolute;
   left: 50%;
-  top: 0;
+  top: var(--orb-top);
   transform: translateX(-50%);
-  width: 61vw;
+  width: var(--orb-size);
   aspect-ratio: 1;
   pointer-events: auto;
   /* The shader's glow falloff is asymptotic — it approaches the background
@@ -55,85 +66,70 @@
   mask-image: radial-gradient(circle closest-side, #000 92%, transparent 100%);
 }
 
-@media (min-width: 921px) {
-  .orbWrap {
-    top: -90px;
+/* The copy stack, aligned to the exact same box as .orbWrap (via the
+   shared --orb-size/--orb-top vars) so it centers within the orb's visible
+   circle rather than the hero's overall box. */
+.textStack {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: var(--orb-top);
+  transform: translateX(-50%);
+  width: var(--orb-size);
+  aspect-ratio: 1;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: clamp(14px, 2vh, 22px);
+  padding: 0 16%;
+  text-align: center;
+}
+
+.tagPill {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  padding: 0.6em 1.3em;
+  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  /* Not 999px: on narrow viewports this pill's text wraps to 2-3 lines, and
+     a full stadium radius pinches the first/last line against the curve.
+     20px stays comfortably rounded at any line count. */
+  border-radius: 20px;
+  color: color-mix(in srgb, currentColor 65%, transparent);
+}
+
+@media (max-width: 640px) {
+  .tagPill {
+    font-size: 10px;
+    letter-spacing: 0.16em;
   }
 }
 
-.center {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  justify-items: center;
-  gap: clamp(28px, 4vh, 44px);
+/* Deliberately not .display-hero: that scale is sized for a full-bleed
+   headline, but this one has to coexist with a tag, subcopy and CTA all
+   inside the same fixed circle, so it needs its own, smaller ceiling. */
+.heading {
+  font-size: clamp(1.5rem, 3vw, 2.75rem);
+  line-height: 1.08;
+  max-width: 11ch;
+}
+
+.subcopy {
+  max-width: 30ch;
+  font-size: 14px;
+  line-height: 1.6;
+  color: color-mix(in srgb, currentColor 78%, transparent);
 }
 
 .heroCta {
   font-size: 15px;
 }
 
-.bottom {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(24px, 4vw, 64px);
-  align-items: end;
-  padding-top: 28px;
-  padding-bottom: clamp(28px, 4vh, 48px);
-}
-
-.bottom::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: var(--gutter);
-  right: var(--gutter);
-  height: 1px;
-  background: var(--stone);
-}
-
-.bottomLeft {
-  display: grid;
-  gap: 14px;
-}
-
-.intro {
-  max-width: 40ch;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.bottomRight {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.tag {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1;
-  padding: 0.7em 1.25em;
-  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
-  border-radius: 999px;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.tag:hover {
-  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
-  background: color-mix(in srgb, var(--stone) 55%, transparent);
-}
-
-@media (max-width: 720px) {
-  .bottom {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-
-  .bottomRight {
-    justify-content: flex-start;
+@media (max-width: 640px) {
+  .textStack {
+    gap: clamp(14px, 2.4vh, 22px);
+    padding: 0 6%;
   }
 }

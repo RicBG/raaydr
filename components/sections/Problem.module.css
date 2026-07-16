@@ -4,6 +4,9 @@
   position: relative;
   z-index: 10;
   background: var(--canvas);
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
   padding: clamp(96px, 14vw, 200px) 0;
 }
 
@@ -17,48 +20,29 @@
   z-index: -1;
 }
 
+/* Treated as a second hero moment: header + reveal paragraph centered as
+   one group, generous whitespace, text-align centered throughout. */
+.inner {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: clamp(56px, 8vw, 120px);
+}
+
 .header {
   display: grid;
+  justify-items: center;
   gap: 20px;
-  margin-bottom: clamp(56px, 8vw, 120px);
 }
 
 .headline {
-  max-width: 16ch;
+  max-width: 18ch;
 }
 
-/* Sparse and editorial: each line gets its own generous stretch of scroll
-   (see .lineBeat) rather than sitting in a dense stacked block — only one
-   or two statements ever share the viewport at once. */
-.beats {
-  max-width: 34ch;
-}
-
-.lineBeat {
-  min-height: 70vh;
-  min-height: 70svh;
-  display: flex;
-  align-items: center;
-  font-size: clamp(1.35rem, 2.6vw, 2.1rem);
+.revealBlock {
+  max-width: 62ch;
+  font-size: clamp(1.25rem, 2.4vw, 1.85rem);
   font-weight: 500;
-  line-height: 1.28;
-  letter-spacing: -0.01em;
-}
-
-.pullStat {
-  max-width: 24ch;
-  font-size: clamp(1.5rem, 3.6vw, 2.7rem);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-@media (max-width: 640px) {
-  .beats {
-    max-width: none;
-  }
-
-  .lineBeat {
-    min-height: 55vh;
-    min-height: 55svh;
-  }
+  line-height: 1.55;
+  letter-spacing: -0.005em;
 }
