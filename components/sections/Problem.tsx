@@ -1,15 +1,16 @@
 "use client";
 
-import { useRef } from "react";
-import { useMaskedReveal } from "@/lib/useMaskedReveal";
-import { useParallax } from "@/lib/useParallax";
+import { useEffect, useRef } from "react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import Pulse from "@/components/Pulse";
 import ScrollTextReveal from "@/components/ScrollTextReveal";
 import styles from "./Problem.module.css";
 
 // One continuous locked paragraph (copy text unchanged from the previous
 // per-line layout — only concatenated into a single block so
-// ScrollTextReveal can light it up word-by-word as it scrolls).
+// ScrollTextReveal can light it up word-by-word as it scrolls). Its own
+// opening lines carry the "streaming is broken" idea, so there's no
+// separate heading above it any more.
 const paragraph = [
   "You pay £10.99 a month.",
   "Do you know where it goes?",
@@ -27,17 +28,46 @@ const paragraph = [
 
 export default function Problem() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const eyebrowRef = useRef<HTMLParagraphElement>(null);
-  useMaskedReveal(headingRef);
-  useParallax(eyebrowRef, 0.95, 200);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const mm = gsap.matchMedia();
+
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      // The card physically rises into place: "top bottom" → "top top" is
+      // already the section's exact natural, gap-free entrance window (the
+      // hero's pin-spacer accounts for its own pin duration, so the section
+      // arrives the instant the hero's recede finishes). A full yPercent:100
+      // lag would double that travel distance and open a dead gap of plain
+      // canvas between the hero ending and the card appearing — so this
+      // stays a modest extra pull on top of the natural entrance, not a
+      // replacement for it.
+      const trigger = ScrollTrigger.create({
+        trigger: section,
+        start: "top bottom",
+        end: "top top",
+        scrub: true,
+        animation: gsap.fromTo(
+          section,
+          { yPercent: 25 },
+          { yPercent: 0, ease: "none" }
+        ),
+      });
+
+      return () => trigger.kill();
+    });
+
+    return () => mm.revert();
+  }, []);
 
   return (
     <section
       ref={sectionRef}
       id="manifesto"
       className={styles.section}
-      aria-labelledby="problem-heading"
+      aria-label="The problem with streaming"
     >
       <Pulse color="var(--coral)" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -48,19 +78,6 @@ export default function Problem() {
         className={styles.sweepCorner}
       />
       <div className={`container ${styles.inner}`}>
-        <div className={styles.header}>
-          <p ref={eyebrowRef} className="eyebrow">
-            01 / The problem
-          </p>
-          <h2
-            ref={headingRef}
-            id="problem-heading"
-            className={`display-section ${styles.headline}`}
-          >
-            Streaming is broken. Let&rsquo;s stop pretending it isn&rsquo;t.
-          </h2>
-        </div>
-
         <ScrollTextReveal
           text={paragraph}
           revealMode="words"

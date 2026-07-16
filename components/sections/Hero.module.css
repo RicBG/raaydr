@@ -85,35 +85,16 @@
   text-align: center;
 }
 
-.tagPill {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  padding: 0.6em 1.3em;
-  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
-  /* Not 999px: on narrow viewports this pill's text wraps to 2-3 lines, and
-     a full stadium radius pinches the first/last line against the curve.
-     20px stays comfortably rounded at any line count. */
-  border-radius: 20px;
-  color: color-mix(in srgb, currentColor 65%, transparent);
-}
-
-@media (max-width: 640px) {
-  .tagPill {
-    font-size: 10px;
-    letter-spacing: 0.16em;
-  }
-}
-
 /* Deliberately not .display-hero: that scale is sized for a full-bleed
-   headline, but this one has to coexist with a tag, subcopy and CTA all
-   inside the same fixed circle, so it needs its own, smaller ceiling. */
+   headline, but this one has to coexist with a subcopy and CTA all inside
+   the same fixed circle, so it needs its own, smaller ceiling. Wider than
+   before (16ch) and a touch smaller — this heading is now the first,
+   longer line in the stack with no pill anchoring above it, so it needs
+   to read as a settled block rather than a tall stack of short lines. */
 .heading {
-  font-size: clamp(1.5rem, 3vw, 2.75rem);
-  line-height: 1.08;
-  max-width: 11ch;
+  font-size: clamp(1.35rem, 2.6vw, 2.35rem);
+  line-height: 1.18;
+  max-width: 16ch;
 }
 
 .subcopy {

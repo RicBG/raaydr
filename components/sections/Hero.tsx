@@ -10,8 +10,8 @@ import styles from "./Hero.module.css";
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const tagRef = useRef<HTMLParagraphElement>(null);
+  const orbLayerRef = useRef<HTMLDivElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const subcopyRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLAnchorElement>(null);
@@ -41,32 +41,32 @@ export default function Hero() {
 
   useEffect(() => {
     const section = sectionRef.current;
-    const content = contentRef.current;
-    const tag = tagRef.current;
+    const orbLayer = orbLayerRef.current;
+    const stack = stackRef.current;
     const heading = headingRef.current;
     const subcopy = subcopyRef.current;
     const cta = ctaRef.current;
-    if (!section || !content || !tag || !heading || !subcopy || !cta) return;
+    if (!section || !orbLayer || !stack || !heading || !subcopy || !cta) return;
 
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const split = new SplitText(heading, { type: "words" });
 
-      // Load: tag, heading (word-by-word via SplitText), subcopy, then CTA —
+      // Load: heading (word-by-word via SplitText), then subcopy, then CTA —
       // each overlapping the previous slightly so the stack feels like one
-      // considered motion rather than four separate pops.
+      // considered motion rather than separate pops.
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.from(tag, { opacity: 0, y: 16, duration: 0.6 })
-        .from(split.words, { opacity: 0, y: 28, duration: 0.8, stagger: 0.06 }, "-=0.3")
+      tl.from(split.words, { opacity: 0, y: 28, duration: 0.8, stagger: 0.06 })
         .from(subcopy, { opacity: 0, y: 20, duration: 0.7 }, "-=0.5")
         .from(cta, { opacity: 0, y: 16, duration: 0.6 }, "-=0.4");
 
-      // Pin the hero for one viewport of scroll while its inner content —
-      // orb backdrop and copy stack, all of it as one group — subtly
-      // recedes (scales down, dims, softens). The section itself stays
-      // fixed in place; only its content wrapper animates. "Streaming is
-      // broken" then scrolls up from normal document flow and covers it.
+      // Pin the hero for one viewport of scroll while the copy stack
+      // recedes (scales down, dims, softens) and the orb behind it grows —
+      // opposite motions, scrubbed together, so the handoff feels like
+      // energy passing into the orb rather than everything just shrinking.
+      // The section itself stays fixed in place; "Streaming is broken"
+      // then scrolls up from normal document flow and covers it.
       const trigger = ScrollTrigger.create({
         trigger: section,
         start: "top top",
@@ -74,12 +74,14 @@ export default function Hero() {
         pin: true,
         pinSpacing: true,
         scrub: true,
-        animation: gsap.to(content, {
-          scale: 0.92,
-          opacity: 0.85,
-          filter: "blur(2px)",
-          ease: "none",
-        }),
+        animation: gsap
+          .timeline()
+          .to(
+            stack,
+            { scale: 0.92, opacity: 0.85, filter: "blur(2px)", ease: "none" },
+            0
+          )
+          .to(orbLayer, { scale: 1.1, ease: "none" }, 0),
       });
 
       return () => {
@@ -99,9 +101,9 @@ export default function Hero() {
       className={styles.hero}
       aria-label="RAAYDR"
     >
-      <div ref={contentRef} className={styles.content}>
+      <div className={styles.content}>
         <div className={`container ${styles.middle}`}>
-          <div className={styles.ringLayer}>
+          <div ref={orbLayerRef} className={styles.ringLayer}>
             {reducedMotion ? (
               // Static fallback: the code-drawn ring renders without its rAF
               // loop under reduced motion; the orb has no static mode.
@@ -119,16 +121,13 @@ export default function Hero() {
             )}
           </div>
 
-          <div className={styles.textStack}>
-            <p ref={tagRef} className={styles.tagPill}>
-              Independent music · Funded by you
-            </p>
+          <div ref={stackRef} className={styles.textStack}>
             <h1 ref={headingRef} className={styles.heading}>
-              Your money follows your ears.
+              The music industry forgot who makes the music.
             </h1>
             <p ref={subcopyRef} className={styles.subcopy}>
-              The music industry forgot who makes the music. On RAAYDR, your
-              money follows your ears. Traceable, every month.
+              On RAAYDR, your money follows your ears. Traceable, every
+              month.
             </p>
             <a
               ref={ctaRef}

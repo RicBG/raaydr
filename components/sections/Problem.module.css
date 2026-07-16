@@ -1,13 +1,17 @@
-/* Opaque background + z-index above the pinned hero: this section must
-   fully cover the locked hero as it slides up and over it. */
+/* A distinct dark surface (not --canvas, which the hero already uses) so
+   this reads as a separate card physically rising over the hero rather
+   than more of the same page — reinforced by the translateY slide-in in
+   Problem.tsx. z-index above the pinned hero so it visibly covers it. */
 .section {
   position: relative;
   z-index: 10;
-  background: var(--canvas);
+  background: var(--deep);
+  color: var(--deep-ink);
   min-height: 100svh;
   display: grid;
   align-content: center;
   padding: clamp(96px, 14vw, 200px) 0;
+  will-change: transform;
 }
 
 .sweepCorner {
@@ -18,25 +22,18 @@
   height: auto;
   pointer-events: none;
   z-index: -1;
+  /* The asset is dark linework (#15151A) tuned for the light canvas
+     elsewhere on the site; inverted here so it reads as faint light
+     linework against this section's dark surface instead of vanishing. */
+  filter: invert(1);
 }
 
-/* Treated as a second hero moment: header + reveal paragraph centered as
-   one group, generous whitespace, text-align centered throughout. */
+/* Treated as a second hero moment: the reveal paragraph centered,
+   generous whitespace, text-align centered throughout. */
 .inner {
   display: grid;
   justify-items: center;
   text-align: center;
-  gap: clamp(56px, 8vw, 120px);
-}
-
-.header {
-  display: grid;
-  justify-items: center;
-  gap: 20px;
-}
-
-.headline {
-  max-width: 18ch;
 }
 
 .revealBlock {
