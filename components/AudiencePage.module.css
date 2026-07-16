@@ -76,6 +76,11 @@
   padding: clamp(40px, 6vw, 80px) 0;
 }
 
+.calcSection {
+  padding: clamp(40px, 6vw, 80px) 0;
+  border-top: 1px solid var(--stone);
+}
+
 .pointsGrid {
   display: grid;
   grid-template-columns: repeat(var(--points-count, 3), 1fr);

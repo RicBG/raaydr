@@ -7,12 +7,35 @@ import {
   raaydrMonthly,
   sliderToFans,
   spotifyMonthly,
+  tastemakerMonthly,
+  tastemakerPerFan,
 } from "./calculator";
 
 describe("artistPerFan", () => {
   it("derives £3.50 from the founding price split", () => {
     // 5.99 − 0.99 − (5.00 × 0.30) = 3.50
     expect(artistPerFan()).toBeCloseTo(3.5, 10);
+    expect(artistPerFan("founding")).toBeCloseTo(3.5, 10);
+  });
+
+  it("derives £4.20 from the standard price split", () => {
+    // 7.99 − 1.99 − (6.00 × 0.30) = 4.20
+    expect(artistPerFan("standard")).toBeCloseTo(4.2, 10);
+  });
+});
+
+describe("tastemakerPerFan", () => {
+  it("is the flat fund amount per tier", () => {
+    expect(tastemakerPerFan()).toBeCloseTo(0.99, 10);
+    expect(tastemakerPerFan("founding")).toBeCloseTo(0.99, 10);
+    expect(tastemakerPerFan("standard")).toBeCloseTo(1.99, 10);
+  });
+});
+
+describe("tastemakerMonthly", () => {
+  it("scales fund-per-fan by fan count and attention share", () => {
+    expect(tastemakerMonthly(1000, 0.4)).toBeCloseTo(396, 6);
+    expect(tastemakerMonthly(1000, 0.4, "standard")).toBeCloseTo(796, 6);
   });
 });
 

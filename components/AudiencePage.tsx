@@ -31,6 +31,10 @@ type AudiencePageProps = {
   halo?: RaaydrAudience;
   /** Preselect the waitlist role for this audience. */
   role?: (typeof ROLES)[number];
+  /** An earnings calculator specific to this audience (producer/songwriter
+   *  split, tastemaker fund) — rendered between the points and the join
+   *  section. Omitted entirely (not just hidden) when a page has none. */
+  calculator?: React.ReactNode;
 };
 
 export default function AudiencePage({
@@ -41,6 +45,7 @@ export default function AudiencePage({
   color,
   halo,
   role,
+  calculator,
 }: AudiencePageProps) {
   const headerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -123,6 +128,17 @@ export default function AudiencePage({
           </div>
         </div>
       </section>
+
+      {calculator && (
+        <section className={styles.calcSection}>
+          <div className="container">
+            <p className="eyebrow" data-reveal>
+              Do the maths
+            </p>
+            {calculator}
+          </div>
+        </section>
+      )}
 
       <section className={styles.join} id="join">
         <div className="container">

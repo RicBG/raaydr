@@ -118,6 +118,51 @@
   font-weight: 500;
 }
 
+/* ---------- Tier toggle (reused pill pattern from WaitlistForm's role
+   segments) — for the single-output calculators that let the reader flip
+   between founding and standard pricing. ---------- */
+
+.tierToggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tierSegment {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.75em 1.2em;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.tierSegment:hover {
+  border-color: color-mix(in srgb, currentColor 45%, transparent);
+}
+
+.tierSegment:has(input:focus-visible) {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+.tierSegmentOn {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--canvas);
+}
+
+.tierSegment input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* ---------- Results ---------- */
 
 .results {
@@ -125,6 +170,23 @@
   grid-template-columns: 1fr 1fr;
   gap: clamp(16px, 2vw, 28px);
   align-items: stretch;
+}
+
+/* Single-output calculators (producer/songwriter/tastemaker) show one panel,
+   not the Spotify-vs-RAAYDR comparison — capped width so it doesn't stretch
+   into an oddly wide single column on desktop. */
+.resultsSingle {
+  grid-template-columns: 1fr;
+  max-width: 420px;
+}
+
+.basis {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  font-size: 12px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 72%, transparent);
 }
 
 .panel {
@@ -211,6 +273,14 @@
   font-size: 12px;
   line-height: 1.6;
   color: color-mix(in srgb, var(--section-ink, currentColor) 72%, transparent);
+}
+
+.footnote {
+  margin-top: 24px;
+  max-width: 78ch;
+  font-size: 12px;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 68%, transparent);
 }
 
 /* ---------- Stacking ---------- */

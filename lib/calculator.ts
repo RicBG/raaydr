@@ -5,19 +5,45 @@ export const BASE_MONTHLY_PLAYS = 300;
 
 const { pricing, split, economics } = siteConfig;
 
+export type PricingTier = "founding" | "standard";
+
 /**
- * What one founding fan can generate for artists in a month:
- * founding − tastemakerFund − (founding − tastemakerFund) × platformShareOfRemainder
- * 5.99 − 0.99 − (5.00 × 0.30) = £3.50
+ * What one fan can generate for artists in a month, at a given pricing tier:
+ * price − tastemakerFund − (price − tastemakerFund) × platformShareOfRemainder
+ * Founding: 5.99 − 0.99 − (5.00 × 0.30) = £3.50
+ * Standard: 7.99 − 1.99 − (6.00 × 0.30) = £4.20
  */
-export function artistPerFan(): number {
-  const afterFund = pricing.founding - split.tastemakerFund;
+export function artistPerFan(tier: PricingTier = "founding"): number {
+  const afterFund = pricing[tier] - split.tastemakerFund[tier];
   return afterFund - afterFund * split.platformShareOfRemainder;
 }
 
-/** RAAYDR monthly earnings. Attention share decides the fraction of each fan's £3.50 that reaches you. */
-export function raaydrMonthly(fans: number, attention: number): number {
-  return fans * attention * artistPerFan();
+/** RAAYDR monthly earnings. Attention share decides the fraction of each fan's artist money that reaches you. */
+export function raaydrMonthly(
+  fans: number,
+  attention: number,
+  tier: PricingTier = "founding"
+): number {
+  return fans * attention * artistPerFan(tier);
+}
+
+/** The tastemaker fund's flat per-fan amount at a given pricing tier. */
+export function tastemakerPerFan(tier: PricingTier = "founding"): number {
+  return split.tastemakerFund[tier];
+}
+
+/**
+ * Tastemaker monthly earnings from the ringfenced fund. Same shape as
+ * raaydrMonthly, but drawing from the flat per-fan tastemaker fund instead
+ * of the artist's attention-weighted share — an illustrative simplification,
+ * not a literal model of how the shared fund is actually distributed.
+ */
+export function tastemakerMonthly(
+  fans: number,
+  attentionShare: number,
+  tier: PricingTier = "founding"
+): number {
+  return fans * attentionShare * tastemakerPerFan(tier);
 }
 
 /**

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
+import TastemakerCalculator from "@/components/sections/TastemakerCalculator";
 
 export const metadata: Metadata = {
   title: "RAAYDR for Tastemakers — Back music early. Earn for your taste.",
@@ -16,6 +17,7 @@ export default function TastemakersPage() {
       color="#E585AC"
       halo="tastemakers"
       role="Tastemaker"
+      calculator={<TastemakerCalculator />}
       points={[
         {
           title: "A ringfenced fund.",

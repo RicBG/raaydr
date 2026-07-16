@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
+import SplitCalculator from "@/components/sections/SplitCalculator";
 
 export const metadata: Metadata = {
   title:
@@ -17,6 +18,7 @@ export default function ProducersSongwritersPage() {
       color="#8C7AE6"
       halo="producers"
       role="Songwriter or Producer"
+      calculator={<SplitCalculator />}
       points={[
         {
           title: "Credit is infrastructure.",
