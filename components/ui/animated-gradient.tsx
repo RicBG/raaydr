@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useMemo, useState, CSSProperties } from "react";
 import { cn } from "@/lib/utils";
+import { createRenderGate } from "@/lib/renderGate";
 
 type PatternShape = "Checks" | "Stripes" | "Edge";
 
@@ -287,12 +288,34 @@ void main() {
         frameIdRef.current = requestAnimationFrame(animate);
       };
 
-      frameIdRef.current = requestAnimationFrame(animate);
-
-      return () => {
+      // Only render while on-screen and the tab is visible. This full-size
+      // canvas otherwise keeps rendering behind the Algorithm section for the
+      // whole page. On resume, shift the clock forward by the paused duration
+      // so the slow gradient picks up where it left off with no visible jump.
+      let running = false;
+      let pausedAt = 0;
+      const startRaf = () => {
+        if (running) return;
+        running = true;
+        if (pausedAt) {
+          startTimeRef.current += performance.now() - pausedAt;
+          pausedAt = 0;
+        }
+        frameIdRef.current = requestAnimationFrame(animate);
+      };
+      const stopRaf = () => {
+        if (!running) return;
+        running = false;
+        pausedAt = performance.now();
         if (frameIdRef.current !== undefined) {
           cancelAnimationFrame(frameIdRef.current);
         }
+      };
+      const releaseGate = createRenderGate(container, startRaf, stopRaf);
+
+      return () => {
+        releaseGate();
+        stopRaf();
         resizeObserver.disconnect();
         gl.deleteProgram(program);
         gl.deleteShader(vertexShader);

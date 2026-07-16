@@ -39,6 +39,11 @@
   display: grid;
   place-items: center;
   pointer-events: none;
+  /* Hidden until the orb signals its first painted frame (see Hero.tsx),
+     then faded in ring-first. A CSS default of 0 avoids any flash of a blank
+     canvas before the reveal JS runs. */
+  opacity: 0;
+  will-change: opacity, transform;
 }
 
 /* A full circle sized so it's fully visible top-to-side, only the very
@@ -108,9 +113,36 @@
   font-size: 15px;
 }
 
+/* Mobile hero: the desktop 61vw orb shrinks to a small ~230px disc on a
+   phone, cramming a 21px heading and the subcopy into it with dead space
+   below. Give mobile its own treatment — a substantial orb that reads as a
+   centrepiece, vertically centred in the viewport, with a heading sized as a
+   proper hero rather than clamped down from the desktop value. */
 @media (max-width: 640px) {
+  .middle {
+    --orb-size: 86vw;
+    min-height: calc(100svh - 96px);
+  }
+
+  .orbWrap {
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   .textStack {
-    gap: clamp(14px, 2.4vh, 22px);
-    padding: 0 6%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0 4%;
+    gap: clamp(16px, 2.6vh, 26px);
+  }
+
+  .heading {
+    font-size: clamp(1.7rem, 6.6vw, 2.15rem);
+    line-height: 1.14;
+  }
+
+  .subcopy {
+    font-size: 15px;
+    max-width: 26ch;
   }
 }

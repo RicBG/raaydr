@@ -39,28 +39,73 @@ export default function Hero() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  // First-paint order: the ring/orb is a WebGL canvas that takes real time to
+  // compile its shader and draw its first frame. We hold the hero content
+  // hidden (CSS opacity:0 on the orb layer, GSAP-hidden text) until the orb
+  // signals its first drawn frame, then reveal ring-first, text-second — so
+  // the page never flashes bare text over a blank canvas. The timeout is a
+  // safety net: if WebGL fails or reduced motion swaps the orb for the static
+  // Ring (which never fires the callback), content still reveals.
+  const [orbReady, setOrbReady] = useState(false);
   useEffect(() => {
-    const section = sectionRef.current;
+    // Reduced motion renders the static Ring instead of the orb, so there's
+    // no first-frame callback to wait for — reveal at once. Otherwise the
+    // orb's onFirstFrame drives the reveal, with this timeout as a safety net.
+    if (reducedMotion) {
+      setOrbReady(true);
+      return;
+    }
+    const t = setTimeout(() => setOrbReady(true), 1000);
+    return () => clearTimeout(t);
+  }, [reducedMotion]);
+
+  // Intro reveal — runs once the orb has painted (or the fallback fires).
+  useEffect(() => {
+    if (!orbReady) return;
     const orbLayer = orbLayerRef.current;
     const stack = stackRef.current;
     const heading = headingRef.current;
     const subcopy = subcopyRef.current;
     const cta = ctaRef.current;
-    if (!section || !orbLayer || !stack || !heading || !subcopy || !cta) return;
+    if (!orbLayer || !stack || !heading || !subcopy || !cta) return;
 
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const split = new SplitText(heading, { type: "words" });
 
-      // Load: heading (word-by-word via SplitText), then subcopy, then CTA —
-      // each overlapping the previous slightly so the stack feels like one
-      // considered motion rather than separate pops.
+      // Ring fades up first; the text stack (heading word-by-word, then
+      // subcopy, then CTA) staggers in starting slightly after, so the
+      // sequence reads ring-first, not everything at once.
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.from(split.words, { opacity: 0, y: 28, duration: 0.8, stagger: 0.06 })
+      tl.to(orbLayer, { opacity: 1, duration: 0.7, ease: "power2.out" })
+        .from(split.words, { opacity: 0, y: 28, duration: 0.8, stagger: 0.06 }, 0.28)
         .from(subcopy, { opacity: 0, y: 20, duration: 0.7 }, "-=0.5")
         .from(cta, { opacity: 0, y: 16, duration: 0.6 }, "-=0.4");
 
+      return () => {
+        tl.kill();
+        split.revert();
+      };
+    });
+
+    mm.add("(prefers-reduced-motion: reduce)", () => {
+      gsap.set([orbLayer, stack], { opacity: 1 });
+    });
+
+    return () => mm.revert();
+  }, [orbReady]);
+
+  // Scroll pin/recede — independent of the intro, set up on mount.
+  useEffect(() => {
+    const section = sectionRef.current;
+    const orbLayer = orbLayerRef.current;
+    const stack = stackRef.current;
+    if (!section || !orbLayer || !stack) return;
+
+    const mm = gsap.matchMedia();
+
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
       // Pin the hero for one viewport of scroll while the copy stack
       // recedes (scales down, dims, softens) and the orb behind it grows —
       // opposite motions, scrubbed together, so the handoff feels like
@@ -85,9 +130,7 @@ export default function Hero() {
       });
 
       return () => {
-        tl.kill();
         trigger.kill();
-        split.revert();
       };
     });
 
@@ -116,6 +159,7 @@ export default function Hero() {
                   ambientRotation
                   ambientRotationSpeed={6}
                   backgroundColor={orbBg}
+                  onFirstFrame={() => setOrbReady(true)}
                 />
               </div>
             )}

@@ -13,6 +13,7 @@
 
 import { Mesh, Program, Renderer, Triangle, Vec3 } from 'ogl';
 import { useEffect, useRef } from 'react';
+import { createRenderGate } from '@/lib/renderGate';
 
 interface RaaydrOrbProps {
   /** Hue in degrees, 0-360. Rotates the two base gradient colours around the wheel. */
@@ -27,6 +28,10 @@ interface RaaydrOrbProps {
   rotateOnHover?: boolean;
   forceHoverState?: boolean;
   backgroundColor?: string;
+  /** Fired once, after the shader's first frame has actually been drawn — lets
+   *  the hero sequence reveal the ring only once it has real pixels, not a
+   *  blank canvas. */
+  onFirstFrame?: () => void;
 }
 
 export default function RaaydrOrb({
@@ -36,9 +41,14 @@ export default function RaaydrOrb({
   ambientRotationSpeed = 6, // degrees/sec — tune this against the live reference
   rotateOnHover = false,
   forceHoverState = false,
-  backgroundColor = '#F5F2EC' // RAAYDR Canvas token
+  backgroundColor = '#F5F2EC', // RAAYDR Canvas token
+  onFirstFrame
 }: RaaydrOrbProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
+  // Kept in a ref so the render loop always sees the latest callback without
+  // re-running the whole WebGL-setup effect when the parent re-renders.
+  const onFirstFrameRef = useRef(onFirstFrame);
+  onFirstFrameRef.current = onFirstFrame;
 
   const vert = /* glsl */ `
     precision highp float;
@@ -287,9 +297,10 @@ export default function RaaydrOrb({
     container.addEventListener('mousemove', handleMouseMove);
     container.addEventListener('mouseleave', handleMouseLeave);
 
-    let rafId: number;
+    let rafId = 0;
+    let running = false;
+    let firstFrameFired = false;
     const update = (t: number) => {
-      rafId = requestAnimationFrame(update);
       const dt = (t - lastTime) * 0.001;
       lastTime = t;
       program.uniforms.iTime.value = t * 0.001;
@@ -311,11 +322,32 @@ export default function RaaydrOrb({
       program.uniforms.backgroundColor.value = hexToVec3(backgroundColor);
 
       renderer.render({ scene: mesh });
+
+      if (!firstFrameFired) {
+        firstFrameFired = true;
+        onFirstFrameRef.current?.();
+      }
+      rafId = requestAnimationFrame(update);
     };
-    rafId = requestAnimationFrame(update);
+
+    // Only render while on-screen and the tab is visible — the hero orb
+    // otherwise keeps drawing at 60fps long after it's scrolled away.
+    const startRaf = () => {
+      if (running) return;
+      running = true;
+      lastTime = performance.now();
+      rafId = requestAnimationFrame(update);
+    };
+    const stopRaf = () => {
+      if (!running) return;
+      running = false;
+      cancelAnimationFrame(rafId);
+    };
+    const releaseGate = createRenderGate(container, startRaf, stopRaf);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      releaseGate();
+      stopRaf();
       window.removeEventListener('resize', resize);
       container.removeEventListener('mousemove', handleMouseMove);
       container.removeEventListener('mouseleave', handleMouseLeave);

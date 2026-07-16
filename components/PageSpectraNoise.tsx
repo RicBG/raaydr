@@ -22,6 +22,7 @@
 //    not just visually, before handoff.
 
 import { useRef, useEffect, useState, startTransition, CSSProperties } from 'react';
+import { createRenderGate } from '@/lib/renderGate';
 
 const vertex = `
 attribute vec2 position;
@@ -251,8 +252,15 @@ export default function PageSpectraNoise({
     const resize = () => {
       const w = parent.clientWidth;
       const h = parent.clientHeight;
-      canvas.width = w * resolutionScale;
-      canvas.height = h * resolutionScale;
+      // The fragment shader is a heavy CPPN (eight mat4 multiplies + sigmoids
+      // per pixel), so fragment count dominates its cost. This is a soft,
+      // out-of-focus ambient wave — rendering it below CSS resolution is
+      // visually indistinguishable but cuts the per-frame GPU work several
+      // fold. Reduced harder on small screens, where GPUs are weaker.
+      const mobileFactor = w <= 640 ? 0.8 : 1;
+      const eff = resolutionScale * mobileFactor;
+      canvas.width = Math.max(1, Math.round(w * eff));
+      canvas.height = Math.max(1, Math.round(h * eff));
       canvas.style.width = w + 'px';
       canvas.style.height = h + 'px';
       gl!.viewport(0, 0, canvas.width, canvas.height);
@@ -263,7 +271,7 @@ export default function PageSpectraNoise({
     resize();
 
     const startTime = performance.now();
-    let animationFrame: number;
+    let animationFrame = 0;
     const render = () => {
       const currentTime = (performance.now() - startTime) / 1000;
       gl!.uniform1f(uniforms.uTime, currentTime * speed);
@@ -282,11 +290,31 @@ export default function PageSpectraNoise({
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
       animationFrame = requestAnimationFrame(render);
     };
-    render();
+
+    // Full-page fixed background, so the IntersectionObserver keeps it active
+    // whenever it's on screen — the real saving here is pausing when the tab
+    // is backgrounded, plus the reduced render resolution above.
+    let running = false;
+    const startRaf = () => {
+      if (running) return;
+      running = true;
+      animationFrame = requestAnimationFrame(render);
+    };
+    const stopRaf = () => {
+      if (!running) return;
+      running = false;
+      cancelAnimationFrame(animationFrame);
+    };
+    const releaseGate = createRenderGate(canvas, startRaf, stopRaf);
 
     return () => {
-      if (animationFrame) cancelAnimationFrame(animationFrame);
+      releaseGate();
+      stopRaf();
       window.removeEventListener('resize', handleResize);
+      // Free the WebGL context on unmount. Without this, navigating between
+      // audience pages leaks contexts toward the browser's ~16-context cap,
+      // after which the oldest canvases silently stop rendering.
+      gl!.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, [audience, colorIntensity, noiseIntensity, scanlineIntensity, scanlineFrequency, warpAmount, speed, resolutionScale, colors.primary, colors.secondary, colors.accent]);
 
