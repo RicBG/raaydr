@@ -135,7 +135,11 @@ const AUDIENCE_COLORS: Record<RaaydrAudience, { primary: [number, number, number
   artists: { primary: [245 / 255, 166 / 255, 35 / 255], secondary: [245 / 255, 166 / 255, 35 / 255], accent: [1, 0.85, 0.5] }, // amber
   songwriters: { primary: [255 / 255, 122 / 255, 107 / 255], secondary: [255 / 255, 122 / 255, 107 / 255], accent: [1, 0.75, 0.7] }, // coral
   producers: { primary: [139 / 255, 124 / 255, 246 / 255], secondary: [139 / 255, 124 / 255, 246 / 255], accent: [0.8, 0.75, 1] }, // violet
-  tastemakers: { primary: [199 / 255, 125 / 255, 255 / 255], secondary: [199 / 255, 125 / 255, 255 / 255], accent: [0.9, 0.7, 1] }, // orchid
+  // Was RGB(199,125,255) — a purple/lavender, not the site's actual --orchid
+  // token (#E585AC = RGB(229,133,172)). Its accent was also blue-leaning
+  // ([0.9,0.7,1], blue channel highest), so high-luminance areas read as
+  // pale lilac instead of pink. Both fixed to match the true pink hue.
+  tastemakers: { primary: [229 / 255, 133 / 255, 172 / 255], secondary: [229 / 255, 133 / 255, 172 / 255], accent: [1, 0.82, 0.88] }, // orchid
   listeners: { primary: [59 / 255, 206 / 255, 123 / 255], secondary: [59 / 255, 206 / 255, 123 / 255], accent: [0.6, 1, 0.8] } // Signal Green
 };
 
