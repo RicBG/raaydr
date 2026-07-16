@@ -28,12 +28,17 @@
   filter: invert(1);
 }
 
-/* Treated as a second hero moment: the reveal paragraph centered,
-   generous whitespace, text-align centered throughout. */
+/* Treated as a second hero moment: heading + reveal paragraph centered as
+   one group, generous whitespace, text-align centered throughout. */
 .inner {
   display: grid;
   justify-items: center;
   text-align: center;
+  gap: clamp(40px, 6vw, 80px);
+}
+
+.headline {
+  max-width: 18ch;
 }
 
 .revealBlock {

@@ -8,9 +8,7 @@ import styles from "./Problem.module.css";
 
 // One continuous locked paragraph (copy text unchanged from the previous
 // per-line layout — only concatenated into a single block so
-// ScrollTextReveal can light it up word-by-word as it scrolls). Its own
-// opening lines carry the "streaming is broken" idea, so there's no
-// separate heading above it any more.
+// ScrollTextReveal can light it up word-by-word as it scrolls).
 const paragraph = [
   "You pay £10.99 a month.",
   "Do you know where it goes?",
@@ -67,7 +65,7 @@ export default function Problem() {
       ref={sectionRef}
       id="manifesto"
       className={styles.section}
-      aria-label="The problem with streaming"
+      aria-labelledby="problem-heading"
     >
       <Pulse color="var(--coral)" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -78,6 +76,10 @@ export default function Problem() {
         className={styles.sweepCorner}
       />
       <div className={`container ${styles.inner}`}>
+        <h2 id="problem-heading" className={`display-section ${styles.headline}`}>
+          Streaming is broken. Let&rsquo;s stop pretending it isn&rsquo;t.
+        </h2>
+
         <ScrollTextReveal
           text={paragraph}
           revealMode="words"
