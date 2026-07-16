@@ -1,8 +1,8 @@
-/* Opaque background + positive z-index: the hero pins beneath this section,
-   so it must fully cover the locked hero as it slides up over it. */
+/* Opaque background + z-index above the pinned hero: this section must
+   fully cover the locked hero as it slides up and over it. */
 .section {
   position: relative;
-  z-index: 1;
+  z-index: 10;
   background: var(--canvas);
   padding: clamp(96px, 14vw, 200px) 0;
 }
@@ -27,10 +27,18 @@
   max-width: 16ch;
 }
 
-.manifesto {
-  display: grid;
-  gap: 0.9em;
+/* Sparse and editorial: each line gets its own generous stretch of scroll
+   (see .lineBeat) rather than sitting in a dense stacked block — only one
+   or two statements ever share the viewport at once. */
+.beats {
   max-width: 34ch;
+}
+
+.lineBeat {
+  min-height: 70vh;
+  min-height: 70svh;
+  display: flex;
+  align-items: center;
   font-size: clamp(1.35rem, 2.6vw, 2.1rem);
   font-weight: 500;
   line-height: 1.28;
@@ -38,15 +46,19 @@
 }
 
 .pullStat {
-  margin: clamp(56px, 8vw, 110px) 0;
+  max-width: 24ch;
   font-size: clamp(1.5rem, 3.6vw, 2.7rem);
   font-weight: 700;
   line-height: 1.2;
-  max-width: 24ch;
 }
 
 @media (max-width: 640px) {
-  .manifesto {
+  .beats {
     max-width: none;
+  }
+
+  .lineBeat {
+    min-height: 55vh;
+    min-height: 55svh;
   }
 }

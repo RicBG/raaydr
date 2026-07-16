@@ -1,10 +1,17 @@
 .hero {
   min-height: 100svh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Everything visible in the hero, as one group, so the pin animation can
+   scale/dim/blur it as a single unit while the section itself stays put. */
+.content {
+  min-height: 100svh;
   display: grid;
   grid-template-rows: 1fr auto;
   padding-top: 96px;
-  overflow: hidden;
-  position: relative;
+  will-change: transform, opacity, filter;
 }
 
 .middle {
@@ -23,24 +30,29 @@
   pointer-events: none;
 }
 
-/* The halo peeks up from below: the square is ~1.5x the section width,
-   anchored so most of it hangs below the hero — only the top arc shows,
-   clipped by the section's overflow: hidden. Pointer events re-enabled on
-   the orb itself (its parent layer is pointer-events: none) so its
-   mouse-proximity ripple works; the CTA sits above at z-index 2 and keeps
-   all its clicks. */
+/* A full circle sized so it's fully visible top-to-side, only the very
+   bottom (~10%) cropped by the hero's own overflow: hidden. Pointer events
+   re-enabled on the orb itself (its parent layer is pointer-events: none)
+   so its mouse-proximity ripple works; the CTA sits above at z-index 2 and
+   keeps all its clicks. */
 .orbWrap {
   position: absolute;
   left: 50%;
-  bottom: -110vw;
+  top: 0;
   transform: translateX(-50%);
-  width: 150vw;
+  width: 61vw;
   aspect-ratio: 1;
   pointer-events: auto;
-  /* The glow still carries faint energy at the canvas's top edge; feather
-     it so the crop line never reads as a hard line. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
+  /* The shader's glow falloff is asymptotic — it approaches the background
+     colour near the canvas edge but never mathematically reaches it. This
+     masks the outermost sliver so no residual tint can read as a seam,
+     regardless of backgroundColor accuracy. `closest-side` is required: an
+     unqualified `circle` radial-gradient resolves percentages against
+     farthest-corner, so the mask's opaque region would only reach ~65% of
+     the visible circle and its fade-to-transparent would bleed a faint
+     square all the way to the container's corners. */
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 92%, transparent 100%);
+  mask-image: radial-gradient(circle closest-side, #000 92%, transparent 100%);
 }
 
 .center {

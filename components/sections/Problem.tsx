@@ -38,22 +38,20 @@ export default function Problem() {
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      // Reading pace becomes scroll pace: each line's opacity is scrubbed
-      // from 0.15 to full as it passes the viewport centre.
+      // Sparse and editorial: each line holds its own generous stretch of
+      // scroll (see .lineBeat's min-height), and rises/fades in once as it
+      // nears the viewport centre — only ever one or two on screen at a
+      // time, never the dense stacked block this used to be.
       lines.forEach((line) => {
         gsap.fromTo(
           line,
-          { opacity: 0.15, y: 24 },
+          { opacity: 0, y: 28 },
           {
             opacity: 1,
             y: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: line,
-              start: "top 75%",
-              end: "top 48%",
-              scrub: true,
-            },
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: { trigger: line, start: "top 70%" },
           }
         );
       });
@@ -103,21 +101,22 @@ export default function Problem() {
           </h2>
         </div>
 
-        <div className={styles.manifesto}>
+        <div className={styles.beats}>
           {manifestoOne.map((line) => (
-            <p key={line} data-manifesto-line>
+            <p key={line} className={styles.lineBeat} data-manifesto-line>
               {line}
             </p>
           ))}
-        </div>
 
-        <p className={`mono-figure ${styles.pullStat}`} data-manifesto-line>
-          1,000 streams on Spotify pays for a coffee.
-        </p>
+          <p
+            className={`mono-figure ${styles.pullStat} ${styles.lineBeat}`}
+            data-manifesto-line
+          >
+            1,000 streams on Spotify pays for a coffee.
+          </p>
 
-        <div className={styles.manifesto}>
           {manifestoTwo.map((line) => (
-            <p key={line} data-manifesto-line>
+            <p key={line} className={styles.lineBeat} data-manifesto-line>
               {line}
             </p>
           ))}

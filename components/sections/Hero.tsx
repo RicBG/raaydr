@@ -17,7 +17,7 @@ const tags = [
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const centerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
@@ -46,10 +46,10 @@ export default function Hero() {
 
   useEffect(() => {
     const section = sectionRef.current;
-    const ring = ringRef.current;
+    const content = contentRef.current;
     const center = centerRef.current;
     const bottom = bottomRef.current;
-    if (!section || !ring || !center || !bottom) return;
+    if (!section || !content || !center || !bottom) return;
 
     const mm = gsap.matchMedia();
 
@@ -64,39 +64,24 @@ export default function Hero() {
         delay: 0.25,
       });
 
-      // Pin the hero for one viewport of scroll; the next section (which
-      // carries its own background and a higher z-index) slides up and over
-      // the locked hero.
+      // Pin the hero for one viewport of scroll while its inner content —
+      // ring, CTA, bottom bar, all of it as one group — subtly recedes
+      // (scales down, dims, softens). The section itself stays fixed in
+      // place; only its content wrapper animates. "Streaming is broken"
+      // then slides up from normal document flow and covers it.
       ScrollTrigger.create({
         trigger: section,
         start: "top top",
         end: "+=100%",
         pin: true,
         pinSpacing: true,
-      });
-
-      // Depth while pinned: the CTA drifts up, the halo sinks, scrubbed
-      // across the same range as the pin.
-      const distance = () => window.innerHeight;
-      gsap.to(center, {
-        y: () => -0.15 * distance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "+=100%",
-          scrub: true,
-        },
-      });
-      gsap.to(ring, {
-        y: () => 0.15 * distance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "+=100%",
-          scrub: true,
-        },
+        scrub: true,
+        animation: gsap.to(content, {
+          scale: 0.92,
+          opacity: 0.85,
+          filter: "blur(2px)",
+          ease: "none",
+        }),
       });
     });
 
@@ -120,52 +105,54 @@ export default function Hero() {
     >
       <h1 className="sr-only">RAAYDR</h1>
 
-      <div className={`container ${styles.middle}`}>
-        <div ref={ringRef} className={styles.ringLayer}>
-          {reducedMotion ? (
-            // Static fallback: the code-drawn ring renders without its rAF
-            // loop under reduced motion; the orb has no static mode.
-            <Ring mode="spectrum" />
-          ) : (
-            <div className={styles.orbWrap}>
-              <RaaydrOrb
-                hue={250}
-                hoverIntensity={0.25}
-                ambientRotation
-                ambientRotationSpeed={6}
-                backgroundColor={orbBg}
-              />
-            </div>
-          )}
-        </div>
-
-        <div ref={centerRef} className={styles.center}>
-          <a href="#join" className={`btn ${styles.heroCta}`}>
-            {ctaCopy().primary} <span aria-hidden="true">↓</span>
-          </a>
-        </div>
-      </div>
-
-      <div ref={bottomRef} className={`container ${styles.bottom}`}>
-        <div className={styles.bottomLeft}>
-          <p className="eyebrow">Independent music · Funded by you</p>
-          <p className={styles.intro}>
-            The music industry forgot who makes the music. On RAAYDR, your
-            money follows your ears. Traceable, every month.
-          </p>
-        </div>
-        <div className={styles.bottomRight}>
-          {tags.map((tag) =>
-            tag.href.startsWith("#") ? (
-              <a key={tag.label} href={tag.href} className={styles.tag}>
-                {tag.label}
-              </a>
+      <div ref={contentRef} className={styles.content}>
+        <div className={`container ${styles.middle}`}>
+          <div className={styles.ringLayer}>
+            {reducedMotion ? (
+              // Static fallback: the code-drawn ring renders without its rAF
+              // loop under reduced motion; the orb has no static mode.
+              <Ring mode="spectrum" />
             ) : (
-              <Link key={tag.label} href={tag.href} className={styles.tag}>
-                {tag.label}
-              </Link>
-            )
-          )}
+              <div className={styles.orbWrap}>
+                <RaaydrOrb
+                  hue={250}
+                  hoverIntensity={0.25}
+                  ambientRotation
+                  ambientRotationSpeed={6}
+                  backgroundColor={orbBg}
+                />
+              </div>
+            )}
+          </div>
+
+          <div ref={centerRef} className={styles.center}>
+            <a href="#join" className={`btn ${styles.heroCta}`}>
+              {ctaCopy().primary} <span aria-hidden="true">↓</span>
+            </a>
+          </div>
+        </div>
+
+        <div ref={bottomRef} className={`container ${styles.bottom}`}>
+          <div className={styles.bottomLeft}>
+            <p className="eyebrow">Independent music · Funded by you</p>
+            <p className={styles.intro}>
+              The music industry forgot who makes the music. On RAAYDR, your
+              money follows your ears. Traceable, every month.
+            </p>
+          </div>
+          <div className={styles.bottomRight}>
+            {tags.map((tag) =>
+              tag.href.startsWith("#") ? (
+                <a key={tag.label} href={tag.href} className={styles.tag}>
+                  {tag.label}
+                </a>
+              ) : (
+                <Link key={tag.label} href={tag.href} className={styles.tag}>
+                  {tag.label}
+                </Link>
+              )
+            )}
+          </div>
         </div>
       </div>
     </section>
