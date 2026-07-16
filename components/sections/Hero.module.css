@@ -1,13 +1,29 @@
-.hero {
-  min-height: 100svh;
-  overflow: hidden;
+/* The hero holds itself in place with position:sticky rather than a GSAP pin.
+   .heroPin is 200svh — one viewport for the visible hero plus one viewport of
+   scroll range over which the sticky .hero stays pinned at the top. The
+   Problem card (opaque, higher z-index) is pulled up over that range with a
+   negative margin, so it scrolls up and covers the hero the moment you start
+   scrolling, fully covering it after one viewport. z-index:0 keeps the hero
+   below Problem's z-index:10 and below the fixed nav. A sticky element needs
+   its container taller than itself to have any sticky range — a 100svh
+   container gives none, which is why the hero has to sit in a 200svh one. */
+.heroPin {
   position: relative;
+  z-index: 0;
+  height: 200svh;
 }
 
-/* Everything visible in the hero, as one group, so the pin animation can
+.hero {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* Everything visible in the hero, as one group, so the recede animation can
    scale/dim/blur it as a single unit while the section itself stays put. */
 .content {
-  min-height: 100svh;
+  height: 100%;
   display: grid;
   padding-top: 96px;
   will-change: transform, opacity, filter;
@@ -120,7 +136,11 @@
    proper hero rather than clamped down from the desktop value. */
 @media (max-width: 640px) {
   .middle {
-    --orb-size: 86vw;
+    /* The ring should own the screen on mobile — sized past the viewport
+       width so it fills it edge-to-edge and reads as the centrepiece, not a
+       small disc floating in whitespace. The soft mask keeps the crop clean
+       where it bleeds off the sides. */
+    --orb-size: 118vw;
     min-height: calc(100svh - 96px);
   }
 
@@ -132,17 +152,25 @@
   .textStack {
     top: 50%;
     transform: translate(-50%, -50%);
-    padding: 0 4%;
-    gap: clamp(16px, 2.6vh, 26px);
+    /* Text sits inside the visible circle, so its column is a fixed share of
+       the viewport rather than of the now-oversized orb box. */
+    width: 88vw;
+    padding: 0;
+    gap: clamp(18px, 3vh, 30px);
   }
 
   .heading {
-    font-size: clamp(1.7rem, 6.6vw, 2.15rem);
-    line-height: 1.14;
+    font-size: clamp(2rem, 8.4vw, 2.6rem);
+    line-height: 1.12;
+    max-width: 15ch;
   }
 
   .subcopy {
-    font-size: 15px;
-    max-width: 26ch;
+    font-size: 16px;
+    max-width: 28ch;
+  }
+
+  .heroCta {
+    font-size: 16px;
   }
 }

@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
 import Pulse from "@/components/Pulse";
 import ScrollRevealText from "@/components/ScrollRevealText";
 import styles from "./Problem.module.css";
@@ -25,62 +23,13 @@ const paragraph = [
 ].join(" ");
 
 export default function Problem() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const mm = gsap.matchMedia();
-
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      // A full yPercent:100 traversal needs runway: starting it at the
-      // section's own natural "top bottom" (i.e. exactly when the hero's
-      // pin ends) gives it only one viewport-height of scroll to close a
-      // full viewport-height of handicap, which mathematically cannot
-      // finish before "top top" without the card sitting static and fully
-      // hidden for a stretch first — a dead gap of plain canvas. Starting
-      // instead one viewport-height earlier (overlapping the hero's entire
-      // recede) gives it that runway, so most of the handicap resolves
-      // while the hero is still on screen. Ending at "top 65%" rather than
-      // "top top" means it finishes settling shortly after the card starts
-      // crossing into view instead of needing the full one-viewport
-      // entrance window — the remaining approach to "top top" then plays
-      // out as plain scroll, no residual dead space.
-      //
-      // The offset must land on the "top" (trigger-side) keyword, not
-      // "bottom" (scroller-side) — "top bottom-=vh" silently breaks GSAP's
-      // parser (verified: it collapses start to equal end), whereas
-      // "top-=vh bottom" computes correctly. And it's a function, not a
-      // fixed px number, so it stays correct if the viewport is resized.
-      const trigger = ScrollTrigger.create({
-        trigger: section,
-        start: () => `top-=${window.innerHeight} bottom`,
-        end: "top 65%",
-        scrub: true,
-        animation: gsap.fromTo(
-          section,
-          { yPercent: 100 },
-          // immediateRender:false is required here: fromTo() otherwise
-          // snaps the element to yPercent:100 synchronously the instant
-          // it's constructed, and since this tween's own target IS the
-          // trigger, ScrollTrigger.create() then measures that already-
-          // offset position as if it were the natural layout — silently
-          // corrupting start/end (verified: it inflated them by almost
-          // exactly one section-height).
-          { yPercent: 0, ease: "none", immediateRender: false }
-        ),
-      });
-
-      return () => trigger.kill();
-    });
-
-    return () => mm.revert();
-  }, []);
-
+  // No JS drives the cover any more: the hero sticks (see Hero.module.css)
+  // and this opaque card, sitting directly after it in flow with a higher
+  // z-index, simply scrolls up over it — so the black surface starts taking
+  // over the screen the instant you scroll, then fully covers the hero as it
+  // recedes. Pure CSS, and robust on every engine including iOS.
   return (
     <section
-      ref={sectionRef}
       id="manifesto"
       className={styles.section}
       aria-labelledby="problem-heading"

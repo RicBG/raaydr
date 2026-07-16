@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
+import Calculator from "@/components/sections/Calculator";
 
 export const metadata: Metadata = {
   title: "RAAYDR for Artists — Get paid for the people who actually listen.",
@@ -16,6 +17,7 @@ export default function ArtistsPage() {
       color="#EBA83A"
       halo="artists"
       role="Artist"
+      calculator={<Calculator disclaimer />}
       points={[
         {
           title: "No label required.",

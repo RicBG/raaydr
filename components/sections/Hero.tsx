@@ -10,6 +10,7 @@ import styles from "./Hero.module.css";
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const heroPinRef = useRef<HTMLDivElement>(null);
   const orbLayerRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -49,13 +50,11 @@ export default function Hero() {
   const [orbReady, setOrbReady] = useState(false);
   useEffect(() => {
     // Reduced motion renders the static Ring instead of the orb, so there's
-    // no first-frame callback to wait for — reveal at once. Otherwise the
-    // orb's onFirstFrame drives the reveal, with this timeout as a safety net.
-    if (reducedMotion) {
-      setOrbReady(true);
-      return;
-    }
-    const t = setTimeout(() => setOrbReady(true), 1000);
+    // no first-frame callback to wait for — reveal on the next tick. Otherwise
+    // the orb's onFirstFrame drives the reveal, with this timeout as a safety
+    // net. (Deferred via setTimeout rather than a synchronous setState so it
+    // doesn't trigger a cascading render inside the effect.)
+    const t = setTimeout(() => setOrbReady(true), reducedMotion ? 0 : 1000);
     return () => clearTimeout(t);
   }, [reducedMotion]);
 
@@ -96,28 +95,26 @@ export default function Hero() {
     return () => mm.revert();
   }, [orbReady]);
 
-  // Scroll pin/recede — independent of the intro, set up on mount.
+  // Scroll recede — the hero holds itself in place via CSS position:sticky
+  // (see .heroPin/.hero in Hero.module.css) while the Problem card scrolls up
+  // and covers it. This just scrubs the recede across that one-viewport
+  // sticky range: the copy stack scales down/dims/softens and the orb behind
+  // it grows, so it reads as energy passing into the orb as it's covered.
   useEffect(() => {
-    const section = sectionRef.current;
+    const heroPin = heroPinRef.current;
     const orbLayer = orbLayerRef.current;
     const stack = stackRef.current;
-    if (!section || !orbLayer || !stack) return;
+    if (!heroPin || !orbLayer || !stack) return;
 
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      // Pin the hero for one viewport of scroll while the copy stack
-      // recedes (scales down, dims, softens) and the orb behind it grows —
-      // opposite motions, scrubbed together, so the handoff feels like
-      // energy passing into the orb rather than everything just shrinking.
-      // The section itself stays fixed in place; "Streaming is broken"
-      // then scrolls up from normal document flow and covers it.
       const trigger = ScrollTrigger.create({
-        trigger: section,
+        trigger: heroPin,
         start: "top top",
+        // One viewport of scroll — the range over which the card covers the
+        // hero. (heroPin is 200svh; the recede maps to its first half.)
         end: "+=100%",
-        pin: true,
-        pinSpacing: true,
         scrub: true,
         animation: gsap
           .timeline()
@@ -138,6 +135,7 @@ export default function Hero() {
   }, []);
 
   return (
+    <div ref={heroPinRef} className={styles.heroPin}>
     <section
       ref={sectionRef}
       id="hero"
@@ -184,5 +182,6 @@ export default function Hero() {
         </div>
       </div>
     </section>
+    </div>
   );
 }

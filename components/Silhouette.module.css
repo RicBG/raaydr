@@ -1,12 +1,14 @@
-/* Height-driven: the figure fills ~70vh on desktop, ~55vh on mobile, and is
-   anchored to the bottom of its frame. Width follows the 3:4 source ratio so
-   the box never shifts. */
+/* Height-driven and bottom-anchored. The frame's height sets the scale; the
+   image's width follows its own 3:4 ratio via width:auto. No aspect-ratio box
+   and no position:absolute fill — that combination renders at zero size on
+   iOS WebKit and was hiding the silhouettes on iPhone. */
 .frame {
   position: relative;
   height: 55vh;
   height: 55svh;
-  aspect-ratio: 3 / 4;
-  max-width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 @media (min-width: 768px) {
@@ -17,15 +19,20 @@
 }
 
 .image {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
   object-fit: contain;
   object-position: bottom center;
+  display: block;
 }
 
 .placeholder {
-  position: absolute;
-  inset: 0;
-  width: 100%;
   height: 100%;
+  width: auto;
+  aspect-ratio: 3 / 4;
   color: var(--ink);
-  opacity: 0.14;
+  /* Visible enough to read as a figure if an image ever fails, rather than
+     leaving the frame looking empty. */
+  opacity: 0.22;
 }

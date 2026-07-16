@@ -11,11 +11,18 @@ type SilhouetteProps = {
 };
 
 /**
- * A silhouette portrait from the pool, height-driven (~70vh desktop, ~55vh
- * mobile) and anchored to the bottom of its frame. The halo renders behind
- * it in code — never baked into the image. Lazy by default (`preload` off).
- * If the image fails to load (flaky mobile network, etc.) a soft ink
- * placeholder takes its place rather than leaving the frame empty.
+ * A silhouette portrait from the pool, height-driven (~70svh desktop, ~55svh
+ * mobile) and anchored to the bottom of its frame. The halo renders behind it
+ * in code — never baked into the image.
+ *
+ * Deliberately NOT using next/image `fill`: fill lays the image out as
+ * position:absolute inset:0 inside a container whose size comes from an
+ * `aspect-ratio` box, and that exact combination (fill + aspect-ratio +
+ * svh) renders at zero size on iOS WebKit (Chrome/Safari on iPhone), which
+ * left the silhouettes invisible on mobile while the code-drawn halos still
+ * showed. The intrinsic-dimension form below drives size from a plain
+ * `height` with `width: auto` — the most cross-engine-robust way to size a
+ * contained image — and still gets next/image's responsive optimisation.
  */
 export default function Silhouette({ src, className }: SilhouetteProps) {
   const [failed, setFailed] = useState(false);
@@ -27,9 +34,11 @@ export default function Silhouette({ src, className }: SilhouetteProps) {
         <Image
           src={src}
           alt=""
-          fill
-          sizes="(max-width: 767px) 62vw, 34vw"
+          width={1050}
+          height={1400}
+          sizes="(max-width: 767px) 70vh, 70vh"
           className={styles.image}
+          style={{ height: "100%", width: "auto" }}
           onError={() => setFailed(true)}
         />
       ) : (

@@ -32,7 +32,14 @@ const approx = (v: number) => {
 
 const ATTENTION_TICKS = [10, 25, 50, 75, 100];
 
-export default function Calculator() {
+type CalculatorProps = {
+  /** Render the illustrative-estimate disclaimer inside the component. The
+   *  homepage leaves this off because its RealNumbers section supplies its
+   *  own footnote; standalone placements (the artist page) turn it on. */
+  disclaimer?: boolean;
+};
+
+export default function Calculator({ disclaimer = false }: CalculatorProps) {
   const reduced = usePrefersReducedMotion();
 
   const [fanPos, setFanPos] = useState(0.5); // log position → 1,000 fans
@@ -213,6 +220,17 @@ export default function Calculator() {
           </p>
         </div>
       </div>
+
+      {disclaimer && (
+        <p className={styles.footnote}>
+          Illustrative estimate, not a guarantee. Founding tier, paid monthly,
+          before payment processing. £3.50 is the most one founding fan can
+          generate in a month, and only if they listen to nothing but you. The
+          Spotify side assumes roughly £0.003 per stream, a typical blended rate
+          for independent artists; the match figure assumes an average of 4
+          streams per casual monthly listener.
+        </p>
+      )}
     </div>
   );
 }
