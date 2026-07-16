@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <main className={styles.page}>
-      <div className={styles.noiseBand}>
+      <div className={styles.noiseBg}>
         {/* Not audience-specific — see About for why "listeners" is the
             neutral pick there; rotated to a different colour here so the
             legal pages aren't all identical. */}

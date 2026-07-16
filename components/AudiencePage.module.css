@@ -2,8 +2,15 @@
   padding-top: 76px;
 }
 
-.noiseBand {
-  height: 200px;
+/* Full-page ambient background, not a top band: fixed behind all content
+   (z-index: -1) so it covers the whole viewport regardless of scroll
+   position. The canvas itself is transparent outside the wave shape (see
+   PageSpectraNoise's shader), so .page's own transparent background lets
+   the real Canvas colour (--canvas, painted on <body>) show through. */
+.noiseBg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
 }
 
 .hero {

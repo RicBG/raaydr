@@ -6,15 +6,20 @@
 // the Framer runtime import) have been stripped and replaced with plain
 // React/TS. The WebGL shader itself is unchanged.
 //
-// One real fix made during porting: the original shader declares
-// uUseCustomColors / uPrimaryColor / uSecondaryColor / uAccentColor /
-// uColorIntensity uniforms, but the shipped component never actually sets
-// them from JavaScript — that code path was dead. This port wires those
-// uniforms up properly, which is what makes exact-hex audience colour
-// matching possible instead of only approximate hue rotation. Verified in
-// a browser: rendered average colour for amber/green/orchid targets landed
-// within single-digit RGB error of RAAYDR's locked hex tokens before this
-// was handed off.
+// Two real fixes made during porting:
+// 1. The original shader declares uUseCustomColors / uPrimaryColor /
+//    uSecondaryColor / uAccentColor / uColorIntensity uniforms, but the
+//    shipped component never actually sets them from JavaScript — that code
+//    path was dead. This port wires those uniforms up properly, which is
+//    what makes exact-hex audience colour matching possible instead of only
+//    approximate hue rotation.
+// 2. The shader used to render as a fully opaque block in the audience
+//    colour. Alpha is now driven by the pattern's own brightness (sampled
+//    before the colour tint is applied, so the tint itself can't make
+//    everything read as opaque) via smoothstep, so only the actual wave
+//    shape carries colour and the rest of the canvas is transparent, letting
+//    the page's real background show through. Verified with pixel sampling,
+//    not just visually, before handoff.
 
 import { useRef, useEffect, useState, startTransition, CSSProperties } from 'react';
 
@@ -103,6 +108,7 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord){
 
 void main(){
     vec4 col;mainImage(col,gl_FragCoord.xy);
+    float baseLum=dot(col.rgb,vec3(0.299,0.587,0.114));
 
     col.rgb=hueShiftRGB(col.rgb,uHueShift);
 
@@ -113,7 +119,12 @@ void main(){
     float scanline_val=sin(gl_FragCoord.y*uScanFreq)*0.5+0.5;
     col.rgb*=1.-(scanline_val*scanline_val)*uScan;
     col.rgb+=(rand(gl_FragCoord.xy+uTime)-0.5)*uNoise;
-    gl_FragColor=vec4(clamp(col.rgb,0.0,1.0),1.0);
+
+    // Alpha is driven by the ORIGINAL pattern's brightness (before colour tint),
+    // not the tinted colour itself — otherwise the tint makes everything read as
+    // bright/opaque and the transparent background never shows through.
+    float alpha=smoothstep(0.03,0.30,baseLum);
+    gl_FragColor=vec4(clamp(col.rgb,0.0,1.0)*alpha,alpha);
 }
 `;
 
@@ -164,12 +175,13 @@ export default function PageSpectraNoise({
 
     let gl: WebGLRenderingContext | null = null;
     try {
-      gl = (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
+      gl = (canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false }) ||
+        canvas.getContext('experimental-webgl', { alpha: true, premultipliedAlpha: false })) as WebGLRenderingContext | null;
       if (!gl) {
         startTransition(() => setWebglSupported(false));
         return;
       }
-    } catch (e) {
+    } catch {
       startTransition(() => setWebglSupported(false));
       return;
     }
@@ -261,6 +273,8 @@ export default function PageSpectraNoise({
       gl!.uniform3f(uniforms.uSecondaryColor, colors.secondary[0], colors.secondary[1], colors.secondary[2]);
       gl!.uniform3f(uniforms.uAccentColor, colors.accent[0], colors.accent[1], colors.accent[2]);
       gl!.uniform1f(uniforms.uColorIntensity, colorIntensity);
+      gl!.clearColor(0, 0, 0, 0);
+      gl!.clear(gl!.COLOR_BUFFER_BIT);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
       animationFrame = requestAnimationFrame(render);
     };

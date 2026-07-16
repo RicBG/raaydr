@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className={styles.page}>
-      <div className={styles.noiseBand}>
+      <div className={styles.noiseBg}>
         {/* Not audience-specific, so this page doesn't have a natural
             colour — Signal Green (--green) is the site's own primary/
             action colour, the closest thing to a neutral pick. */}

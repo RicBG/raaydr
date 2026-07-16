@@ -68,7 +68,7 @@ export default function AudiencePage({
       style={{ "--halo-color": color } as React.CSSProperties}
     >
       {halo && (
-        <div className={styles.noiseBand}>
+        <div className={styles.noiseBg}>
           <PageSpectraNoise audience={halo} />
         </div>
       )}
