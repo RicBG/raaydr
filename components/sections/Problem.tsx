@@ -103,8 +103,8 @@ export default function Problem() {
           preset="Glitch Rise"
           htmlTag="p"
           trigger="Scroll"
-          offsetStart={90}
-          offsetEnd={30}
+          offsetStart={120}
+          offsetEnd={-10}
           // This section sits on the dark --deep surface (see
           // Problem.module.css), not the light canvas the component's own
           // defaults assume — colours flipped to --deep-ink so hidden text
