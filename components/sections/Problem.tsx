@@ -3,12 +3,12 @@
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import Pulse from "@/components/Pulse";
-import ScrollTextReveal from "@/components/ScrollTextReveal";
+import ScrollRevealText from "@/components/ScrollRevealText";
 import styles from "./Problem.module.css";
 
 // One continuous locked paragraph (copy text unchanged from the previous
 // per-line layout — only concatenated into a single block so
-// ScrollTextReveal can light it up word-by-word as it scrolls).
+// ScrollRevealText can light it up word-by-word as it scrolls).
 const paragraph = [
   "You pay £10.99 a month.",
   "Do you know where it goes?",
@@ -98,13 +98,27 @@ export default function Problem() {
           Streaming is broken. Let&rsquo;s stop pretending it isn&rsquo;t.
         </h2>
 
-        <ScrollTextReveal
+        <ScrollRevealText
           text={paragraph}
-          revealMode="words"
-          startOffset={90}
-          endOffset={30}
-          dimOpacity={0.2}
-          className={styles.revealBlock}
+          preset="Soft Words"
+          htmlTag="p"
+          trigger="Scroll"
+          offsetStart={90}
+          offsetEnd={30}
+          // This section sits on the dark --deep surface (see
+          // Problem.module.css), not the light canvas the component's own
+          // defaults assume — colours flipped to --deep-ink so hidden text
+          // dims against the dark background instead of vanishing into it.
+          colorHidden="rgba(242,244,247,0.2)"
+          colorRevealed="#F2F4F7"
+          font={{
+            fontFamily: "var(--font-body)",
+            fontWeight: 500,
+            fontSize: "clamp(1.25rem, 2.4vw, 1.85rem)",
+            lineHeight: 1.55,
+            letterSpacing: "-0.005em",
+          }}
+          style={{ maxWidth: "62ch", textAlign: "center" }}
         />
       </div>
     </section>

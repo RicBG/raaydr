@@ -40,11 +40,3 @@
 .headline {
   max-width: 18ch;
 }
-
-.revealBlock {
-  max-width: 62ch;
-  font-size: clamp(1.25rem, 2.4vw, 1.85rem);
-  font-weight: 500;
-  line-height: 1.55;
-  letter-spacing: -0.005em;
-}
