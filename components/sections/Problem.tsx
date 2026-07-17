@@ -8,7 +8,7 @@ import styles from "./Problem.module.css";
 // per-line layout — only concatenated into a single block so
 // ScrollRevealText can light it up word-by-word as it scrolls).
 const paragraph = [
-  "You pay £10.99 a month.",
+  "You pay £12.99 a month.",
   "Do you know where it goes?",
   "Into a pool. Divided by total streams.",
   "The artists with the most plays take the biggest share.",

@@ -13,11 +13,18 @@ export default function ArtistsPage() {
     <AudiencePage
       eyebrow="For artists"
       title="Get paid for the people who actually listen."
-      lead="On RAAYDR your income comes from your fans' subscriptions, not a global pool. £3.50 of every fan's month follows their listening — and the share that lands on your music lands with you. Automatic splits for everyone who made the record."
+      lead="On RAAYDR your income comes from your fans' subscriptions, not a global pool. £3.50 of every fan's month follows their listening, and the share that lands on your music lands with you. Automatic splits for everyone who made the record."
       color="#EBA83A"
       halo="artists"
       role="Artist"
       calculator={<Calculator disclaimer />}
+      beat={{
+        heading: "You didn't sign up to be a content creator.",
+        body: [
+          "Post more. Dance more. Do TikTok. Do Instagram. Everything except make music. Because making music stopped paying.",
+          "RAAYDR pays for the music. Not the marketing.",
+        ],
+      }}
       points={[
         {
           title: "No label required.",

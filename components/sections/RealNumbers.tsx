@@ -18,12 +18,10 @@ const DEEP_INK = "#F2F4F7";
 export default function RealNumbers() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const thesisRef = useRef<HTMLParagraphElement>(null);
   const eyebrowRef = useRef<HTMLParagraphElement>(null);
   const closingRef = useRef<HTMLParagraphElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   useMaskedReveal(headingRef);
-  useMaskedReveal(thesisRef);
   useMaskedReveal(closingRef);
   useParallax(eyebrowRef, 0.95, 200);
   useReveal(bodyRef);
@@ -104,9 +102,6 @@ export default function RealNumbers() {
             You don&rsquo;t need a million streams. You need people who
             actually care.
           </h2>
-          <p ref={thesisRef} className={styles.thesis}>
-            Spotify pays for streams. RAAYDR pays for attention.
-          </p>
         </div>
 
         <Calculator />

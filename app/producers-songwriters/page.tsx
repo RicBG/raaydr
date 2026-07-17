@@ -14,7 +14,7 @@ export default function ProducersSongwritersPage() {
     <AudiencePage
       eyebrow="For producers & songwriters"
       title="Credited, found, and paid the moment your work plays."
-      lead="The split is built in, not begged for. When a record you helped make earns, your share arrives automatically — with your name on the work everywhere it travels."
+      lead="The split is built in, not begged for. When a record you helped make earns, your share arrives automatically, with your name on the work everywhere it travels."
       color="#8C7AE6"
       halo="producers"
       role="Songwriter or Producer"
