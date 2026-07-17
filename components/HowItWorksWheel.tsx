@@ -400,6 +400,15 @@ export default function HowItWorksWheel({
     const colorAt = (i: number) => steps[clamp(i, 0, steps.length - 1)]?.accentColor || accentColor;
     return lerpColor(colorAt(base), colorAt(base + 1), e);
   })();
+
+  // Ambient background wash in the current step's colour, lerped through the
+  // same colour sequence as the dial so it shifts amber -> orchid -> green ->
+  // violet as you scroll. Kept as a soft, low-opacity radial tint (not the
+  // full saturated colour) so the full-colour number badges stay legible
+  // against it — a solid step-colour background would swallow its own badge.
+  const [tintR, tintG, tintB] = (dialColor.match(/\d+/g) || ['0', '0', '0']).map(Number);
+  const tint = (a: number) => `rgba(${tintR}, ${tintG}, ${tintB}, ${a})`;
+  const stageBg = `radial-gradient(130% 115% at 60% 40%, ${tint(0.18)} 0%, ${tint(0.05)} 44%, rgba(0,0,0,0) 72%)`;
   const arcSvgStyle: CSSProperties = {
     position: 'absolute',
     left: cx - R,
@@ -537,7 +546,7 @@ export default function HowItWorksWheel({
       )}
       <div style={{ position: 'relative', width: '100%', background: bgColor, fontFamily: bodyFontFamily, color: textColor }}>
         <section ref={sectionRef} style={{ position: 'relative', height: `${scrollHeightVh}vh` }}>
-          <div style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', overflow: 'hidden' }}>
+          <div style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', overflow: 'hidden', background: stageBg }}>
             {!isMobile && showArc && (
               <svg style={arcSvgStyle} viewBox={`0 0 ${R * 2} ${R * 2}`} preserveAspectRatio="none">
                 <circle cx={R} cy={R} r={R} fill="none" stroke={`rgba(21,21,26,${arcGuideOpacity})`} strokeWidth={arcGuideWidth} />
