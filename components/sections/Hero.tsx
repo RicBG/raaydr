@@ -190,11 +190,10 @@ export default function Hero() {
 
           <div ref={stackRef} className={styles.textStack}>
             <h1 ref={headingRef} className={styles.heading}>
-              Spotify pays for streams. RAAYDR pays for attention.
+              The music industry forgot who makes the music.
             </h1>
             <p ref={subcopyRef} className={styles.subcopy}>
-              The artists you actually listen to get paid. Traceably, every
-              month.
+              Spotify pays for streams. RAAYDR pays for attention.
             </p>
             <a
               ref={ctaRef}
