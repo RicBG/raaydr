@@ -26,6 +26,16 @@ export default function ForListenersPage() {
           body: "Artists can choose to open things up to the listeners who show up most. Some will, some won't, and that is theirs to decide. What is certain is that being early counts: the first 1,000 listeners lock £5.99 a month, forever.",
         },
       ]}
+      heroCallout={{
+        heading: "Your taste has power here.",
+        body: "Every play, share, rating and save moves an artist forward. Not because an algorithm decided you'd like them, because you did. Tastemakers surface what's worth hearing first. The community decides if they were right. You're not funding this from the sidelines. You're part of how the whole thing decides what's next.",
+      }}
+      tintSections={[
+        {
+          heading: "What loyalty gets you.",
+          body: "Early access to new music. Discounts on merch and tickets. A shout-out from the artist themselves, when you've actually shown up. Every artist decides what unlocks and when, but showing up matters here in ways it never did on a platform that only counted your stream.",
+        },
+      ]}
     />
   );
 }

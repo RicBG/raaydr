@@ -22,6 +22,14 @@
   max-width: 16ch;
 }
 
+/* The attitude paragraph, now leading the page directly under the hero. */
+.lead {
+  margin-top: clamp(24px, 4vw, 40px);
+  max-width: 52ch;
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  line-height: 1.5;
+}
+
 .body {
   display: grid;
   gap: 1.4em;

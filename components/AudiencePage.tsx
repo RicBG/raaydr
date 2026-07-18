@@ -12,6 +12,8 @@ import HaloVideo from "@/components/HaloVideo";
 import PageSpectraNoise, {
   type RaaydrAudience,
 } from "@/components/PageSpectraNoise";
+import HeroCallout from "@/components/HeroCallout";
+import TintedSection from "@/components/TintedSection";
 import WaitlistForm, { type ROLES } from "@/components/WaitlistForm";
 import styles from "./AudiencePage.module.css";
 
@@ -45,6 +47,15 @@ type AudiencePageProps = {
    *  split, tastemaker fund) — rendered between the points and the join
    *  section. Omitted entirely (not just hidden) when a page has none. */
   calculator?: React.ReactNode;
+  /** A full-bleed animated-gradient callout rendered after the numbered points
+   *  and before the calculator. Needs `halo` set (it drives the gradient
+   *  colour). While it is on screen the page's PageSpectraNoise is unmounted,
+   *  so only one heavy WebGL context is ever live. Omitted when absent. */
+  heroCallout?: { heading: string; body: string };
+  /** Lighter tinted add-ons (a softly tinted band, no WebGL) rendered in order
+   *  after the Hero Callout and before the calculator — "coming soon" lines and
+   *  secondary sections. Omitted when absent. */
+  tintSections?: { heading?: string; body: string }[];
 };
 
 export default function AudiencePage({
@@ -59,6 +70,8 @@ export default function AudiencePage({
   beat,
   pointsNote,
   closing,
+  heroCallout,
+  tintSections,
 }: AudiencePageProps) {
   const headerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -68,6 +81,7 @@ export default function AudiencePage({
   const pointsRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef<HTMLDivElement>(null);
   const joinRef = useRef<HTMLDivElement>(null);
+  const calloutRef = useRef<HTMLElement>(null);
   useReveal(headerRef);
   useMaskedReveal(titleRef);
   useParallax(figureRef, 1.05, 240);
@@ -86,12 +100,31 @@ export default function AudiencePage({
     return () => cancelAnimationFrame(frame);
   }, [halo]);
 
+  // One IntersectionObserver drives the single-WebGL-context rule: while the
+  // Hero Callout is on screen its gradient is the only live context, and the
+  // full-page PageSpectraNoise (which is fixed, so it never scrolls off on its
+  // own) is unmounted. Both flip from this one boolean in a single React
+  // commit, so the two are never live at once.
+  const [calloutActive, setCalloutActive] = useState(false);
+  useEffect(() => {
+    const el = calloutRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => setCalloutActive(entries.some((e) => e.isIntersecting)),
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [heroCallout, halo]);
+
+  const showCallout = Boolean(heroCallout && halo);
+
   return (
     <main
       className={styles.page}
       style={{ "--halo-color": color } as React.CSSProperties}
     >
-      {halo && (
+      {halo && !calloutActive && (
         <div className={styles.noiseBg}>
           <PageSpectraNoise audience={halo} />
         </div>
@@ -173,6 +206,25 @@ export default function AudiencePage({
           </div>
         </div>
       </section>
+
+      {showCallout && halo && heroCallout && (
+        <HeroCallout
+          ref={calloutRef}
+          audience={halo}
+          heading={heroCallout.heading}
+          body={heroCallout.body}
+          active={calloutActive}
+        />
+      )}
+
+      {tintSections?.map((section) => (
+        <TintedSection
+          key={section.heading ?? section.body}
+          heading={section.heading}
+          body={section.body}
+          color={color}
+        />
+      ))}
 
       {calculator && (
         <section className={styles.calcSection}>

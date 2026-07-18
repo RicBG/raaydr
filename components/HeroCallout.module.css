@@ -1,0 +1,54 @@
+/* Full-bleed callout with the same visual weight as the homepage's "People
+   are the algorithm" beat: min viewport height, vertically centred, generous
+   vertical rhythm. */
+.callout {
+  position: relative;
+  z-index: 0;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: clamp(96px, 14vw, 200px) 0;
+  overflow: hidden;
+}
+
+/* The animated gradient (or its static reduced-motion stand-in) sits behind
+   the copy. AnimatedGradient renders position:absolute inset:0 itself, so this
+   layer just establishes the stacking context and covers the section. */
+.gradientLayer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Static stand-in for the reduced-motion path and the pre-mount state — the
+   same canvas + audience-accent wash as the live gradient, so there is no
+   visible seam between states. */
+.gradientFallback {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      120% 120% at 80% 25%,
+      color-mix(in srgb, var(--callout-accent) 16%, transparent) 0%,
+      color-mix(in srgb, var(--callout-accent) 0%, transparent) 50%
+    ),
+    var(--canvas);
+}
+
+.inner {
+  display: grid;
+  gap: 28px;
+}
+
+.heading {
+  max-width: 20ch;
+}
+
+.body {
+  display: grid;
+  gap: 1em;
+  max-width: 52ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--ink) 82%, transparent);
+}

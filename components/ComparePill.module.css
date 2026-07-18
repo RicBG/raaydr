@@ -32,6 +32,9 @@
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  /* A slim floating tab: the label must stay on one line so the container
+     keeps its true pill shape rather than swelling to two rows. */
+  white-space: nowrap;
   color: var(--deep-ink);
   padding: 0.7em 0.4em 0.7em 0;
   transition: transform 0.2s ease;
@@ -75,5 +78,14 @@
 
   .visible {
     transform: translate(50%, 0);
+  }
+
+  /* Tighten the label just enough that "SPOTIFY VS RAAYDR" holds a single line
+     on narrow screens, so the tab stays a slim pill instead of wrapping to two
+     rows. */
+  .link {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    gap: 6px;
   }
 }
