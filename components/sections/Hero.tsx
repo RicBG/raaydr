@@ -12,6 +12,7 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const heroPinRef = useRef<HTMLDivElement>(null);
   const orbLayerRef = useRef<HTMLDivElement>(null);
+  const orbWrapRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const subcopyRef = useRef<HTMLParagraphElement>(null);
@@ -96,19 +97,50 @@ export default function Hero() {
   }, [orbReady]);
 
   // Scroll recede — the hero holds itself in place via CSS position:sticky
-  // (see .heroPin/.hero in Hero.module.css) while the Problem card scrolls up
-  // and covers it. This just scrubs the recede across that one-viewport
-  // sticky range: the copy stack scales down/dims/softens and the orb behind
-  // it grows, so it reads as energy passing into the orb as it's covered.
+  // (see .heroPin/.hero in Hero.module.css) while the opaque Problem card
+  // (z-index above this layer) scrolls up and covers it. This scrubs the
+  // recede across that one-viewport sticky range so the hero visibly steps
+  // back as the card takes the frame, rather than staying lit until the
+  // card's edge cuts across it. Everything here is compositor-only
+  // (transform/opacity/filter) — the OGL canvas buffer is never resized.
   useEffect(() => {
     const heroPin = heroPinRef.current;
     const orbLayer = orbLayerRef.current;
+    const orbWrap = orbWrapRef.current;
     const stack = stackRef.current;
     if (!heroPin || !orbLayer || !stack) return;
 
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
+      // Timeline total is 1 unit. The copy finishes receding at ~0.475 —
+      // gone BEFORE the rising card's top edge reaches where it sat, so lit
+      // text is never bisected by the card edge. The orb spans the full
+      // scrub: it grows for the parallax push and dims so the card owns the
+      // frame by the end.
+      const tl = gsap
+        .timeline()
+        .to(
+          stack,
+          {
+            opacity: 0,
+            scale: 0.96,
+            filter: "blur(6px)",
+            ease: "none",
+            duration: 0.475,
+          },
+          0
+        )
+        // Scale the orb's container layer (no OGL buffer resize) for the push.
+        .to(orbLayer, { scale: 1.25, ease: "none", duration: 1 }, 0);
+
+      // Fade the orb wrapper (not orbLayer, whose opacity the intro reveal
+      // owns) so its recede start value is a stable 1, uncoupled from the
+      // intro. Guarded because the wrapper only exists in this branch.
+      if (orbWrap) {
+        tl.to(orbWrap, { opacity: 0.35, ease: "none", duration: 1 }, 0);
+      }
+
       const trigger = ScrollTrigger.create({
         trigger: heroPin,
         start: "top top",
@@ -116,14 +148,7 @@ export default function Hero() {
         // hero. (heroPin is 200svh; the recede maps to its first half.)
         end: "+=100%",
         scrub: true,
-        animation: gsap
-          .timeline()
-          .to(
-            stack,
-            { scale: 0.92, opacity: 0.85, filter: "blur(2px)", ease: "none" },
-            0
-          )
-          .to(orbLayer, { scale: 1.1, ease: "none" }, 0),
+        animation: tl,
       });
 
       return () => {
@@ -150,7 +175,7 @@ export default function Hero() {
               // loop under reduced motion; the orb has no static mode.
               <Ring mode="spectrum" />
             ) : (
-              <div className={styles.orbWrap}>
+              <div ref={orbWrapRef} className={styles.orbWrap}>
                 <RaaydrOrb
                   hue={250}
                   hoverIntensity={0.25}
@@ -165,10 +190,10 @@ export default function Hero() {
 
           <div ref={stackRef} className={styles.textStack}>
             <h1 ref={headingRef} className={styles.heading}>
-              The music industry forgot who makes the music.
+              Spotify pays for streams. RAAYDR pays for attention.
             </h1>
             <p ref={subcopyRef} className={styles.subcopy}>
-              On RAAYDR, your money follows your ears. Traceable, every
+              The artists you actually listen to get paid. Traceably, every
               month.
             </p>
             <a

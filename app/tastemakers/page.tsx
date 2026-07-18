@@ -18,6 +18,8 @@ export default function TastemakersPage() {
       halo="tastemakers"
       role="Tastemaker"
       calculator={<TastemakerCalculator />}
+      pointsNote="Not follower counts. Not industry connections. Ears."
+      closing="You've done this for free your whole life. Time to do it somewhere that pays."
       points={[
         {
           title: "A ringfenced fund.",

@@ -72,8 +72,55 @@
   height: 100%;
 }
 
+/* Optional emotional beat between the hero and the points. Heading + body in
+   the page's own treatment, separated from the hero by the same hairline the
+   points grid uses. */
+.beat {
+  padding: clamp(40px, 6vw, 80px) 0;
+}
+
+.beatInner {
+  display: grid;
+  gap: clamp(20px, 3vw, 32px);
+  border-top: 1px solid var(--stone);
+  padding-top: clamp(32px, 4vw, 56px);
+}
+
+.beatHeading {
+  max-width: 20ch;
+}
+
+.beatBody {
+  display: grid;
+  gap: 16px;
+  max-width: 52ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  color: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+
 .points {
   padding: clamp(40px, 6vw, 80px) 0;
+}
+
+/* A short standalone line under the numbered points, before the calculator. */
+.pointsNote {
+  margin-top: clamp(28px, 4vw, 48px);
+  max-width: 44ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  color: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+
+/* A closing beat immediately before the join CTA — a settled statement, not a
+   full display heading. The join section's own top padding spaces them. */
+.closing {
+  padding: clamp(40px, 6vw, 80px) 0 0;
+}
+
+.closingText {
+  max-width: 24ch;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  line-height: 1.3;
+  text-wrap: balance;
 }
 
 .calcSection {

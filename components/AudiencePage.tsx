@@ -22,6 +22,16 @@ type AudiencePageProps = {
   title: string;
   lead: string;
   points: Point[];
+  /** An optional emotional beat rendered as a full-width section between the
+   *  hero and the numbered points — heading plus one or more body paragraphs,
+   *  in the same treatment as the rest of the page. Omitted when absent. */
+  beat?: { heading: string; body: string[] };
+  /** A short standalone line rendered under the numbered points, before the
+   *  calculator. Omitted when absent. */
+  pointsNote?: string;
+  /** A closing beat rendered immediately before the join CTA. Omitted when
+   *  absent. */
+  closing?: string;
   /** The audience colour — carried by the halo, never by flat UI. */
   color: string;
   /** Media stem for the living halo film (e.g. "artists") — also drives the
@@ -46,16 +56,25 @@ export default function AudiencePage({
   halo,
   role,
   calculator,
+  beat,
+  pointsNote,
+  closing,
 }: AudiencePageProps) {
   const headerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const figureRef = useRef<HTMLDivElement>(null);
+  const beatHeadingRef = useRef<HTMLHeadingElement>(null);
+  const beatRef = useRef<HTMLDivElement>(null);
   const pointsRef = useRef<HTMLDivElement>(null);
+  const closingRef = useRef<HTMLDivElement>(null);
   const joinRef = useRef<HTMLDivElement>(null);
   useReveal(headerRef);
   useMaskedReveal(titleRef);
   useParallax(figureRef, 1.05, 240);
+  useMaskedReveal(beatHeadingRef);
+  useReveal(beatRef);
   useReveal(pointsRef);
+  useReveal(closingRef);
   useReveal(joinRef);
 
   // Client-only randomness, deferred a frame so server and client markup
@@ -109,22 +128,48 @@ export default function AudiencePage({
         </div>
       </section>
 
+      {beat && (
+        <section className={styles.beat}>
+          <div className={`container ${styles.beatInner}`}>
+            <h2
+              ref={beatHeadingRef}
+              className={`display-section ${styles.beatHeading}`}
+            >
+              {beat.heading}
+            </h2>
+            <div ref={beatRef} className={styles.beatBody}>
+              {beat.body.map((para) => (
+                <p key={para} data-reveal>
+                  {para}
+                </p>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className={styles.points}>
         <div className="container">
-          <div
-            ref={pointsRef}
-            className={styles.pointsGrid}
-            style={{ "--points-count": points.length } as React.CSSProperties}
-          >
-            {points.map((point, i) => (
-              <div key={point.title} className={styles.point} data-reveal>
-                <span className={`mono-figure ${styles.pointNumber}`} aria-hidden="true">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h2 className={styles.pointTitle}>{point.title}</h2>
-                <p className={styles.pointBody}>{point.body}</p>
-              </div>
-            ))}
+          <div ref={pointsRef}>
+            <div
+              className={styles.pointsGrid}
+              style={{ "--points-count": points.length } as React.CSSProperties}
+            >
+              {points.map((point, i) => (
+                <div key={point.title} className={styles.point} data-reveal>
+                  <span className={`mono-figure ${styles.pointNumber}`} aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h2 className={styles.pointTitle}>{point.title}</h2>
+                  <p className={styles.pointBody}>{point.body}</p>
+                </div>
+              ))}
+            </div>
+            {pointsNote && (
+              <p className={styles.pointsNote} data-reveal>
+                {pointsNote}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -136,6 +181,16 @@ export default function AudiencePage({
               Do the maths
             </p>
             {calculator}
+          </div>
+        </section>
+      )}
+
+      {closing && (
+        <section className={styles.closing}>
+          <div className="container">
+            <p ref={closingRef} className={styles.closingText} data-reveal>
+              {closing}
+            </p>
           </div>
         </section>
       )}

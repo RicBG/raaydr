@@ -157,7 +157,7 @@ export default function FindYourPlace() {
             03 / Find your place
           </p>
           <h2 ref={headingRef} id="place-heading" className="display-section">
-            Everyone who makes it eats.
+            Everyone wins.
           </h2>
         </div>
       </div>
