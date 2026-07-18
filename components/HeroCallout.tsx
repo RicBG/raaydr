@@ -22,17 +22,13 @@ import styles from "./HeroCallout.module.css";
  * no WebGL context is created at all.
  */
 
-/** The audience's brand colour, used as the gradient's accent wash. */
-const AUDIENCE_HEX: Record<RaaydrAudience, string> = {
-  artists: "#EBA83A", // amber
-  songwriters: "#EF6351", // coral
-  producers: "#8C7AE6", // violet
-  tastemakers: "#E585AC", // orchid
-  listeners: "#3BCE7B", // Signal Green
-};
-
 type HeroCalloutProps = {
+  /** Only used to give the section a stable id for aria-labelledby. */
   audience: RaaydrAudience;
+  /** The page's canonical audience colour (the same token the halo, points and
+   *  PageSpectraNoise key off) — drives the gradient's accent wash so the
+   *  shader colour always matches the audience. */
+  color: string;
   heading: string;
   /** A single paragraph, or several rendered in sequence. */
   body: string | string[];
@@ -42,7 +38,7 @@ type HeroCalloutProps = {
 };
 
 const HeroCallout = forwardRef<HTMLElement, HeroCalloutProps>(function HeroCallout(
-  { audience, heading, body, active },
+  { audience, color, heading, body, active },
   ref
 ) {
   const reducedMotion = usePrefersReducedMotion();
@@ -51,7 +47,7 @@ const HeroCallout = forwardRef<HTMLElement, HeroCalloutProps>(function HeroCallo
   useMaskedReveal(headingRef);
   useReveal(bodyRef);
 
-  const accent = AUDIENCE_HEX[audience];
+  const accent = color;
   const paragraphs = Array.isArray(body) ? body : [body];
 
   return (

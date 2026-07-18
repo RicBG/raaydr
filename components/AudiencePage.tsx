@@ -211,6 +211,7 @@ export default function AudiencePage({
         <HeroCallout
           ref={calloutRef}
           audience={halo}
+          color={color}
           heading={heroCallout.heading}
           body={heroCallout.body}
           active={calloutActive}

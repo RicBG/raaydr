@@ -71,6 +71,7 @@ export default function AboutContent() {
       <HeroCallout
         ref={calloutRef}
         audience="listeners"
+        color="#3BCE7B"
         active={calloutActive}
         heading="The industry isn't broken. It was built this way."
         body={[
