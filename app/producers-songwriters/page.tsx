@@ -33,6 +33,19 @@ export default function ProducersSongwritersPage() {
           body: "When a track travels, everyone on it travels too.",
         },
       ]}
+      heroCallout={{
+        heading: "We tell you when you're owed something.",
+        body: "Get credited on a track, and the moment it starts earning, we let you know. No chasing the artist. No waiting on a statement six months late. Your money finds you.",
+      }}
+      tintSections={[
+        {
+          body: "Coming soon: claim your credit. Helped make a track that's already up under someone else's upload? You'll be able to flag it, agree the split with the artist, and start earning from it.",
+        },
+        {
+          heading: "See exactly who's playing your work.",
+          body: "Which artists' tracks you're featured on are getting the most love. Which of your songs actually connects, and with who. Real numbers, not a credit buried in metadata nobody reads.",
+        },
+      ]}
     />
   );
 }

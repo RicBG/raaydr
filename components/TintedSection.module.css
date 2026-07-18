@@ -1,0 +1,38 @@
+/* Softly tinted band in the page's audience colour. The wash reuses the "How
+   it works" wheel's tint formula (a low-opacity radial gradient in the accent
+   colour over the canvas) — see HowItWorksWheel's stageBg — but static. */
+.section {
+  position: relative;
+  padding: clamp(40px, 6vw, 80px) 0;
+  background: radial-gradient(
+      130% 115% at 60% 40%,
+      color-mix(in srgb, var(--tint) 18%, transparent) 0%,
+      color-mix(in srgb, var(--tint) 5%, transparent) 44%,
+      transparent 72%
+    ),
+    var(--canvas);
+}
+
+.inner {
+  display: grid;
+  gap: clamp(16px, 2.5vw, 24px);
+}
+
+.heading {
+  max-width: 20ch;
+}
+
+.body {
+  max-width: 52ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+
+/* Single-line "coming soon" note: no heading, a touch lighter than body copy. */
+.note {
+  max-width: 52ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
