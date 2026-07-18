@@ -5,7 +5,8 @@ import { gsap, ScrollTrigger, SplitText } from "@/lib/gsap";
 import { ctaCopy } from "@/lib/siteConfig";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Ring from "@/components/Ring";
-import LazyOrb from "@/components/LazyOrb";
+import LazyMount from "@/components/LazyMount";
+import RaaydrOrb from "@/components/RaaydrOrb";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
@@ -176,14 +177,16 @@ export default function Hero() {
               <Ring mode="spectrum" />
             ) : (
               <div ref={orbWrapRef} className={styles.orbWrap}>
-                <LazyOrb
-                  hue={250}
-                  hoverIntensity={0.25}
-                  ambientRotation
-                  ambientRotationSpeed={6}
-                  backgroundColor={orbBg}
-                  onFirstFrame={() => setOrbReady(true)}
-                />
+                <LazyMount style={{ width: "100%", height: "100%" }}>
+                  <RaaydrOrb
+                    hue={250}
+                    hoverIntensity={0.25}
+                    ambientRotation
+                    ambientRotationSpeed={6}
+                    backgroundColor={orbBg}
+                    onFirstFrame={() => setOrbReady(true)}
+                  />
+                </LazyMount>
               </div>
             )}
           </div>

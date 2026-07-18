@@ -19,35 +19,22 @@ type WaitlistFormProps = {
   variant?: "hero" | "closing";
   /** Preselect a role (e.g. the For Listeners page preselects Listener). */
   defaultRole?: Role;
-  /** Drop the role selector for the lighter mid-page capture. The role stored
-   *  is then fixed to `implicitRole`. */
-  hideRoles?: boolean;
-  /** Role recorded when hideRoles is set (there is no selector to choose one). */
-  implicitRole?: Role;
   /** Analytics source persisted with the signup so captures can be told apart
    *  in the email tool (e.g. "homepage-mid"). */
   source?: string;
-  /** Override the submit button label. */
-  submitLabel?: string;
 };
 
 export default function WaitlistForm({
   variant = "hero",
   defaultRole,
-  hideRoles = false,
-  implicitRole = "Listener",
   source,
-  submitLabel,
 }: WaitlistFormProps) {
   const id = useId();
-  const [role, setRole] = useState<Role | null>(
-    defaultRole ?? (hideRoles ? implicitRole : null)
-  );
+  const [role, setRole] = useState<Role | null>(defaultRole ?? null);
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
 
-  const label =
-    submitLabel ?? (variant === "hero" ? ctaCopy().primary : ctaCopy().closing);
+  const label = variant === "hero" ? ctaCopy().primary : ctaCopy().closing;
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -122,35 +109,33 @@ export default function WaitlistForm({
         </button>
       </div>
 
-      {!hideRoles && (
-        <fieldset className={styles.roles}>
-          <legend className={styles.fieldLabel}>I&rsquo;m joining as</legend>
-          <div
-            className={styles.segments}
-            role="radiogroup"
-            aria-required="true"
-            aria-label="I'm joining as"
-          >
-            {ROLES.map((r) => (
-              <label
-                key={r}
-                className={`${styles.segment} ${role === r ? styles.segmentOn : ""}`}
-              >
-                <input
-                  type="radio"
-                  name={`${id}-role`}
-                  value={r}
-                  checked={role === r}
-                  onChange={() => setRole(r)}
-                  required
-                  className="sr-only"
-                />
-                {r}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      )}
+      <fieldset className={styles.roles}>
+        <legend className={styles.fieldLabel}>I&rsquo;m joining as</legend>
+        <div
+          className={styles.segments}
+          role="radiogroup"
+          aria-required="true"
+          aria-label="I'm joining as"
+        >
+          {ROLES.map((r) => (
+            <label
+              key={r}
+              className={`${styles.segment} ${role === r ? styles.segmentOn : ""}`}
+            >
+              <input
+                type="radio"
+                name={`${id}-role`}
+                value={r}
+                checked={role === r}
+                onChange={() => setRole(r)}
+                required
+                className="sr-only"
+              />
+              {r}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       {status === "error" && (
         <p className={styles.error} role="alert">
