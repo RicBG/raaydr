@@ -1,0 +1,15 @@
+/* A large, centred brand statement — the closing beat before the ask. Its
+   bottom padding is tight so it reads as belonging to the CTA block directly
+   below it rather than as a free-standing section. */
+.section {
+  padding: clamp(72px, 12vw, 160px) 0 clamp(8px, 2vw, 24px);
+  text-align: center;
+}
+
+.line {
+  max-width: 20ch;
+  margin-inline: auto;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}

@@ -4,7 +4,9 @@ import { useRef } from "react";
 import { siteConfig } from "@/lib/siteConfig";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
+import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Ring from "@/components/Ring";
+import LazyOrb from "@/components/LazyOrb";
 import Pulse from "@/components/Pulse";
 import WaitlistForm from "@/components/WaitlistForm";
 import styles from "./FirstWave.module.css";
@@ -28,6 +30,7 @@ const copy = {
 export default function FirstWave() {
   const innerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
   useMaskedReveal(headingRef);
   useReveal(innerRef);
 
@@ -41,8 +44,25 @@ export default function FirstWave() {
         aria-hidden="true"
         className={styles.ringsCorner}
       />
-      <div className={styles.ringLayer}>
-        <Ring mode="spectrum" />
+      {/* The closing orb, matching the hero (Canvas #F5F2EC, ambient rotation).
+          It mounts through LazyOrb, which owns the only live orb GL context at
+          the bottom of the page while the hero's is unmounted off-screen — the
+          two are never alive at once. Reduced motion keeps the static ring,
+          exactly as the hero does. */}
+      <div className={styles.ringLayer} aria-hidden="true">
+        {reducedMotion ? (
+          <Ring mode="spectrum" />
+        ) : (
+          <div className={styles.orbWrap}>
+            <LazyOrb
+              hue={250}
+              hoverIntensity={0.25}
+              ambientRotation
+              ambientRotationSpeed={6}
+              backgroundColor="#F5F2EC"
+            />
+          </div>
+        )}
       </div>
       <div ref={innerRef} className={`container ${styles.inner}`}>
         <p className="eyebrow" data-reveal>

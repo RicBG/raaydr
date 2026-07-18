@@ -1,0 +1,33 @@
+/* Deliberately lighter than FirstWave: no orb, no pricing copy, tighter
+   vertical rhythm — a quick capture beat between the wheel and the algorithm
+   section, not a full moment. */
+.section {
+  padding: clamp(56px, 9vw, 110px) 0;
+  border-top: 1px solid var(--stone);
+  border-bottom: 1px solid var(--stone);
+}
+
+.inner {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: clamp(20px, 3vw, 30px);
+}
+
+.heading {
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+}
+
+.form {
+  width: 100%;
+  max-width: 520px;
+  display: grid;
+  justify-items: center;
+}
+
+.form > * {
+  text-align: left;
+}

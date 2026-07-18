@@ -10,13 +10,19 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
  *     id uuid primary key default gen_random_uuid(),
  *     email text not null unique,
  *     role text not null,
+ *     source text,
  *     created_at timestamptz not null default now()
  *   );
+ *
+ * `source` tags which capture a signup came from (e.g. "homepage-mid") so the
+ * captures can be told apart in the email tool. It is only sent to Supabase
+ * when the client provides it, so signups from captures that don't set a
+ * source are unaffected.
  *
  * Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (server-only, never NEXT_PUBLIC).
  */
 export async function POST(request: Request) {
-  let body: { email?: string; role?: string };
+  let body: { email?: string; role?: string; source?: string };
   try {
     body = await request.json();
   } catch {
@@ -25,6 +31,8 @@ export async function POST(request: Request) {
 
   const email = body.email?.trim().toLowerCase() ?? "";
   const role = body.role ?? "";
+  const source =
+    typeof body.source === "string" ? body.source.trim().slice(0, 64) : "";
 
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
@@ -44,7 +52,9 @@ export async function POST(request: Request) {
 
   if (!url || !key) {
     if (process.env.NODE_ENV !== "production") {
-      console.log(`[waitlist] dev capture (no Supabase configured): ${email} · ${role}`);
+      console.log(
+        `[waitlist] dev capture (no Supabase configured): ${email} · ${role}${source ? ` · ${source}` : ""}`
+      );
       return NextResponse.json({ ok: true });
     }
     return NextResponse.json(
@@ -61,7 +71,7 @@ export async function POST(request: Request) {
       "Content-Type": "application/json",
       Prefer: "return=minimal",
     },
-    body: JSON.stringify({ email, role }),
+    body: JSON.stringify({ email, role, ...(source ? { source } : {}) }),
   });
 
   // Unique violation: they're already on the list. Treat as success.
