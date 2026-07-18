@@ -2,12 +2,48 @@
    between the wheel and the algorithm section. Generous vertical padding keeps
    it clearly separated from the bottom CTA, which sits many sections below. */
 .section {
+  position: relative;
+  overflow: hidden;
   padding: clamp(64px, 10vw, 120px) 0;
   border-top: 1px solid var(--stone);
   border-bottom: 1px solid var(--stone);
 }
 
+/* The Signal Green noise field, behind everything and never intercepting the
+   form. */
+.noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* The static render used on mobile and under reduced motion. */
+.noiseStill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.5;
+}
+
+/* Soft Canvas scrim concentrated behind the copy/form so the noise stays a
+   texture, not a distraction, and the text reads cleanly. */
+.noiseScrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    58% 72% at 50% 50%,
+    color-mix(in srgb, var(--canvas) 86%, transparent) 0%,
+    color-mix(in srgb, var(--canvas) 62%, transparent) 46%,
+    transparent 82%
+  );
+}
+
 .inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   justify-items: center;
   text-align: center;

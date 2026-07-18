@@ -165,7 +165,10 @@ export default function PageSpectraNoise({
   scanlineFrequency = 0,
   warpAmount = 0.3,
   speed = 0.4,
-  resolutionScale = 1,
+  // Render below native so the heavy CPPN shades fewer fragments — this is the
+  // lever that keeps motion fluid without slowing it. The wave is a soft,
+  // out-of-focus ambient, so sub-native resolution is visually indistinct.
+  resolutionScale = 0.75,
   style
 }: PageSpectraNoiseProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -264,7 +267,12 @@ export default function PageSpectraNoise({
       canvas.style.width = w + 'px';
       canvas.style.height = h + 'px';
       gl!.viewport(0, 0, canvas.width, canvas.height);
-      gl!.uniform2f(uniforms.uResolution, w, h);
+      // Feed the shader the backing-store size, not CSS pixels: gl_FragCoord is
+      // in device pixels, so with resolutionScale < 1 (and the mobile factor)
+      // passing CSS px made uv span only [-1, 2*eff-1] instead of [-1, 1],
+      // cropping and squashing the pattern on mobile. Using the real drawing
+      // buffer size keeps uv correct at any scale.
+      gl!.uniform2f(uniforms.uResolution, canvas.width, canvas.height);
     };
     const handleResize = () => resize();
     window.addEventListener('resize', handleResize);
