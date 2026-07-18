@@ -15,6 +15,8 @@ const steps: HowItWorksStep[] = [
     description:
       "Independent artists upload their music. No label required. No gatekeeper to pass.",
     accentColor: "#EBA83A", // --amber
+    image: "/how-it-works/raaydr-howitworks-01-artists-submit-amber.png",
+    imageAlt: "A vinyl record lit in warm amber light.",
   },
   {
     titleLine1: "Tastemakers",
@@ -22,6 +24,8 @@ const steps: HowItWorksStep[] = [
     description:
       "Trusted ears surface what's worth hearing first, and earn from a ringfenced fund when they're early and right.",
     accentColor: "#E585AC", // --orchid
+    image: "/how-it-works/raaydr-howitworks-02-tastemakers-pick-orchid.png",
+    imageAlt: "A stack of records glowing in orchid pink.",
   },
   {
     titleLine1: "Community",
@@ -29,6 +33,8 @@ const steps: HowItWorksStep[] = [
     description:
       "Listeners rate, save, share and comment. Engagement is the signal. People move the music, not a machine.",
     accentColor: "#3BCE7B", // --green
+    image: "/how-it-works/raaydr-howitworks-03-community-rates-green.png",
+    imageAlt: "Concentric green light ripples radiating outward.",
   },
   {
     titleLine1: "Everyone",
@@ -36,6 +42,8 @@ const steps: HowItWorksStep[] = [
     description:
       "Artists, producers, songwriters and tastemakers all get paid. Automatically. Traceably. Every month.",
     accentColor: "#8C7AE6", // --violet
+    image: "/how-it-works/raaydr-howitworks-04-everyone-earns-spectrum.png",
+    imageAlt: "A vinyl record shimmering across the full colour spectrum.",
   },
 ];
 
@@ -44,6 +52,7 @@ export default function HowItWorks() {
     <div id="how-it-works">
       <HowItWorksWheel
         steps={steps}
+        showIcon
         bgColor="var(--canvas)"
         textColor="var(--ink)"
         mutedColor="color-mix(in srgb, var(--ink) 55%, transparent)"
