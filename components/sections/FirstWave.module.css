@@ -5,22 +5,39 @@
   overflow: hidden;
 }
 
-.ringLayer {
+/* Full-bleed backdrop for the closing metaball field. The field (live or
+   still) and the scrim both fill it; it sits behind the copy and never
+   intercepts the form. */
+.fieldLayer {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  /* The orb sits purely behind the centred copy — never intercept the form. */
   pointer-events: none;
+  overflow: hidden;
 }
 
-/* Square, centred box for the closing RaaydrOrb, edge-masked like the hero's
-   so the shader's asymptotic glow can't leave a seam. */
-.orbWrap {
-  width: min(72vw, 560px);
-  aspect-ratio: 1;
-  -webkit-mask-image: radial-gradient(circle closest-side, #000 92%, transparent 100%);
-  mask-image: radial-gradient(circle closest-side, #000 92%, transparent 100%);
+/* The static render used on mobile and under reduced motion — same field,
+   cover-fit so it fills the section at any ratio. */
+.fieldStill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Legibility scrim: a soft Canvas wash concentrated behind the centred copy,
+   fading to transparent at the edges so the blobs stay sharp around the
+   margins. Deliberately not a blur of the whole field. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    62% 58% at 50% 50%,
+    color-mix(in srgb, var(--canvas) 90%, transparent) 0%,
+    color-mix(in srgb, var(--canvas) 68%, transparent) 40%,
+    color-mix(in srgb, var(--canvas) 22%, transparent) 66%,
+    transparent 82%
+  );
 }
 
 /* Bottom-left of pricing, not mirrored — rings radiate from that corner. */
@@ -37,6 +54,7 @@
 
 .inner {
   position: relative;
+  z-index: 1;
   display: grid;
   gap: 26px;
   justify-items: center;
