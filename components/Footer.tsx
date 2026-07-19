@@ -1,6 +1,16 @@
 import Link from "next/link";
 import FooterWordmark from "./FooterWordmark";
+import { InstagramIcon, TikTokIcon } from "./SocialIcons";
 import styles from "./Footer.module.css";
+
+const socials = [
+  {
+    label: "Instagram",
+    href: "https://instagram.com/raaydrmusic",
+    Icon: InstagramIcon,
+  },
+  { label: "TikTok", href: "https://tiktok.com/@raaydrmusic", Icon: TikTokIcon },
+];
 
 const columns = [
   {
@@ -40,6 +50,20 @@ export default function Footer() {
           <p className={styles.tagline}>
             Built for the culture. Owned by the community.
           </p>
+          <div className={styles.social}>
+            {socials.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`RAAYDR on ${label}`}
+                className={styles.socialLink}
+              >
+                <Icon className={styles.socialIcon} />
+              </a>
+            ))}
+          </div>
         </div>
 
         <div className={styles.columns}>

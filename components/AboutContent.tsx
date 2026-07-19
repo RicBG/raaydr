@@ -5,6 +5,7 @@ import Link from "next/link";
 import PageSpectraNoise from "@/components/PageSpectraNoise";
 import HeroCallout from "@/components/HeroCallout";
 import FaqAccordion from "@/components/FaqAccordion";
+import { InstagramIcon, TikTokIcon } from "@/components/SocialIcons";
 import { faqData } from "@/lib/faqData";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
@@ -112,6 +113,39 @@ export default function AboutContent() {
           <Link href="/#join" className="btn">
             Join the free waitlist
           </Link>
+        </div>
+      </section>
+
+      <section className={styles.follow}>
+        <div className="container">
+          <div className={styles.followInner}>
+            <h2 className={styles.followHeading}>Follow the build</h2>
+            <p className={styles.followText}>
+              We&rsquo;re building RAAYDR in public. Follow along on Instagram
+              and TikTok for the process, the progress, and everything in
+              between.
+            </p>
+            <div className={styles.followLinks}>
+              <a
+                href="https://instagram.com/raaydrmusic"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn"
+              >
+                <InstagramIcon className={styles.followIcon} />
+                Instagram
+              </a>
+              <a
+                href="https://tiktok.com/@raaydrmusic"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.followGhost}
+              >
+                <TikTokIcon className={styles.followIcon} />
+                TikTok
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 

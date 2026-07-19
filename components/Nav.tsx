@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
+import { InstagramIcon, TikTokIcon } from "./SocialIcons";
 import styles from "./Nav.module.css";
 
 const links = [
@@ -12,6 +13,15 @@ const links = [
   { href: "/tastemakers", label: "For Tastemakers" },
   { href: "/for-listeners", label: "For Listeners" },
   { href: "/about", label: "About" },
+];
+
+const socials = [
+  {
+    label: "Instagram",
+    href: "https://instagram.com/raaydrmusic",
+    Icon: InstagramIcon,
+  },
+  { label: "TikTok", href: "https://tiktok.com/@raaydrmusic", Icon: TikTokIcon },
 ];
 
 export default function Nav() {
@@ -71,6 +81,20 @@ export default function Nav() {
         </nav>
 
         <div className={styles.actions}>
+          <div className={styles.navSocial}>
+            {socials.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`RAAYDR on ${label}`}
+                className={styles.navSocialLink}
+              >
+                <Icon className={styles.navSocialIcon} />
+              </a>
+            ))}
+          </div>
           <a href={ctaHref} className={`btn ${styles.cta}`}>
             {ctaCopy().primary}
           </a>
@@ -100,6 +124,20 @@ export default function Nav() {
           <a href={ctaHref} className="btn" onClick={() => setOpen(false)}>
             {ctaCopy().primary}
           </a>
+          <div className={styles.mobileSocial}>
+            {socials.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`RAAYDR on ${label}`}
+                onClick={() => setOpen(false)}
+              >
+                <Icon className={styles.mobileSocialIcon} />
+              </a>
+            ))}
+          </div>
         </nav>
       </div>
     </header>
