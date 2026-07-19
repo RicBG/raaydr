@@ -18,6 +18,7 @@ export default function ProducersSongwritersPage() {
       color="#8C7AE6"
       halo="producers"
       role="Songwriter or Producer"
+      waitlistSource="producers-page"
       calculator={<SplitCalculator />}
       points={[
         {

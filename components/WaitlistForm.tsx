@@ -2,14 +2,12 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
+import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
 import styles from "./WaitlistForm.module.css";
 
-export const ROLES = [
-  "Listener",
-  "Artist",
-  "Songwriter or Producer",
-  "Tastemaker",
-] as const;
+// The human-readable labels shown as role pills. The API/database store the
+// slug form (see lib/waitlistRoles); we map label -> slug on submit.
+export const ROLES = WAITLIST_ROLE_LABELS;
 
 type Role = (typeof ROLES)[number];
 type Status = "idle" | "submitting" | "success" | "error";
@@ -56,25 +54,21 @@ export default function WaitlistForm({
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, role, ...(source ? { source } : {}) }),
+        body: JSON.stringify({
+          email,
+          role: ROLE_LABEL_TO_SLUG[role],
+          ...(source ? { source } : {}),
+        }),
       });
-      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data.error ?? "Something went wrong.");
+        throw new Error("request-failed");
       }
       setStatus("success");
-      setMessage(
-        data.duplicate
-          ? "You're already on the list — your spot is safe."
-          : "You're in. We'll email you when founding spots open."
-      );
-    } catch (err) {
+      setMessage("We'll email you when founding spots open.");
+    } catch {
+      // No technical detail shown — just a plain, retryable error.
       setStatus("error");
-      setMessage(
-        err instanceof Error && err.message
-          ? err.message
-          : "Something went wrong. Try again."
-      );
+      setMessage("Something went wrong. Please try again.");
     }
   }
 

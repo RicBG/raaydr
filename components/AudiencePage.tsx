@@ -43,6 +43,9 @@ type AudiencePageProps = {
   halo?: RaaydrAudience;
   /** Preselect the waitlist role for this audience. */
   role?: (typeof ROLES)[number];
+  /** Source tag persisted with the signup so this page's captures can be told
+   *  apart in the email tool (e.g. "artists-page"). */
+  waitlistSource?: string;
   /** An earnings calculator specific to this audience (producer/songwriter
    *  split, tastemaker fund) — rendered between the points and the join
    *  section. Omitted entirely (not just hidden) when a page has none. */
@@ -72,6 +75,7 @@ export default function AudiencePage({
   closing,
   heroCallout,
   tintSections,
+  waitlistSource,
 }: AudiencePageProps) {
   const headerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -255,7 +259,11 @@ export default function AudiencePage({
               Join the first wave
             </p>
             <div data-reveal>
-              <WaitlistForm variant="closing" defaultRole={role} />
+              <WaitlistForm
+                variant="closing"
+                defaultRole={role}
+                source={waitlistSource}
+              />
             </div>
           </div>
         </div>

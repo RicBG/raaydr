@@ -16,6 +16,7 @@ export default function ForListenersPage() {
       color="#3BCE7B"
       halo="listeners"
       role="Listener"
+      waitlistSource="listeners-page"
       points={[
         {
           title: "Every listen builds something.",

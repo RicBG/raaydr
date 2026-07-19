@@ -17,6 +17,7 @@ export default function TastemakersPage() {
       color="#E585AC"
       halo="tastemakers"
       role="Tastemaker"
+      waitlistSource="tastemakers-page"
       calculator={<TastemakerCalculator />}
       pointsNote="Not follower counts. Not industry connections. Ears."
       closing="You've done this for free your whole life. Time to do it somewhere that pays."

@@ -17,6 +17,7 @@ export default function ArtistsPage() {
       color="#EBA83A"
       halo="artists"
       role="Artist"
+      waitlistSource="artists-page"
       calculator={<Calculator disclaimer />}
       beat={{
         heading: "You didn't sign up to be a content creator.",
