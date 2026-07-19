@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import PageSpectraNoise from "@/components/PageSpectraNoise";
 import HeroCallout from "@/components/HeroCallout";
+import FaqAccordion from "@/components/FaqAccordion";
+import { faqData } from "@/lib/faqData";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
 import styles from "@/app/about/about.module.css";
@@ -112,6 +114,8 @@ export default function AboutContent() {
           </Link>
         </div>
       </section>
+
+      <FaqAccordion items={faqData.about} />
     </main>
   );
 }

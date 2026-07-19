@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import SplitCalculator from "@/components/sections/SplitCalculator";
+import { faqData } from "@/lib/faqData";
 
 export const metadata: Metadata = {
   title:
@@ -19,6 +20,7 @@ export default function ProducersSongwritersPage() {
       halo="producers"
       role="Songwriter or Producer"
       waitlistSource="producers-page"
+      faqItems={faqData.producersSongwriters}
       calculator={<SplitCalculator />}
       points={[
         {

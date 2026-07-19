@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
+import { faqData } from "@/lib/faqData";
 
 export const metadata: Metadata = {
   title: "RAAYDR for Listeners — Your money follows your ears.",
@@ -17,6 +18,7 @@ export default function ForListenersPage() {
       halo="listeners"
       role="Listener"
       waitlistSource="listeners-page"
+      faqItems={faqData.listeners}
       points={[
         {
           title: "Every listen builds something.",
