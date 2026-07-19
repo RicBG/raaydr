@@ -80,6 +80,46 @@
   padding: 0.85em 1.5em;
 }
 
+.navSocial {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navSocialLink {
+  display: inline-flex;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  transition: color 0.2s ease;
+}
+
+.navSocialLink:hover {
+  color: var(--ink);
+}
+
+.navSocialIcon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* Social row inside the open mobile menu. */
+.mobileSocial {
+  display: flex;
+  gap: 22px;
+  margin-top: 4px;
+}
+
+.mobileSocial a {
+  display: inline-flex;
+  color: var(--ink);
+}
+
+.mobileSocialIcon {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
 .menuButton {
   display: none;
   width: 44px;
@@ -135,7 +175,8 @@
 
 @media (max-width: 920px) {
   .links,
-  .actions .cta {
+  .actions .cta,
+  .navSocial {
     display: none;
   }
 
