@@ -205,11 +205,6 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
         "Because the standard streaming model pays artists fractions of a penny no matter how much a real fan listens, and that gap between listener love and artist income felt worth fixing directly.",
     },
     {
-      question: "Who's behind RAAYDR?",
-      answer:
-        "Founded by Ric Williams, a session vocalist and marketer who's spent years on both sides of the industry, as a performing artist and building brands.",
-    },
-    {
       question: "Is RAAYDR backed by a major label or platform?",
       answer:
         "No, RAAYDR is independent, built specifically to work for independent artists and the people who support them without a major label layer in between.",
