@@ -10,6 +10,8 @@ import Stance from "@/components/sections/Stance";
 import BrandLine from "@/components/sections/BrandLine";
 import FirstWave from "@/components/sections/FirstWave";
 import ComparePill from "@/components/ComparePill";
+import FaqAccordion from "@/components/FaqAccordion";
+import { faqData } from "@/lib/faqData";
 
 export default function Home() {
   return (
@@ -33,6 +35,7 @@ export default function Home() {
       />
       <BrandLine />
       <FirstWave />
+      <FaqAccordion items={faqData.home} />
       <ComparePill />
     </main>
   );

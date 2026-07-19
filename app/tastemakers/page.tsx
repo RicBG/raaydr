@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import TastemakerCalculator from "@/components/sections/TastemakerCalculator";
+import { faqData } from "@/lib/faqData";
 
 export const metadata: Metadata = {
   title: "RAAYDR for Tastemakers — Back music early. Earn for your taste.",
@@ -18,6 +19,7 @@ export default function TastemakersPage() {
       halo="tastemakers"
       role="Tastemaker"
       waitlistSource="tastemakers-page"
+      faqItems={faqData.tastemakers}
       calculator={<TastemakerCalculator />}
       heroCallout={{
         heading: "No one can buy their way onto your list.",

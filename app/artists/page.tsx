@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import Calculator from "@/components/sections/Calculator";
+import { faqData } from "@/lib/faqData";
 
 export const metadata: Metadata = {
   title: "RAAYDR for Artists — Get paid for the people who actually listen.",
@@ -18,6 +19,7 @@ export default function ArtistsPage() {
       halo="artists"
       role="Artist"
       waitlistSource="artists-page"
+      faqItems={faqData.artists}
       calculator={<Calculator disclaimer />}
       beat={{
         heading: "You didn't sign up to be a content creator.",

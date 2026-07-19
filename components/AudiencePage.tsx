@@ -14,6 +14,8 @@ import PageSpectraNoise, {
 } from "@/components/PageSpectraNoise";
 import HeroCallout from "@/components/HeroCallout";
 import TintedSection from "@/components/TintedSection";
+import FaqAccordion from "@/components/FaqAccordion";
+import type { FaqItem } from "@/lib/faqData";
 import WaitlistForm, { type ROLES } from "@/components/WaitlistForm";
 import styles from "./AudiencePage.module.css";
 
@@ -59,6 +61,9 @@ type AudiencePageProps = {
    *  after the Hero Callout and before the calculator — "coming soon" lines and
    *  secondary sections. Omitted when absent. */
   tintSections?: { heading?: string; body: string }[];
+  /** FAQ items for this page's closing FAQ section, rendered after everything
+   *  else and before the site footer. Omitted when absent. */
+  faqItems?: FaqItem[];
 };
 
 export default function AudiencePage({
@@ -76,6 +81,7 @@ export default function AudiencePage({
   heroCallout,
   tintSections,
   waitlistSource,
+  faqItems,
 }: AudiencePageProps) {
   const headerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -268,6 +274,8 @@ export default function AudiencePage({
           </div>
         </div>
       </section>
+
+      {faqItems && <FaqAccordion items={faqItems} />}
     </main>
   );
 }
