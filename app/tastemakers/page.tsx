@@ -19,6 +19,10 @@ export default function TastemakersPage() {
       role="Tastemaker"
       waitlistSource="tastemakers-page"
       calculator={<TastemakerCalculator />}
+      heroCallout={{
+        heading: "No one can buy their way onto your list.",
+        body: "Tastemakers rise because people rate their picks, not because someone paid for placement. Every pick public, every track record visible. Your name means something here.",
+      }}
       pointsNote="Not follower counts. Not industry connections. Ears."
       closing="You've done this for free your whole life. Time to do it somewhere that pays."
       points={[

@@ -40,7 +40,7 @@ const audiences = [
     color: "#3BCE7B",
     message:
       "Your money follows your ears. Every month, you can see exactly who it reached.",
-    href: "/#join",
+    href: "/for-listeners",
     silhouette: "/silhouettes/silhouette-03.png",
   },
 ];
