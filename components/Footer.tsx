@@ -36,7 +36,6 @@ const columns = [
     links: [
       { href: "/terms", label: "Terms" },
       { href: "/privacy", label: "Privacy" },
-      { href: "mailto:hello@raaydr.com", label: "Contact" },
     ],
   },
 ];
