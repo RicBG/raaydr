@@ -49,7 +49,7 @@ export default function Problem() {
 
         <ScrollRevealText
           text={paragraph}
-          preset="Glitch Rise"
+          preset="Default"
           htmlTag="p"
           trigger="Scroll"
           offsetStart={120}

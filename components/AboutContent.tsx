@@ -62,7 +62,7 @@ export default function AboutContent() {
               RAAYDR is built by people who make music, produce music, and spend
               too much money going to see it live. If the last decade of
               streaming worked for you, this platform isn&rsquo;t for you. If it
-              didn&rsquo;t &mdash; welcome.
+              didn&rsquo;t, welcome.
             </p>
           </div>
         </div>
@@ -91,16 +91,16 @@ export default function AboutContent() {
               listening, and you can trace where it went.
             </p>
             <p data-reveal>
-              The split is simple and public. £5.99 a month from a founding
-              member: £0.99 is ringfenced for the tastemakers who find music
+              The split is simple and public. £5.99 a month from a Day One:
+              £0.99 is ringfenced for the tastemakers who find music
               first, RAAYDR keeps 30% of the remainder to run the platform, and
-              £3.50 is that member&rsquo;s artist money — it follows the artists
+              £3.50 is that member&rsquo;s artist money. It follows the artists
               they actually listened to, divided by attention, not by play
               count. Producers and songwriters are paid automatically from
               splits built into every record.
             </p>
             <p data-reveal>
-              We&rsquo;re launching in waves. The first 1,000 founding members
+              We&rsquo;re launching in waves. The first 1,000 Day Ones
               lock in £5.99 forever and fund the first cohort of independent
               artists on the platform. After that, membership opens at £7.99.
               Early counts here.
