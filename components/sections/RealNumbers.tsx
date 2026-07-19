@@ -94,7 +94,7 @@ export default function RealNumbers() {
       <div className="container">
         <div className={styles.header}>
           <p ref={eyebrowRef} className="eyebrow">
-            04 / The real numbers
+            // The real numbers
           </p>
           <h2
             ref={headingRef}

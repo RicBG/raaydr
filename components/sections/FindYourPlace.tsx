@@ -154,7 +154,7 @@ export default function FindYourPlace() {
       <div className={`container ${styles.headerWrap}`}>
         <div className={styles.header}>
           <p ref={eyebrowRef} className="eyebrow">
-            03 / Find your place
+            // Find your place
           </p>
           <h2 ref={headingRef} id="place-heading" className="display-section">
             Everyone wins.
