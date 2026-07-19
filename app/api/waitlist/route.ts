@@ -1,36 +1,39 @@
 import { NextResponse } from "next/server";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { isWaitlistRoleSlug } from "@/lib/waitlistRoles";
 
-const ROLES = ["Listener", "Artist", "Songwriter or Producer", "Tastemaker"];
+// Uses env + the service-role Supabase client, so it must run on the Node
+// runtime, never the edge.
+export const runtime = "nodejs";
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
- * Stores signups in a Supabase table. Expected schema:
+ * Waitlist signup endpoint.
  *
- *   create table waitlist (
- *     id uuid primary key default gen_random_uuid(),
- *     email text not null unique,
- *     role text not null,
- *     source text,
- *     created_at timestamptz not null default now()
- *   );
+ * Accepts POST { email, role, source } and upserts into `waitlist_signups`
+ * (case-insensitive on email) via the `upsert_waitlist_signup` Postgres
+ * function, which runs INSERT ... ON CONFLICT (lower(email)) against the
+ * table's unique lower(email) index — inserting a new row or updating the
+ * role / source / updated_at of an existing one.
  *
- * `source` tags which capture a signup came from (e.g. "homepage-mid") so the
- * captures can be told apart in the email tool. It is only sent to Supabase
- * when the client provides it, so signups from captures that don't set a
- * source are unaffected.
+ * All Supabase access uses the SERVICE ROLE key server-side (see
+ * lib/supabaseAdmin), since the table has RLS enabled with no public policies.
+ * No internal error detail is ever returned to the client.
  *
  * Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (server-only, never NEXT_PUBLIC).
  */
 export async function POST(request: Request) {
-  let body: { email?: string; role?: string; source?: string };
+  let body: { email?: unknown; role?: unknown; source?: unknown };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const email = body.email?.trim().toLowerCase() ?? "";
-  const role = body.role ?? "";
+  const email =
+    typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+  const role = typeof body.role === "string" ? body.role.trim() : "";
   const source =
     typeof body.source === "string" ? body.source.trim().slice(0, 64) : "";
 
@@ -40,20 +43,24 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-  if (!ROLES.includes(role)) {
+  if (!isWaitlistRoleSlug(role)) {
     return NextResponse.json(
       { error: "Pick the role that fits you." },
       { status: 400 }
     );
   }
 
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabase = getSupabaseAdmin();
 
-  if (!url || !key) {
+  if (!supabase) {
+    // No Supabase configured. In dev, accept and log so the forms can be
+    // exercised locally; in production, tell the client it's unavailable
+    // without leaking why.
     if (process.env.NODE_ENV !== "production") {
       console.log(
-        `[waitlist] dev capture (no Supabase configured): ${email} · ${role}${source ? ` · ${source}` : ""}`
+        `[waitlist] dev capture (no Supabase configured): ${email} · ${role}${
+          source ? ` · ${source}` : ""
+        }`
       );
       return NextResponse.json({ ok: true });
     }
@@ -63,24 +70,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const res = await fetch(`${url}/rest/v1/waitlist`, {
-    method: "POST",
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-      Prefer: "return=minimal",
-    },
-    body: JSON.stringify({ email, role, ...(source ? { source } : {}) }),
+  const { error } = await supabase.rpc("upsert_waitlist_signup", {
+    p_email: email,
+    p_role: role,
+    p_source: source || "unknown",
   });
 
-  // Unique violation: they're already on the list. Treat as success.
-  if (res.status === 409) {
-    return NextResponse.json({ ok: true, duplicate: true });
-  }
-
-  if (!res.ok) {
-    console.error(`[waitlist] Supabase insert failed: ${res.status}`);
+  if (error) {
+    // Log server-side only; never surface Supabase/Postgres detail to clients.
+    console.error(`[waitlist] upsert failed: ${error.code ?? "unknown"}`);
     return NextResponse.json(
       { error: "Couldn't save your spot. Try again." },
       { status: 502 }
