@@ -1,0 +1,88 @@
+/* /pulse/[slug]. Single centred reading column on --canvas, clearing the
+   fixed Nav. Measure held around 68-72ch for the body. */
+
+.page {
+  padding-top: 76px;
+}
+
+.article {
+  width: 100%;
+  max-width: calc(72ch + 2 * var(--gutter));
+  margin-inline: auto;
+  padding: clamp(40px, 6vw, 72px) var(--gutter) clamp(24px, 4vw, 40px);
+}
+
+.head {
+  display: grid;
+  gap: 1.1rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.eyebrowLink {
+  width: fit-content;
+  transition: color 0.2s ease;
+}
+
+.eyebrowLink:hover {
+  color: var(--green);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.byline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--ink) 52%, transparent);
+}
+
+.sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.body {
+  /* PostBody, Faq, note and CTA render their own rhythm. */
+  display: block;
+}
+
+/* ---------- More from The Pulse ---------- */
+
+.more {
+  padding-bottom: clamp(80px, 12vw, 140px);
+  padding-top: clamp(40px, 6vw, 72px);
+}
+
+.moreHeading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  letter-spacing: -0.02em;
+  margin-bottom: clamp(1.4rem, 2.5vw, 2rem);
+}
+
+.moreGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(18px, 2.5vw, 28px);
+}
+
+@media (min-width: 768px) {
+  .moreGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

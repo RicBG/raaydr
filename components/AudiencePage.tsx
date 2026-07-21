@@ -238,7 +238,7 @@ export default function AudiencePage({
       ))}
 
       {calculator && (
-        <section className={styles.calcSection}>
+        <section className={styles.calcSection} id="calculator">
           <div className="container">
             <p className="eyebrow" data-reveal>
               Do the maths

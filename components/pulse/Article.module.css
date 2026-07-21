@@ -1,0 +1,164 @@
+/* Article typography for a single Pulse post. Reading measure and vertical
+   rhythm tuned to the site's scale; all colour via tokens. */
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-top: clamp(2.4rem, 5vw, 3.4rem);
+  margin-bottom: 1.1rem;
+}
+
+.p {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  margin-top: 1.25rem;
+  color: color-mix(in srgb, var(--ink) 92%, transparent);
+}
+
+.p:first-child {
+  margin-top: 0;
+}
+
+/* First paragraph is the bold direct answer; give it a touch more presence. */
+.p:first-child strong {
+  font-weight: 600;
+}
+
+.p a,
+.faqAnswer a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+
+.p code,
+.faqAnswer code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--stone) 70%, transparent);
+}
+
+/* ---------- Image ---------- */
+
+.figure {
+  margin: clamp(2rem, 4vw, 3rem) 0;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  border: 1px solid var(--stone);
+}
+
+/* ---------- Rule ---------- */
+
+.rule {
+  border: none;
+  border-top: 1px solid var(--stone);
+  margin: clamp(2.4rem, 5vw, 3.4rem) 0;
+}
+
+/* ---------- Tables ---------- */
+
+.tableWrap {
+  margin: clamp(1.8rem, 3.5vw, 2.6rem) 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 16px;
+  border: 1px solid var(--stone);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 32rem;
+}
+
+.table th {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: left;
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--stone);
+  background: color-mix(in srgb, var(--stone) 34%, transparent);
+  vertical-align: bottom;
+}
+
+.table td {
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--stone) 75%, transparent);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table td:first-child {
+  font-weight: 500;
+}
+
+/* ---------- FAQ ---------- */
+
+.faq {
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--stone);
+}
+
+.faqList {
+  margin-top: 0.5rem;
+  display: grid;
+  gap: 1.6rem;
+}
+
+.faqItem {
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--stone) 70%, transparent);
+}
+
+.faqItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.faqQuestion {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.faqAnswer {
+  margin: 0.6rem 0 0;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+
+/* ---------- Trailing disclaimer note ---------- */
+
+.note {
+  margin-top: clamp(2.4rem, 5vw, 3.4rem);
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--stone);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  font-style: italic;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+}

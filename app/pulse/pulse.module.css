@@ -1,0 +1,36 @@
+/* /pulse index. Clears the fixed Nav (matching other subpages' 76px), then a
+   header and a one/two-column card grid on --canvas. No hero WebGL. */
+
+.page {
+  padding-top: 76px;
+  min-height: 100svh;
+}
+
+.header {
+  padding: clamp(48px, 8vw, 96px) var(--gutter) clamp(28px, 4vw, 44px);
+  display: grid;
+  gap: 14px;
+}
+
+.title {
+  margin-top: 4px;
+}
+
+.strap {
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  max-width: 40ch;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(18px, 2.5vw, 28px);
+  padding-bottom: clamp(80px, 12vw, 140px);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
