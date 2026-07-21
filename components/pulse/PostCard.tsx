@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { formatDate, type PostMeta } from "@/lib/pulse";
@@ -13,9 +14,30 @@ export default function PostCard({
   return (
     <Link
       href={`/pulse/${post.slug}`}
-      className={`${styles.card} ${feature ? styles.feature : ""}`}
+      className={`${styles.card} ${feature ? styles.feature : ""} ${
+        post.heroImage ? styles.hasMedia : ""
+      }`}
       style={{ "--accent": `var(--${post.accent})` } as CSSProperties}
     >
+      {/* Decorative here: the card title carries the meaning. */}
+      {post.heroImage && (
+        <span className={styles.media}>
+          <Image
+            src={post.heroImage}
+            alt=""
+            width={2048}
+            height={1152}
+            loading="lazy"
+            sizes={
+              feature
+                ? "(max-width: 767px) 100vw, 1180px"
+                : "(max-width: 767px) 100vw, 580px"
+            }
+            className={styles.mediaImage}
+          />
+        </span>
+      )}
+
       <span className={styles.meta}>
         <time dateTime={post.datePublished}>{formatDate(post.datePublished)}</time>
         <span className={styles.dot} aria-hidden="true" />

@@ -8,6 +8,7 @@ author: "Ric, Founder of RAAYDR"
 accent: "green"
 readingTime: "4 min read"
 heroImage: "/pulse/images/what-is-raaydr.jpg"
+heroAlt: "A portrait lit by a thin circular green halo against black"
 ---
 
 # What Is RAAYDR? The Attention-Based Music Streaming Platform, Explained

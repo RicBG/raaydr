@@ -55,6 +55,15 @@
   opacity: 0.6;
 }
 
+/* Hero: full width of the reading measure, 16:9 preserved by the intrinsic
+   dimensions. No overlay, filter or gradient; the images arrive graded. */
+.hero {
+  width: 100%;
+  height: auto;
+  border-radius: 24px;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
 .body {
   /* PostBody, Faq, note and CTA render their own rhythm. */
   display: block;

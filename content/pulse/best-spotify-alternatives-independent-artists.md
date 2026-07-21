@@ -8,6 +8,7 @@ author: "Ric, Founder of RAAYDR"
 accent: "coral"
 readingTime: "5 min read"
 heroImage: "/pulse/images/best-spotify-alternatives-independent-artists.jpg"
+heroAlt: "A musician with a guitar case walks out of darkness toward a coral glow"
 ---
 
 # What Are the Best Spotify Alternatives for Independent Artists in 2026?

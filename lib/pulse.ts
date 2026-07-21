@@ -20,6 +20,7 @@ export interface PostMeta {
   accent: Accent;
   readingTime: string;
   heroImage: string;
+  heroAlt: string;
 }
 
 export type Block =
@@ -231,6 +232,7 @@ function readPost(slug: string): Post {
     accent: (meta.accent as Accent) || "green",
     readingTime: meta.readingTime ?? "",
     heroImage: meta.heroImage ?? "",
+    heroAlt: meta.heroAlt ?? "",
     blocks,
     faq,
     note,

@@ -8,6 +8,7 @@ author: "Ric, Founder of RAAYDR"
 accent: "violet"
 readingTime: "5 min read"
 heroImage: "/pulse/images/what-is-attention-based-streaming-payment.jpg"
+heroAlt: "A listener with headphones, eyes closed, face lit by a faint violet glow"
 ---
 
 # What Is Attention-Based Streaming Payment? User-Centric Royalties Explained

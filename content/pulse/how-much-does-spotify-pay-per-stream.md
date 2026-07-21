@@ -8,6 +8,7 @@ author: "Ric, Founder of RAAYDR"
 accent: "green"
 readingTime: "7 min read"
 heroImage: "/pulse/images/how-much-does-spotify-pay-per-stream.jpg"
+heroAlt: "A vocalist sits alone in a dark studio, lit by a single key light with a green glow"
 ---
 
 # How Much Does Spotify Actually Pay Per Stream? (2026, With Real Numbers)

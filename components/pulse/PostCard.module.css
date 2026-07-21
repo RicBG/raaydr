@@ -3,11 +3,12 @@
    corner glow: felt, not seen. */
 
 .card {
+  --card-pad: clamp(1.5rem, 2.6vw, 2.1rem);
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  padding: clamp(1.5rem, 2.6vw, 2.1rem);
+  padding: var(--card-pad);
   background: var(--stone);
   border-radius: 24px;
   overflow: hidden;
@@ -51,6 +52,30 @@
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 18px 40px -22px color-mix(in srgb, var(--ink) 45%, transparent);
+}
+
+/* ---------- Hero thumbnail ---------- */
+
+/* Breaks out of the card padding so the image sits edge to edge; the card's
+   own overflow:hidden and radius clip the top corners. */
+.media {
+  display: block;
+  margin: calc(var(--card-pad) * -1) calc(var(--card-pad) * -1) 0;
+  line-height: 0;
+  /* The accent reads as a hairline under the image instead of a rule laid
+     over it: the artwork is already graded and should stay untouched. */
+  border-bottom: 2px solid color-mix(in srgb, var(--accent) 65%, transparent);
+}
+
+.mediaImage {
+  width: 100%;
+  height: auto;
+}
+
+/* With an image present the top rule would sit on the artwork, so it moves
+   to the media border above rather than stacking a second effect. */
+.hasMedia::before {
+  display: none;
 }
 
 .meta {
@@ -116,16 +141,34 @@
 
 @media (min-width: 768px) {
   .feature {
+    --card-pad: clamp(2rem, 3.5vw, 3rem);
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: 1.1fr 1fr;
     grid-template-areas:
+      "media media"
       "meta desc"
       "title desc"
       "more desc";
     align-content: center;
     gap: 0.85rem clamp(1.5rem, 4vw, 3rem);
-    padding: clamp(2rem, 3.5vw, 3rem);
+    padding: var(--card-pad);
+  }
+
+  /* Full 16:9 at this width would stand over 660px tall and push the rest of
+     the index below the fold, so the feature crops to a wider band. Still
+     comfortably larger than a standard card thumbnail. */
+  .feature .media {
+    grid-area: media;
+    margin-bottom: clamp(1rem, 2vw, 1.6rem);
+    aspect-ratio: 2.8 / 1;
+    overflow: hidden;
+  }
+
+  .feature .mediaImage {
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
 
   .feature .meta {

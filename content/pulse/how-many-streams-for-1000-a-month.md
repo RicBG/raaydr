@@ -8,6 +8,7 @@ author: "Ric, Founder of RAAYDR"
 accent: "amber"
 readingTime: "4 min read"
 heroImage: "/pulse/images/how-many-streams-for-1000-a-month.jpg"
+heroAlt: "A lone musician stands under a single amber spotlight in a vast empty venue"
 ---
 
 # How Many Streams Do You Need to Earn £1,000 a Month From Music?

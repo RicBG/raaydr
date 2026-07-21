@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, getAllPosts, getAllSlugs, getPost } from "@/lib/pulse";
@@ -137,6 +138,21 @@ export default async function PulsePost({
             <span>{post.readingTime}</span>
           </div>
         </header>
+
+        {/* LCP element on post pages: eager and prioritised, never lazy.
+            Intrinsic dimensions (not `fill`) reserve the 16:9 box, so there
+            is no layout shift and no iOS sizing bug (see Silhouette.tsx). */}
+        {post.heroImage && (
+          <Image
+            src={post.heroImage}
+            alt={post.heroAlt}
+            width={2048}
+            height={1152}
+            priority
+            sizes="(max-width: 900px) 100vw, 760px"
+            className={styles.hero}
+          />
+        )}
 
         <div className={styles.body}>
           <PostBody blocks={post.blocks} />

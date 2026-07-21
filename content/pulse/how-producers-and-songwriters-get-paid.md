@@ -8,6 +8,7 @@ author: "Ric, Founder of RAAYDR"
 accent: "violet"
 readingTime: "6 min read"
 heroImage: "/pulse/images/how-producers-and-songwriters-get-paid.jpg"
+heroAlt: "A producer's hands on a mixing console fader in near darkness, edged in violet light"
 ---
 
 # How Do Music Producers and Songwriters Get Paid? (And How to Know If You're Owed Money)
