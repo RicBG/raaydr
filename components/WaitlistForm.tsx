@@ -45,7 +45,7 @@ export default function WaitlistForm({
 
     if (!role) {
       setStatus("error");
-      setMessage("Pick the role that fits you — it shapes what we send you.");
+      setMessage("Pick the role that fits you. It shapes what we send you.");
       return;
     }
 
@@ -64,7 +64,7 @@ export default function WaitlistForm({
         throw new Error("request-failed");
       }
       setStatus("success");
-      setMessage("We'll email you when founding spots open.");
+      setMessage("We'll email you when spots open.");
     } catch {
       // No technical detail shown — just a plain, retryable error.
       setStatus("error");

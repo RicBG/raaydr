@@ -1,0 +1,101 @@
+.wrap {
+  display: grid;
+  gap: clamp(24px, 3vw, 36px);
+  margin: clamp(40px, 5vw, 72px) 0;
+  max-width: 760px;
+}
+
+.tierToggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tierSegment {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.75em 1.2em;
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.tierSegment:hover {
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+
+.tierSegmentOn {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--canvas);
+}
+
+.tierSegment:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+/* Segmented bar. Monochrome ink tints, quiet by design, no role colours and no
+   extra Signal Green. */
+.bar {
+  display: flex;
+  width: 100%;
+  height: 56px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+.segment {
+  height: 100%;
+  min-width: 2px;
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.legend {
+  display: grid;
+  gap: 12px;
+}
+
+.legendRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex: none;
+}
+
+.legendName {
+  font-weight: 500;
+}
+
+.legendPct {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+}
+
+.caption {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.55;
+  max-width: 60ch;
+}
+
+.note {
+  font-size: 12px;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+  max-width: 70ch;
+}

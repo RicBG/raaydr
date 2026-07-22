@@ -4,9 +4,9 @@ import TastemakerCalculator from "@/components/sections/TastemakerCalculator";
 import { faqData } from "@/lib/faqData";
 
 export const metadata: Metadata = {
-  title: "RAAYDR for Tastemakers — Back music early. Earn for your taste.",
+  title: "RAAYDR for Tastemakers: Back music early. Earn for your taste.",
   description:
-    "£0.99 of every subscription is ringfenced for the people who find music first. Be early and right, and the fund pays you for it.",
+    "Up to 15% of every subscription is ring fenced for the people who find music first. Be early and right, and the fund pays you for it.",
 };
 
 export default function TastemakersPage() {
@@ -14,7 +14,7 @@ export default function TastemakersPage() {
     <AudiencePage
       eyebrow="For tastemakers"
       title="Back music early. Earn for your taste."
-      lead="£0.99 of every subscription is ringfenced for the people who find music first. Surface what's worth hearing, be early and right, and the fund pays you for it."
+      lead="Up to 15% of every subscription is ring fenced for the people who find music first. Whatever is not earned goes to the artists. Surface what's worth hearing, be early and right, and the fund pays you for it."
       color="#E585AC"
       halo="tastemakers"
       role="Tastemaker"
@@ -25,6 +25,20 @@ export default function TastemakersPage() {
         heading: "No one can buy their way onto your list.",
         body: "Tastemakers rise because people rate their picks, not because someone paid for placement. Every pick public, every track record visible. Your name means something here.",
       }}
+      tintSections={[
+        {
+          heading: "RAAYDR+",
+          body: "The first 25 tastemakers get it free, forever. Everyone after pays £3.99 a month. Proof you broke it. Every artist you put in front of people, how many stayed, and what you delivered to that artist in pounds. A record of your taste that nobody can fake.",
+        },
+        {
+          heading: "Nothing comes back to us.",
+          body: "Any part of the tastemaker fund nobody earns goes to the artists. It never comes back to us.",
+        },
+        {
+          heading: "25 seats.",
+          body: "Every seat we add divides the same fund, so we are not adding many.",
+        },
+      ]}
       pointsNote="Not follower counts. Not industry connections. Ears."
       closing="You've done this for free your whole life. Time to do it somewhere that pays."
       points={[
