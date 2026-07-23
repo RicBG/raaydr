@@ -193,7 +193,7 @@ export default function Hero() {
 
           <div ref={stackRef} className={styles.textStack}>
             <h1 ref={headingRef} className={styles.heading}>
-              Music streaming is broken. We fixed it. Everyone wins.
+              Music streaming is broken. We fixed it. Now everyone wins.
             </h1>
             <p ref={subcopyRef} className={styles.subcopy}>
               Attention over streams.
