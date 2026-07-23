@@ -2,12 +2,8 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
-import {
-  raaydrMonthly,
-  sliderToFans,
-  type PricingTier,
-} from "@/lib/calculator";
-import { ATTENTION_DEFAULT, ATTENTION_PRESETS, PRICING } from "@/lib/raaydrRates";
+import { sliderToFans } from "@/lib/calculator";
+import { ATTENTION_DEFAULT, PER_FAN } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
 
@@ -32,11 +28,6 @@ type SplitCalculatorProps = {
   defaultSplit?: number;
 };
 
-const TIER_LABEL: Record<PricingTier, string> = {
-  dayOne: `Day Ones · £${PRICING.dayOne}`,
-  standard: `Standard · £${PRICING.standard}`,
-};
-
 export default function SplitCalculator({
   defaultRole = "Producer",
   defaultSplit = 30,
@@ -46,24 +37,24 @@ export default function SplitCalculator({
 
   const [role, setRole] = useState<Role>(defaultRole);
   const [fanPos, setFanPos] = useState(0.5); // log slider → 1,000 fans
-  const [attention, setAttention] = useState(ATTENTION_DEFAULT);
-  const [catalogue, setCatalogue] = useState(100);
   const [splitPercent, setSplitPercent] = useState(defaultSplit);
-  const [tier, setTier] = useState<PricingTier>("standard");
 
+  // This calculator is scoped to a single song: attention is fixed at the
+  // Committed default and the tier at standard (both hidden), and catalogue
+  // share is 100% by definition, so there is nothing to expose as a control.
   const fans = sliderToFans(fanPos);
   const values = useMemo(() => {
-    const artistM = raaydrMonthly(fans, attention / 100, tier);
-    const shareM = artistM * (catalogue / 100) * (splitPercent / 100);
-    return { artistM, shareM, shareY: shareM * 12 };
-  }, [fans, attention, catalogue, splitPercent, tier]);
+    const songM = fans * (ATTENTION_DEFAULT / 100) * PER_FAN.artist.standard;
+    const shareM = songM * (splitPercent / 100);
+    return { songM, shareM, shareY: shareM * 12 };
+  }, [fans, splitPercent]);
 
   // Same GSAP counter-tween pattern as the homepage calculator: numbers
   // glide, painted straight to the DOM so React doesn't re-render per frame.
   const display = useRef({ ...values });
   const shareMEl = useRef<HTMLSpanElement>(null);
   const shareYEl = useRef<HTMLSpanElement>(null);
-  const artistMEl = useRef<HTMLSpanElement>(null);
+  const songMEl = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const paint = () => {
@@ -71,7 +62,7 @@ export default function SplitCalculator({
       if (shareMEl.current) shareMEl.current.textContent = gbp(d.shareM);
       if (shareYEl.current)
         shareYEl.current.textContent = `${gbp(d.shareY)} a year`;
-      if (artistMEl.current) artistMEl.current.textContent = gbp(d.artistM);
+      if (songMEl.current) songMEl.current.textContent = gbp(d.songM);
     };
 
     if (reduced) {
@@ -116,30 +107,8 @@ export default function SplitCalculator({
         </div>
 
         <div className={styles.control}>
-          <div className={styles.tierToggle} role="radiogroup" aria-label="Pricing tier">
-            {(["dayOne", "standard"] as const).map((t) => (
-              <label
-                key={t}
-                className={`${styles.tierSegment} ${tier === t ? styles.tierSegmentOn : ""}`}
-              >
-                <input
-                  type="radio"
-                  name={`${id}-tier`}
-                  value={t}
-                  checked={tier === t}
-                  onChange={() => setTier(t)}
-                />
-                {TIER_LABEL[t]}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.control}>
           <div className={styles.controlHead}>
-            <label htmlFor={`${id}-fans`}>
-              People who genuinely rate this artist
-            </label>
+            <label htmlFor={`${id}-fans`}>People who have this song on repeat</label>
             <output htmlFor={`${id}-fans`} className="mono-figure">
               {count(fans)}
             </output>
@@ -159,64 +128,7 @@ export default function SplitCalculator({
 
         <div className={styles.control}>
           <div className={styles.controlHead}>
-            <label htmlFor={`${id}-attention`}>
-              How much of their attention is this artist&rsquo;s
-            </label>
-            <output htmlFor={`${id}-attention`} className="mono-figure">
-              {attention}%
-            </output>
-          </div>
-          <div className={styles.tierToggle} role="group" aria-label="Attention share presets">
-            {ATTENTION_PRESETS.map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                className={`${styles.tierSegment} ${attention === p.value ? styles.tierSegmentOn : ""}`}
-                aria-pressed={attention === p.value}
-                onClick={() => setAttention(p.value)}
-              >
-                {p.label} {p.value}%
-              </button>
-            ))}
-          </div>
-          <input
-            id={`${id}-attention`}
-            type="range"
-            min={5}
-            max={100}
-            step={1}
-            value={attention}
-            onChange={(e) => setAttention(Number(e.target.value))}
-            className={styles.slider}
-          />
-        </div>
-
-        <div className={styles.control}>
-          <div className={styles.controlHead}>
-            <label htmlFor={`${id}-catalogue`}>
-              Share of this artist&rsquo;s catalogue you are credited on
-            </label>
-            <output htmlFor={`${id}-catalogue`} className="mono-figure">
-              {catalogue}%
-            </output>
-          </div>
-          <input
-            id={`${id}-catalogue`}
-            type="range"
-            min={0}
-            max={100}
-            step={1}
-            value={catalogue}
-            onChange={(e) => setCatalogue(Number(e.target.value))}
-            className={styles.slider}
-          />
-        </div>
-
-        <div className={styles.control}>
-          <div className={styles.controlHead}>
-            <label htmlFor={`${id}-split`}>
-              The split this artist has agreed to pay you, per song
-            </label>
+            <label htmlFor={`${id}-split`}>Your split on this song</label>
             <output htmlFor={`${id}-split`} className="mono-figure">
               {splitPercent}%
             </output>
@@ -238,7 +150,7 @@ export default function SplitCalculator({
         <div className={`${styles.panel} ${styles.raaydr}`}>
           <p className={styles.panelName}>
             {role} earnings
-            <span className={styles.panelSub}>on this one collaboration</span>
+            <span className={styles.panelSub}>on this one song</span>
           </p>
           <p className={`mono-figure ${styles.figure}`}>
             <span ref={shareMEl}>{gbp(values.shareM)}</span>
@@ -248,24 +160,19 @@ export default function SplitCalculator({
             <span ref={shareYEl}>{gbp(values.shareY)} a year</span>
           </p>
           <p className={`mono-figure ${styles.basis}`}>
-            Based on <span ref={artistMEl}>{gbp(values.artistM)}</span>{" "}
-            /month in this artist&rsquo;s own RAAYDR earnings, at your{" "}
-            {splitPercent}% split.
-          </p>
-          <p className={styles.helper}>
-            This is your cut of one artist&rsquo;s earnings. It adds up across
-            every artist you work with.
+            Based on this song earning roughly{" "}
+            <span ref={songMEl}>{gbp(values.songM)}</span>/month on RAAYDR, at
+            your {splitPercent}% split.
           </p>
         </div>
       </div>
 
       <p className={styles.footnote}>
-        Illustrative estimate, not a guarantee. This is a per-song, per-artist
-        figure. If you work with several artists, run this once for each
-        collaboration rather than treating it as a single blended platform
-        income. The split percentage is whatever you&rsquo;ve agreed with the
-        artist for this song. RAAYDR doesn&rsquo;t set or enforce it. Figures
-        are projections based on your inputs, not a guarantee.
+        Illustrative estimate, not a guarantee. This is a per-song figure. If
+        you&rsquo;re credited on more than one song, run this once per song
+        rather than treating it as a single blended platform income. The split
+        percentage is whatever you&rsquo;ve agreed with the artist for this
+        song. RAAYDR doesn&rsquo;t set or enforce it.
       </p>
     </div>
   );
