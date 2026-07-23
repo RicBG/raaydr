@@ -47,21 +47,21 @@ The streaming economy asks you to be huge before it pays you anything like a wag
 
 Yes: change what gets counted. Under attention-based payment, your income is not streams multiplied by a tiny rate. It is fans multiplied by their attention.
 
-On RAAYDR's founding listener tier, up to £3.50 of each fan's subscription flows to artists every month, split by how much of that fan's listening time each artist earned. So the £1,000 calculation becomes:
+On RAAYDR, 55% of each fan's subscription flows to artists every month, after tax, publishing royalties and card fees, split by how much of that fan's listening time each artist earned. On the standard £9.99 tier that is up to £3.57 per fan. So the £1,000 calculation becomes:
 
-| Attention share per fan | Founding fans needed for £1,000/month |
+| Attention share per fan | Fans needed for £1,000/month |
 | --- | --- |
-| 100% (you are all they play) | ~286 fans |
-| 60% | ~476 fans |
-| 40% | ~715 fans |
-| 25% | ~1,143 fans |
+| 100% (you are all they play) | ~280 fans |
+| 60% | ~467 fans |
+| 40% | ~700 fans |
+| 25% | ~1,120 fans |
 
 Seven hundred people who genuinely rate you, versus fifty thousand people who vaguely encountered you. Those are different jobs. One of them is achievable for a working independent artist; you can sanity check the numbers yourself with the calculator at [raaydr.com](https://raaydr.com).
 
 ## FAQ
 
 **How many streams do you need to earn £100 a month?**
-At roughly £0.003 per stream, about 33,000 streams a month. On RAAYDR, roughly 29 founding fans giving you all of their listening, or around 72 fans at a 40% attention share.
+At roughly £0.003 per stream, about 33,000 streams a month. On RAAYDR, roughly 28 fans giving you all of their listening, or around 70 fans at a 40% attention share.
 
 **How many Spotify streams equal minimum wage in the UK?**
 A full-time UK minimum wage salary is roughly £1,900 a month gross. At £0.003 per stream that is around 630,000 streams every month, or about 7.6 million a year.
@@ -77,4 +77,4 @@ Listening time. Each subscriber's artist pool is divided among the artists they 
 
 ---
 
-*Calculations use the verified blended rate from a real distributor dashboard and RAAYDR's published founding tier mechanics. Figures are illustrative and not financial advice.*
+*Calculations use the verified blended rate from a real distributor dashboard and RAAYDR's published tier mechanics. Figures are illustrative and not financial advice.*

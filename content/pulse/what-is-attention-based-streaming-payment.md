@@ -36,9 +36,9 @@ That last finding matters, and it is why implementation details decide everythin
 
 ## How does RAAYDR's attention-based model work?
 
-RAAYDR is built user-centric from the ground up, with the amounts published rather than buried. Each founding listener pays £5.99 a month. £0.99 goes to a fund that pays tastemakers for curation. Of the remaining £5.00, RAAYDR keeps 30% to run the platform, leaving £3.50 per fan per month that flows to artists based on that fan's listening share. On the standard £7.99 tier, £4.20 per fan reaches artists.
+RAAYDR is built user-centric from the ground up, with the amounts published rather than buried. A Day One pays £6.99 a month; the standard price is £9.99. After tax, publishing royalties and card fees, 55% of every subscription flows to artists based on that fan's listening share, up to 15% is ring fenced for tastemakers, and RAAYDR keeps 30%. That is up to £3.57 per fan a month to artists on the standard tier, up to £2.46 on the Day One tier.
 
-A worked example. A fan gives you 40% of their listening this month. You earn 40% of their £3.50: £1.40, from that one fan, this month. Five hundred fans at that attention share is roughly £700 a month, about £8,400 a year. The same fan behaviour on a pro-rata platform is worth roughly £48 a month.
+A worked example. A fan gives you 40% of their listening this month. On the standard tier you earn 40% of their per-fan share, about £1.43 from that one fan this month. Five hundred fans at that attention share is roughly £714 a month, about £8,568 a year. The same fan behaviour on a pro-rata platform is worth roughly £48 a month.
 
 Three design choices push against the "modest redistribution" finding from earlier studies. The artist pool per fan is fixed and visible, so it cannot be quietly diluted. Attention is measured in listening time, not stream counts, which blunts the click-farm economics that plague per-stream models. And curation is funded separately, so tastemakers do not compete with artists for the same money.
 
