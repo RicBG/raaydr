@@ -20,7 +20,7 @@ const audienceLinks = [
 // the audience pages rather than as peers of them.
 const secondaryLinks = [
   { href: "/about", label: "About" },
-  { href: "/pulse", label: "The Pulse" },
+  { href: "/pulse", label: "Blog" },
 ];
 
 const allLinks = [...audienceLinks, ...secondaryLinks];
