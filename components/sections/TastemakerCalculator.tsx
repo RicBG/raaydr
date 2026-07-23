@@ -5,9 +5,9 @@ import { gsap } from "@/lib/gsap";
 import {
   sliderToFans,
   tastemakerMonthly,
-  tastemakerPerFan,
   type PricingTier,
 } from "@/lib/calculator";
+import { PRICING } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
 
@@ -22,21 +22,32 @@ const gbp = (v: number) =>
 const count = (v: number) =>
   new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(v);
 
+// Second input presets: the share of a follower's listening the tastemaker
+// actually drove.
+const DRIVEN_PRESETS = [
+  { label: "Quiet", value: 10 },
+  { label: "Solid", value: 25 },
+  { label: "Dominant", value: 45 },
+] as const;
+
+const TIER_LABEL: Record<PricingTier, string> = {
+  dayOne: `Day Ones · £${PRICING.dayOne}`,
+  standard: `Standard · £${PRICING.standard}`,
+};
+
 export default function TastemakerCalculator() {
   const id = useId();
   const reduced = usePrefersReducedMotion();
 
-  // Same defaults as the homepage calculator: 1,000 fans (fanPos 0.5 on the
-  // log slider), 40% attention.
-  const [fanPos, setFanPos] = useState(0.5);
-  const [attention, setAttention] = useState(40);
-  const [tier, setTier] = useState<PricingTier>("founding");
+  const [fanPos, setFanPos] = useState(0.5); // log slider → 1,000 followers
+  const [driven, setDriven] = useState(25); // Solid, the middle preset
+  const [tier, setTier] = useState<PricingTier>("standard");
 
   const fans = sliderToFans(fanPos);
   const values = useMemo(() => {
-    const earningsM = tastemakerMonthly(fans, attention / 100, tier);
+    const earningsM = tastemakerMonthly(fans, driven / 100, tier);
     return { earningsM, earningsY: earningsM * 12 };
-  }, [fans, attention, tier]);
+  }, [fans, driven, tier]);
 
   // Same GSAP counter-tween pattern as the homepage calculator: numbers
   // glide, painted straight to the DOM so React doesn't re-render per frame.
@@ -76,7 +87,7 @@ export default function TastemakerCalculator() {
       <div className={styles.controls}>
         <div className={styles.control}>
           <div className={styles.tierToggle} role="radiogroup" aria-label="Pricing tier">
-            {(["founding", "standard"] as const).map((t) => (
+            {(["dayOne", "standard"] as const).map((t) => (
               <label
                 key={t}
                 className={`${styles.tierSegment} ${tier === t ? styles.tierSegmentOn : ""}`}
@@ -88,7 +99,7 @@ export default function TastemakerCalculator() {
                   checked={tier === t}
                   onChange={() => setTier(t)}
                 />
-                {t === "founding" ? "Founding · £5.99" : "Standard · £7.99"}
+                {TIER_LABEL[t]}
               </label>
             ))}
           </div>
@@ -96,9 +107,7 @@ export default function TastemakerCalculator() {
 
         <div className={styles.control}>
           <div className={styles.controlHead}>
-            <label htmlFor={`${id}-fans`}>
-              People who follow your picks
-            </label>
+            <label htmlFor={`${id}-fans`}>People who follow your picks</label>
             <output htmlFor={`${id}-fans`} className="mono-figure">
               {count(fans)}
             </output>
@@ -118,21 +127,34 @@ export default function TastemakerCalculator() {
 
         <div className={styles.control}>
           <div className={styles.controlHead}>
-            <label htmlFor={`${id}-attention`}>
-              How much of their attention goes to what you surfaced
+            <label htmlFor={`${id}-driven`}>
+              How much of their listening you actually drive
             </label>
-            <output htmlFor={`${id}-attention`} className="mono-figure">
-              {attention}%
+            <output htmlFor={`${id}-driven`} className="mono-figure">
+              {driven}%
             </output>
           </div>
+          <div className={styles.tierToggle} role="group" aria-label="Driven share presets">
+            {DRIVEN_PRESETS.map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                className={`${styles.tierSegment} ${driven === p.value ? styles.tierSegmentOn : ""}`}
+                aria-pressed={driven === p.value}
+                onClick={() => setDriven(p.value)}
+              >
+                {p.label} {p.value}%
+              </button>
+            ))}
+          </div>
           <input
-            id={`${id}-attention`}
+            id={`${id}-driven`}
             type="range"
             min={5}
             max={100}
             step={1}
-            value={attention}
-            onChange={(e) => setAttention(Number(e.target.value))}
+            value={driven}
+            onChange={(e) => setDriven(Number(e.target.value))}
             className={styles.slider}
           />
         </div>
@@ -142,7 +164,7 @@ export default function TastemakerCalculator() {
         <div className={`${styles.panel} ${styles.raaydr}`}>
           <p className={styles.panelName}>
             Tastemaker earnings
-            <span className={styles.panelSub}>from the ringfenced fund</span>
+            <span className={styles.panelSub}>from the ring-fenced fund</span>
           </p>
           <p className={`mono-figure ${styles.figure}`}>
             <span ref={earningsMEl}>{gbp(values.earningsM)}</span>
@@ -151,19 +173,20 @@ export default function TastemakerCalculator() {
           <p className={`mono-figure ${styles.annual}`}>
             <span ref={earningsYEl}>{gbp(values.earningsY)} a year</span>
           </p>
-          <p className={`mono-figure ${styles.basis}`}>
-            Based on {gbp(tastemakerPerFan(tier))}/fan/month ringfenced for
-            tastemakers at the {tier} tier.
+          <p className={styles.helper}>
+            Drawn from the ring-fenced tastemaker fund. You earn on what you
+            actually drive, so this is what you build toward, not what you start
+            at.
           </p>
         </div>
       </div>
 
       <p className={styles.footnote}>
-        Illustrative estimate, not a guarantee. The tastemaker fund is a
-        shared pool across everyone finding music first — this treats your
-        share as a simple fraction of fans × attention, not a literal model
-        of how the fund is actually divided. Founding tier assumes £5.99/
-        month, standard assumes £7.99; both before payment processing.
+        Illustrative estimate, not a guarantee. Up to 15% of every subscription,
+        after tax, publishing royalties and card fees, is ring fenced for
+        tastemakers, and you earn from it in proportion to the listening you
+        actually drive. Figures are projections based on your inputs, not a
+        guarantee.
       </p>
     </div>
   );

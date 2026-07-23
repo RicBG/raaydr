@@ -116,22 +116,22 @@ export default function RealNumbers() {
           <Glyph name="the-split" size={48} className={styles.splitGlyph} />
           <p className={styles.splitLine}>
             <span className="mono-figure">
-              £5.99 − £0.99 tastemaker fund − 30% to RAAYDR = £3.50, the
-              fan&rsquo;s artist money, every month.
+              55% of every subscription goes to artists, after tax, publishing
+              royalties and card fees.
             </span>{" "}
-            Attention decides where the £3.50 goes. 40% of a fan&rsquo;s
-            attention gets you 40% of their artist money. Play count
+            Attention decides how that splits: the share of a fan&rsquo;s
+            listening you hold is the share of their money you earn. Play count
             doesn&rsquo;t decide it. Devotion does.
           </p>
         </div>
 
         {/* Honesty footnote: always visible, never behind a reveal. */}
         <p className={styles.footnote}>
-          Founding tier, paid monthly, before payment processing. Spotify side
-          assumes roughly £0.003 per stream, a typical blended rate for
-          independent artists. £3.50 is the most one founding fan can generate
-          in a month, and only if they listen to nothing but you. The match
-          figure assumes an average of 4 streams per casual monthly listener.
+          Figures are projections based on your inputs, not a guarantee. Your
+          share is 55% of every subscription, after tax, publishing royalties
+          and card fees, divided by how much of each fan&rsquo;s listening you
+          hold. The Spotify comparison is per monthly listener, the number
+          Spotify for Artists actually shows you, not per stream.
         </p>
         </div>
 

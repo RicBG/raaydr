@@ -3,7 +3,7 @@ import PageSpectraNoise from "@/components/PageSpectraNoise";
 import styles from "../about/about.module.css";
 
 export const metadata: Metadata = {
-  title: "Privacy — RAAYDR",
+  title: "Privacy: RAAYDR",
 };
 
 export default function PrivacyPage() {
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
             <p>
               While RAAYDR is in waitlist mode we collect exactly two things when
               you sign up: your email address and the role you choose. We use
-              them to tell you when founding spots open, and for nothing else. No
+              them to tell you when Day One spots open, and for nothing else. No
               tracking pixels, no data resale, no third-party advertising.
             </p>
             <p>

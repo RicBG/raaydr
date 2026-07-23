@@ -13,15 +13,15 @@ import styles from "./FirstWave.module.css";
 const copy = {
   waitlist: {
     eyebrow: "Join the first wave",
-    headline: `Be one of the first ${siteConfig.pricing.foundingCap.toLocaleString("en-GB")}.`,
-    body: `Founding members pay £${siteConfig.pricing.founding} a month. Locked in forever. When RAAYDR opens to everyone, it goes to £${siteConfig.pricing.standard}. You were early. On RAAYDR, that counts.`,
+    headline: `Be one of the first ${siteConfig.pricing.dayOneCap.toLocaleString("en-GB")}.`,
+    body: `Day Ones pay £${siteConfig.pricing.dayOne} a month. Locked in forever. When RAAYDR opens to everyone, it goes to £${siteConfig.pricing.standard}. You were early. On RAAYDR, that counts.`,
     micro:
-      "No payment required to join the waitlist. We'll let you know when founding spots open.",
+      "No payment required to join the waitlist. We'll let you know when Day One spots open.",
   },
   live: {
     eyebrow: "Membership",
     headline: "The first wave is live.",
-    body: `Membership is £${siteConfig.pricing.standard} a month. Your money follows the artists you actually listen to — traceably, every month.`,
+    body: `Membership is £${siteConfig.pricing.standard} a month. Your money follows the artists you actually listen to. Traceable, every month.`,
     micro: "Cancel any time. Traceable, every month.",
   },
 }[siteConfig.mode];

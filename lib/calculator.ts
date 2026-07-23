@@ -1,75 +1,46 @@
-import { siteConfig } from "./siteConfig";
-
-/** A typical listener's total plays per month, across all artists. */
-export const BASE_MONTHLY_PLAYS = 300;
-
-const { pricing, split, economics } = siteConfig;
-
-export type PricingTier = "founding" | "standard";
+import { PER_FAN, type RatesTier } from "./raaydrRates";
 
 /**
- * What one fan can generate for artists in a month, at a given pricing tier:
- * price − tastemakerFund − (price − tastemakerFund) × platformShareOfRemainder
- * Founding: 5.99 − 0.99 − (5.00 × 0.30) = £3.50
- * Standard: 7.99 − 1.99 − (6.00 × 0.30) = £4.20
+ * Calculator UI helpers. All money rates live in raaydr-rates.ts
+ * (PER_FAN etc.); this module only holds the slider mapping and the
+ * qualitative milestone, plus thin wrappers that read the rates.
  */
-export function artistPerFan(tier: PricingTier = "founding"): number {
-  const afterFund = pricing[tier] - split.tastemakerFund[tier];
-  return afterFund - afterFund * split.platformShareOfRemainder;
+
+/** Pricing tier used across the calculators. Steady state is standard. */
+export type PricingTier = RatesTier; // "standard" | "dayOne"
+
+/** What one fan is worth to an artist per month at 100% attention share. */
+export function artistPerFan(tier: PricingTier = "standard"): number {
+  return PER_FAN.artist[tier];
 }
 
-/** RAAYDR monthly earnings. Attention share decides the fraction of each fan's artist money that reaches you. */
+/**
+ * Artist monthly earnings. Attention is a fraction (0..1): the share of each
+ * fan's listening that goes to this artist.
+ */
 export function raaydrMonthly(
   fans: number,
   attention: number,
-  tier: PricingTier = "founding"
+  tier: PricingTier = "standard"
 ): number {
   return fans * attention * artistPerFan(tier);
 }
 
-/** The tastemaker fund's flat per-fan amount at a given pricing tier. */
-export function tastemakerPerFan(tier: PricingTier = "founding"): number {
-  return split.tastemakerFund[tier];
+/** What one fan is worth to a tastemaker per month at 100% driven share. */
+export function tastemakerPerFan(tier: PricingTier = "standard"): number {
+  return PER_FAN.tastemaker[tier];
 }
 
 /**
- * Tastemaker monthly earnings from the ringfenced fund. Same shape as
- * raaydrMonthly, but drawing from the flat per-fan tastemaker fund instead
- * of the artist's attention-weighted share — an illustrative simplification,
- * not a literal model of how the shared fund is actually distributed.
+ * Tastemaker monthly earnings from the ring-fenced fund. `share` is a fraction
+ * (0..1): the portion of a follower's listening the tastemaker actually drove.
  */
 export function tastemakerMonthly(
   fans: number,
-  attentionShare: number,
-  tier: PricingTier = "founding"
+  share: number,
+  tier: PricingTier = "standard"
 ): number {
-  return fans * attentionShare * tastemakerPerFan(tier);
-}
-
-/**
- * Spotify monthly earnings from the same fans and the same attention share.
- * Volume multiplies plays only — play count never moves the RAAYDR side.
- */
-export function spotifyMonthly(
-  fans: number,
-  attention: number,
-  volumeMultiplier: number
-): number {
-  return (
-    fans *
-    attention *
-    BASE_MONTHLY_PLAYS *
-    volumeMultiplier *
-    economics.spotifyPerStream
-  );
-}
-
-/** Casual monthly listeners needed on Spotify to match a RAAYDR monthly figure. */
-export function matchListeners(raaydrMonthlyAmount: number): number {
-  return (
-    raaydrMonthlyAmount /
-    (economics.matchStreamsPerListener * economics.spotifyPerStream)
-  );
+  return fans * share * tastemakerPerFan(tier);
 }
 
 /** Qualitative milestone for a RAAYDR annual figure. No salary claims, no named benchmarks. */

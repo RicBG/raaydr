@@ -2,13 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
+import { milestone, raaydrMonthly, sliderToFans } from "@/lib/calculator";
 import {
-  matchListeners,
-  milestone,
-  raaydrMonthly,
-  sliderToFans,
-  spotifyMonthly,
-} from "@/lib/calculator";
+  ATTENTION_DEFAULT,
+  ATTENTION_PRESETS,
+  spotifyEquivalentListeners,
+} from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Glyph from "@/components/Glyph";
 import styles from "./Calculator.module.css";
@@ -24,12 +23,6 @@ const gbp = (v: number) =>
 const count = (v: number) =>
   new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(v);
 
-/** ≈ figures round to a scale the eye can hold. */
-const approx = (v: number) => {
-  const unit = v >= 20000 ? 1000 : v >= 2000 ? 100 : 10;
-  return count(Math.round(v / unit) * unit);
-};
-
 const ATTENTION_TICKS = [10, 25, 50, 75, 100];
 
 type CalculatorProps = {
@@ -43,42 +36,37 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   const reduced = usePrefersReducedMotion();
 
   const [fanPos, setFanPos] = useState(0.5); // log position → 1,000 fans
-  const [attention, setAttention] = useState(40); // percent
-  const [volume, setVolume] = useState(1); // Spotify-only multiplier
+  const [attention, setAttention] = useState(ATTENTION_DEFAULT); // percent
 
   const fans = sliderToFans(fanPos);
   const values = useMemo(() => {
     const raaydrM = raaydrMonthly(fans, attention / 100);
-    const spotM = spotifyMonthly(fans, attention / 100, volume);
     return {
       raaydrM,
       raaydrY: raaydrM * 12,
-      spotM,
-      spotY: spotM * 12,
-      match: matchListeners(raaydrM),
+      spotifyListeners: spotifyEquivalentListeners(raaydrM),
     };
-  }, [fans, attention, volume]);
+  }, [fans, attention]);
 
   const cap = milestone(values.raaydrY);
 
   // GSAP counter tween: numbers glide ~0.4s, painted straight to the DOM so
   // React never re-renders per frame.
   const display = useRef({ ...values });
-  const spotMEl = useRef<HTMLSpanElement>(null);
-  const spotYEl = useRef<HTMLSpanElement>(null);
   const raaydrMEl = useRef<HTMLSpanElement>(null);
   const raaydrYEl = useRef<HTMLSpanElement>(null);
-  const matchEl = useRef<HTMLSpanElement>(null);
+  const fansEl = useRef<HTMLSpanElement>(null);
+  const listenersEl = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const paint = () => {
       const d = display.current;
-      if (spotMEl.current) spotMEl.current.textContent = gbp(d.spotM);
-      if (spotYEl.current) spotYEl.current.textContent = `${gbp(d.spotY)} a year`;
       if (raaydrMEl.current) raaydrMEl.current.textContent = gbp(d.raaydrM);
       if (raaydrYEl.current)
         raaydrYEl.current.textContent = `${gbp(d.raaydrY)} a year`;
-      if (matchEl.current) matchEl.current.textContent = approx(d.match);
+      if (fansEl.current) fansEl.current.textContent = count(fans);
+      if (listenersEl.current)
+        listenersEl.current.textContent = count(Math.round(d.spotifyListeners));
     };
 
     if (reduced) {
@@ -97,7 +85,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
     return () => {
       tween.kill();
     };
-  }, [values, reduced]);
+  }, [values, reduced, fans]);
 
   return (
     <div className={styles.calculator}>
@@ -132,6 +120,19 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
               {attention}%
             </output>
           </div>
+          <div className={styles.tierToggle} role="group" aria-label="Attention share presets">
+            {ATTENTION_PRESETS.map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                className={`${styles.tierSegment} ${attention === p.value ? styles.tierSegmentOn : ""}`}
+                aria-pressed={attention === p.value}
+                onClick={() => setAttention(p.value)}
+              >
+                {p.label} {p.value}%
+              </button>
+            ))}
+          </div>
           <input
             id="calc-attention"
             type="range"
@@ -153,51 +154,16 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
               </span>
             ))}
           </div>
-        </div>
-
-        <div className={styles.control}>
-          <div className={styles.controlHead}>
-            <label htmlFor="calc-volume">How much do they stream overall</label>
-            <output htmlFor="calc-volume" className="mono-figure">
-              {volume.toFixed(2)}×
-            </output>
-          </div>
-          <input
-            id="calc-volume"
-            type="range"
-            min={0.5}
-            max={2}
-            step={0.05}
-            value={volume}
-            onChange={(e) => setVolume(Number(e.target.value))}
-            className={styles.slider}
-          />
-          <div className={styles.rangeEnds} aria-hidden="true">
-            <span>Light</span>
-            <span>Heavy</span>
-          </div>
-          <p className={styles.volumeCaption}>
-            Play count moves Spotify. It doesn&rsquo;t move RAAYDR.
+          <p className={styles.helper}>
+            Attention share is your slice of each fan&rsquo;s total listening.
+            40% means you are close to half of everything that person plays. It
+            happens. It is not the average.
           </p>
         </div>
       </div>
 
       <div className={styles.results}>
-        <div className={`${styles.panel} ${styles.spotify}`}>
-          <p className={styles.panelName}>
-            Spotify
-            <span className={styles.panelSub}>pays for streams</span>
-          </p>
-          <p className={`mono-figure ${styles.figure}`}>
-            <span ref={spotMEl}>{gbp(values.spotM)}</span>
-            <span className={styles.per}>/month</span>
-          </p>
-          <p className={`mono-figure ${styles.annual}`}>
-            <span ref={spotYEl}>{gbp(values.spotY)} a year</span>
-          </p>
-        </div>
-
-        <div className={`${styles.panel} ${styles.raaydr}`}>
+        <div className={`${styles.panel} ${styles.raaydr}`} style={{ gridColumn: "1 / -1" }}>
           <p className={styles.panelName}>
             RAAYDR
             <span className={styles.panelSub}>pays for attention</span>
@@ -214,21 +180,27 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
               {cap}
             </span>
           </p>
-          <p className={`mono-figure ${styles.match}`}>
-            ≈ <span ref={matchEl}>{approx(values.match)}</span> casual monthly
-            listeners needed on Spotify to match this
-          </p>
         </div>
+
+        <p className={styles.hook} style={{ gridColumn: "1 / -1" }}>
+          <span className={styles.hookFigure} ref={fansEl}>
+            {count(fans)}
+          </span>{" "}
+          fans on RAAYDR earns the same as{" "}
+          <span className={styles.hookFigure} ref={listenersEl}>
+            {count(values.spotifyListeners)}
+          </span>{" "}
+          monthly listeners on Spotify.
+        </p>
       </div>
 
       {disclaimer && (
         <p className={styles.footnote}>
-          Illustrative estimate, not a guarantee. Founding tier, paid monthly,
-          before payment processing. £3.50 is the most one founding fan can
-          generate in a month, and only if they listen to nothing but you. The
-          Spotify side assumes roughly £0.003 per stream, a typical blended rate
-          for independent artists; the match figure assumes an average of 4
-          streams per casual monthly listener.
+          Your share is 55% of every subscription, after tax, publishing
+          royalties and card fees, divided by how much of each fan&rsquo;s
+          listening you hold. The Spotify comparison is per monthly listener,
+          the number Spotify for Artists actually shows you, not per stream.
+          Figures are projections based on your inputs, not a guarantee.
         </p>
       )}
     </div>

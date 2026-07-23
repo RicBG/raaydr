@@ -94,18 +94,18 @@ export default function AboutContent() {
               listening, and you can trace where it went.
             </p>
             <p data-reveal>
-              The split is simple and public. £5.99 a month from a Day One:
-              £0.99 is ringfenced for the tastemakers who find music
-              first, RAAYDR keeps 30% of the remainder to run the platform, and
-              £3.50 is that member&rsquo;s artist money. It follows the artists
-              they actually listened to, divided by attention, not by play
-              count. Producers and songwriters are paid automatically from
-              splits built into every record.
+              The split is simple and public. 55% of every subscription goes
+              to artists, up to 15% is ring fenced for the tastemakers who find
+              music first, and we keep 30%, each a share of what is left after
+              tax, publishing royalties and card fees. The artists&rsquo; share
+              follows the ones you actually listened to, divided by attention,
+              not by play count. Producers and songwriters are paid
+              automatically from splits built into every record.
             </p>
             <p data-reveal>
               We&rsquo;re launching in waves. The first 1,000 Day Ones
-              lock in £5.99 forever and fund the first cohort of independent
-              artists on the platform. After that, membership opens at £7.99.
+              lock in £6.99 forever and back the first cohort of independent
+              artists on the platform. After that, membership opens at £9.99.
               Early counts here.
             </p>
           </div>

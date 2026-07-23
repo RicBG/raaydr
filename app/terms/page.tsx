@@ -3,7 +3,7 @@ import PageSpectraNoise from "@/components/PageSpectraNoise";
 import styles from "../about/about.module.css";
 
 export const metadata: Metadata = {
-  title: "Terms — RAAYDR",
+  title: "Terms: RAAYDR",
 };
 
 export default function TermsPage() {
@@ -23,7 +23,7 @@ export default function TermsPage() {
           <div className={styles.body}>
             <p>
               RAAYDR is currently in waitlist mode. Full terms of service will be
-              published here before founding memberships open. Joining the
+              published here before Day One memberships open. Joining the
               waitlist creates no payment obligation.
             </p>
             <p>

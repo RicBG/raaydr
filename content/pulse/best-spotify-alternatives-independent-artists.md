@@ -35,11 +35,11 @@ Different alternatives fix different parts of that. Here is the honest map.
 | Apple Music | Pooled pro-rata, roughly £0.008 per stream (estimate) | Higher per-stream income at scale | Same pooled model as Spotify; no direct artist relationship |
 | Tidal | Pooled pro-rata at comparatively high rates | Audio quality, artist-friendly positioning | Smaller audience; still a pool |
 | YouTube | Ad revenue plus Music streaming | Reach, video, discovery | Among the lowest effective music rates |
-| RAAYDR | Attention-based: up to £3.50 to £4.20 of each fan's subscription follows their listening | Artists with genuine fans; depth over reach | New platform in waitlist phase; audience is growing, not established |
+| RAAYDR | Attention-based: 55% of each fan's subscription follows their listening, up to £3.57 per fan | Artists with genuine fans; depth over reach | New platform in waitlist phase; audience is growing, not established |
 
 ## What makes RAAYDR different from fan-powered royalties?
 
-SoundCloud deserves real credit: its fan-powered royalties were the first mainstream move toward user-centric payment, and the principle is the same one we build on. The differences are in degree and design. On RAAYDR the artist pool is a fixed, published amount per fan (up to £3.50 on the founding tier, £4.20 on standard), so you can calculate your earnings ceiling rather than discover it. There is also a separate fund that pays tastemakers for curation, and role-specific tools for producers and songwriters, because artists are not the only people the industry underpays.
+SoundCloud deserves real credit: its fan-powered royalties were the first mainstream move toward user-centric payment, and the principle is the same one we build on. The differences are in degree and design. On RAAYDR the artist share is a fixed, published percentage of every subscription (55%, after tax, publishing royalties and card fees, up to £2.46 per fan on the Day One tier and £3.57 on standard), so you can calculate your earnings ceiling rather than discover it. There is also a separate fund that pays tastemakers for curation, and role-specific tools for producers and songwriters, because artists are not the only people the industry underpays.
 
 The honest trade-off is stated in the table: we are new. If you need an audience of millions today, keep your music on the majors and treat RAAYDR as where your real fans convert into real income. Distribution is not either-or.
 
@@ -55,7 +55,7 @@ Most working artists should be on several of these at once. The question is wher
 For most artists, no. Reach and discovery still matter, and playlists remain a marketing channel. The stronger strategy is keeping broad distribution while moving your engaged fans somewhere their money reaches you.
 
 **Which platform pays artists the most per stream?**
-Among the majors, Apple Music and Tidal are consistently estimated highest, around two to three times Spotify's rate. But per-stream rate is the wrong lens for fan value: an engaged fan is worth pennies a month on any pooled platform and up to £3.50 a month on RAAYDR.
+Among the majors, Apple Music and Tidal are consistently estimated highest, around two to three times Spotify's rate. But per-stream rate is the wrong lens for fan value: an engaged fan is worth pennies a month on any pooled platform and up to £3.57 a month on RAAYDR.
 
 **Is Bandcamp better than streaming?**
 For income per fan, usually yes: one £7 album sale equals thousands of streams. The limitation is behaviour, since most listeners stream daily and buy rarely. Bandcamp captures the buyers; an attention-based platform captures the listeners.

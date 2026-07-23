@@ -9,10 +9,10 @@ const description =
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://raaydr.com"),
-  title: "RAAYDR — The music industry forgot who makes the music.",
+  title: "RAAYDR: The music industry forgot who makes the music.",
   description,
   openGraph: {
-    title: "RAAYDR — The music industry forgot who makes the music.",
+    title: "RAAYDR: The music industry forgot who makes the music.",
     description,
     siteName: "RAAYDR",
     type: "website",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "RAAYDR — The music industry forgot who makes the music.",
+    title: "RAAYDR: The music industry forgot who makes the music.",
     description,
     images: ["/og.png"],
   },

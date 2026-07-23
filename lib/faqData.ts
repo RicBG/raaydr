@@ -1,6 +1,10 @@
 // FAQ content for RAAYDR site-wide accordion component.
-// Keyed by page. Each page's array renders as its own FAQ section.
-// Do not alter copy without sign-off, this is locked content pending page build.
+// Keyed by page. Each page's array renders as its own FAQ section, and the
+// same array generates that page's FAQPage JSON-LD, so the two never drift.
+//
+// Copy rules (see the site build spec): earnings are stated as a percentage
+// with its denominator, never as a standalone pound figure. Pricing and the
+// payout threshold may use pounds. No em dashes or en dashes anywhere.
 
 export type FaqItem = {
   question: string;
@@ -25,17 +29,17 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "How is RAAYDR different from Spotify or Apple Music?",
       answer:
-        "Most streaming platforms pool all subscription revenue together and divide it by total plays across the whole platform, which means a fraction of a penny per stream no matter how engaged the listener is. RAAYDR pays each artist directly from each fan's subscription, based on the share of that fan's actual listening time they earn. More attention from real fans means more money, not more plays from anyone.",
+        "On Spotify your money goes into a global pool and gets averaged out across everyone. On RAAYDR your subscription goes to the artists you actually listen to, in proportion to how much of your listening each one holds. The practical difference is roughly a hundred times per person.",
     },
     {
       question: "Is RAAYDR live yet?",
       answer:
-        "Not yet, we're in waitlist mode right now while we finish building the platform. Joining the waitlist locks in founding pricing and early access.",
+        "Not yet, we're in waitlist mode right now while we finish building the platform. Joining the waitlist locks in Day One pricing and early access.",
     },
     {
-      question: "What's the founding offer?",
+      question: "What's the Day One offer?",
       answer:
-        "The first 1,000 listeners get RAAYDR at £5.99 a month, locked forever, instead of the standard £7.99. The first 100 artists, 100 producers and songwriters, and 50 tastemakers get RAAYDR+ free forever.",
+        "The first 1,000 listeners, the Day Ones, get RAAYDR at £6.99 a month, locked forever, instead of the standard £9.99. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.",
     },
     {
       question: "Where is RAAYDR available?",
@@ -43,9 +47,9 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
         "RAAYDR is open worldwide for the waitlist, though our active marketing right now is focused on the UK.",
     },
     {
-      question: "How do artists actually get paid on RAAYDR?",
+      question: "How do artists get paid on RAAYDR?",
       answer:
-        "A set pool from every fan's subscription goes directly to the artists that fan listens to, split by attention share, and paid out monthly once an artist crosses the £50 threshold via Stripe Connect. You can see the numbers for yourself on the earnings calculator.",
+        "55% of every subscription, after tax, publishing royalties and card fees, goes to artists, split by how much of each fan's listening they hold. Payouts run monthly once an artist passes £50, straight to their bank through Stripe. You can see what your own audience would look like on the calculator.",
     },
     {
       question: "Who is RAAYDR for?",
@@ -55,20 +59,25 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "What is a tastemaker on RAAYDR?",
       answer:
-        "A tastemaker is someone whose recommendations genuinely move listeners to discover and stick with new artists, and RAAYDR pays them for that influence out of a ringfenced fund built into every subscription.",
+        "Someone whose recommendations genuinely move listeners to discover and stick with new artists. RAAYDR pays them from a ring-fenced share of every subscription, up to 15%, and anything nobody earns goes to the artists.",
+    },
+    {
+      question: "Is there a free plan?",
+      answer:
+        "No. Playing music requires a subscription. That is deliberate: it is what makes fake accounts pointless here, because a subscription costs more than any account could ever extract.",
     },
   ],
 
   artists: [
     {
-      question: "How much can I actually earn per fan on RAAYDR?",
+      question: "How much do artists earn?",
       answer:
-        "On the founding tier, £3.50 of every £5.99 fan subscription goes into the artist pool each month, split by attention share. On the standard tier, it's £4.20 of every £7.99. A fan who gives you 40 percent of their listening time pays you 40 percent of that pool, every month, for as long as they stay subscribed.",
+        "55% of every subscription, after tax, publishing royalties and card fees. Your share of that comes from how much of each fan's listening time you hold, so a fan who plays you constantly is worth more to you than one who plays you occasionally. Use the calculator to see what your own audience would look like.",
     },
     {
-      question: "How does this compare to what I make on Spotify?",
+      question: "How is this different from Spotify?",
       answer:
-        "Spotify pays roughly £0.003 per stream, so an engaged fan playing your music 80 times a month is worth around 24 pence to you. The same fan on RAAYDR, at a strong attention share, is worth pounds, not pence. Run your own numbers on the calculator to see the difference at your fan count.",
+        "On Spotify your earnings come from a global pool, so your fans' money gets averaged out across everyone. On RAAYDR your fans' money goes to you, in proportion to how much of their listening you hold. The practical difference is roughly a hundred times per person.",
     },
     {
       question: 'What counts as "attention share"?',
@@ -76,14 +85,14 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
         "It's the proportion of a fan's total listening time each month that goes to you specifically, out of everyone they listen to. It rewards artists who hold a fan's actual attention, not just artists who get added to a playlist and skipped.",
     },
     {
-      question: "When and how do I get paid?",
+      question: "When do I get paid?",
       answer:
-        "Payouts run monthly through Stripe Connect once your balance hits £50. There's no manual invoicing, it's automatic once you cross the threshold.",
+        "Monthly, once your balance passes £50, straight to your bank through Stripe. There's no manual invoicing, it's automatic once you cross the threshold.",
     },
     {
-      question: "What is RAAYDR+ and is it really free?",
+      question: "What is RAAYDR+?",
       answer:
-        "RAAYDR+ is our creator subscription with a role specific dashboard for tracking your fans, attention share and earnings in detail. It's £1.99 a month normally, but the first 100 artists get it free forever.",
+        "A deeper analytics and tools layer for artists, producers, songwriters and tastemakers. It is £3.99 a month, and free forever for our founding creators. Everything you need to trust your numbers, what you earned, who it came from and when it lands, is free for every creator. RAAYDR+ is about what you do with that.",
     },
     {
       question: "Do I need a label or distributor to join?",
@@ -101,18 +110,18 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "How do producers and songwriters get paid on RAAYDR?",
       answer:
-        "You earn a share of the artist's attention based earnings for any track you're credited on, based on a split percentage you agree directly with the artist, commonly around 30 percent but entirely up to what you've negotiated. As the artist earns more from real fan attention, your cut grows with it.",
+        "You earn a share of the artist's attention based earnings for any track you're credited on, at a split you agree directly with the artist, commonly around 30 percent of that song's share but entirely up to what you've negotiated. As the artist earns more from real fan attention, your cut grows with it.",
     },
     {
       question:
         "How is this different from a typical production or songwriting deal?",
       answer:
-        "Right now most streaming income is so diluted per stream that agreed splits barely add up to anything. Because RAAYDR pays meaningfully more per engaged fan, the same agreed percentage translates into real, trackable monthly income.",
+        "Right now most streaming income is so diluted per stream that agreed splits barely add up to anything. Because RAAYDR pays from real fan attention rather than a global pool, the same agreed percentage translates into real, trackable monthly income.",
     },
     {
       question: "Do I set my own split percentage?",
       answer:
-        "The split is whatever you and the artist agree on for that song, RAAYDR doesn't dictate it. Our calculator lets you plug in your agreed percentage to see what it means in pounds.",
+        "The split is whatever you and the artist agree on for that song, RAAYDR doesn't dictate it. Our calculator lets you plug in your agreed percentage to see what it means for you.",
     },
     {
       question: "How do I track my earnings?",
@@ -122,11 +131,11 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "Is RAAYDR+ free for producers and songwriters?",
       answer:
-        "Yes, for the first 100 producers and songwriters to join, RAAYDR+ is free forever. After that it's £1.99 a month.",
+        "Yes, the first 100 producers and songwriters to join get RAAYDR+ free forever. After that it's £3.99 a month.",
     },
     {
-      question: "What's the payout threshold and method?",
-      answer: "£50 minimum, paid monthly through Stripe Connect, same as artists.",
+      question: "When do I get paid?",
+      answer: "Monthly, once your balance passes £50, straight to your bank through Stripe, same as artists.",
     },
   ],
 
@@ -137,9 +146,9 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
         "Someone whose picks and playlists genuinely introduce listeners to music they stick with. If people trust your taste enough to act on it, RAAYDR pays you for that influence.",
     },
     {
-      question: "How do tastemakers get paid?",
+      question: "How does the tastemaker fund work?",
       answer:
-        "Every subscription includes a ringfenced tastemaker fund, £0.99 a month on the founding tier and £1.99 on standard. That fund is split across the tastemakers each fan actually discovers and listens through, based on the same attention share model artists are paid on.",
+        "Up to 15% of every subscription is ring fenced for tastemakers, after tax, publishing royalties and card fees. You earn from it based on how much of a listener's attention your recommendations actually drove. Anything nobody earns goes to the artists.",
     },
     {
       question: "Do I need to be a celebrity or influencer to qualify?",
@@ -155,12 +164,12 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "Is RAAYDR+ free for tastemakers?",
       answer:
-        "The first 50 tastemakers to join get RAAYDR+ free forever, after that it's £1.99 a month for the full dashboard.",
+        "The first 25 tastemakers to join get RAAYDR+ free forever, after that it's £3.99 a month for the full dashboard.",
     },
     {
-      question: "What's the payout threshold?",
+      question: "When do I get paid?",
       answer:
-        "£50 minimum, paid monthly via Stripe Connect, same as every other creator role.",
+        "Monthly, once your balance passes £50, straight to your bank through Stripe, same as every other creator role.",
     },
   ],
 
@@ -171,9 +180,9 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
         "Same idea, streaming your music, except your subscription goes directly to the artists you actually listen to, in proportion to how much you listen to them. If you want your money to matter to the artists you love, this is a more direct way to do it.",
     },
     {
-      question: "What's the founding listener offer?",
+      question: "What's the Day One offer?",
       answer:
-        "The first 1,000 listeners get RAAYDR at £5.99 a month, locked in forever. After that it's £7.99.",
+        "The first 1,000 listeners, the Day Ones, get RAAYDR at £6.99 a month, locked in forever. After that it's £9.99.",
     },
     {
       question:
@@ -182,19 +191,19 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
         "Just the artists, songwriters, producers and tastemakers you actually listen to and engage with, split by your attention share across them.",
     },
     {
-      question: "Is RAAYDR available where I live?",
+      question: "Is there a free plan?",
       answer:
-        "Yes, the waitlist is open worldwide, our early marketing push is UK focused but anyone can join.",
+        "No. Playing music requires a subscription. That is deliberate: it is what makes fake accounts pointless here, because a subscription costs more than any account could ever extract.",
     },
     {
-      question: "Do I need to do anything special for my listening to count?",
+      question: "Do listeners need RAAYDR+?",
       answer:
-        "No, just listen the way you normally would. Attention share is calculated automatically from your listening activity.",
+        "No. RAAYDR+ is a creator tool. There is nothing in it for listeners and nothing about your listening is behind it.",
     },
     {
       question: "Can I cancel any time?",
       answer:
-        "Yes, it's a standard monthly subscription with no lock in beyond keeping your founding price for as long as you stay subscribed.",
+        "Yes, it's a standard monthly subscription with no lock in beyond keeping your Day One price for as long as you stay subscribed.",
     },
   ],
 

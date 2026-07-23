@@ -69,15 +69,15 @@ Here is what one engaged fan, someone playing your music around 80 times a month
 | YouTube Music | ~£0.0015 (estimate) | ~£0.12 |
 | Spotify | ~£0.003 (verified above) | ~£0.24 |
 | Apple Music | ~£0.008 (estimate) | ~£0.62 |
-| RAAYDR | attention based, no per-stream rate | up to £3.50 (founding tier) |
+| RAAYDR | attention based, no per-stream rate | up to £3.57 (standard tier) |
 
 And here is the same comparison at fanbase scale, using a working artist scenario: 500 genuine fans who give you 40% of their listening time.
 
-| | Spotify | RAAYDR (founding) |
+| | Spotify | RAAYDR (standard) |
 | --- | --- | --- |
-| 500 engaged fans, 40% attention share | ~£48/month | ~£700/month |
-| Over a year | ~£576 | ~£8,400 |
-| Audience needed to earn £700/month | ~58,000 monthly listeners | 500 fans |
+| 500 engaged fans, 40% attention share | ~£48/month | ~£714/month |
+| Over a year | ~£576 | ~£8,568 |
+| Audience needed to earn £714/month | ~59,500 monthly listeners | 500 fans |
 
 The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, your fans' money follows their listening instead of disappearing into a global pool.
 
@@ -85,9 +85,9 @@ The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, 
 
 Attention-based payment flips the pool. Instead of your fan's subscription being divided among every artist on the platform, it is divided among the artists that fan actually listened to, in proportion to their listening time.
 
-That is the model RAAYDR is built on. On a founding listener subscription, up to £3.50 per fan per month flows to artists based on each fan's actual attention. The same engaged fan worth 24p a month on Spotify is worth up to £3.50 a month here, roughly fifteen times more, because their money follows their ears.
+That is the model RAAYDR is built on. On a standard subscription, up to £3.57 per fan per month flows to artists based on each fan's actual attention. The same engaged fan worth 24p a month on Spotify is worth up to £3.57 a month here, roughly fifteen times more, because their money follows their ears.
 
-At that rate the maths changes shape entirely: 500 fans giving you 40% of their listening time is about £700 a month. To match that on Spotify you would need roughly 58,000 monthly listeners.
+At that rate the maths changes shape entirely: 500 fans giving you 40% of their listening time is about £714 a month. To match that on Spotify you would need roughly 59,500 monthly listeners.
 
 We wrote a full breakdown of how attention-based payment works, and you can run your own numbers with the earnings calculator on [raaydr.com](https://raaydr.com).
 

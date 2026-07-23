@@ -7,6 +7,7 @@ import {
   sliderToFans,
   type PricingTier,
 } from "@/lib/calculator";
+import { ATTENTION_DEFAULT, ATTENTION_PRESETS, PRICING } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
 
@@ -31,27 +32,31 @@ type SplitCalculatorProps = {
   defaultSplit?: number;
 };
 
+const TIER_LABEL: Record<PricingTier, string> = {
+  dayOne: `Day Ones · £${PRICING.dayOne}`,
+  standard: `Standard · £${PRICING.standard}`,
+};
+
 export default function SplitCalculator({
   defaultRole = "Producer",
-  defaultSplit = 25,
+  defaultSplit = 30,
 }: SplitCalculatorProps) {
   const id = useId();
   const reduced = usePrefersReducedMotion();
 
   const [role, setRole] = useState<Role>(defaultRole);
-  // Same defaults as the homepage calculator: 1,000 fans (fanPos 0.5 on the
-  // log slider), 40% attention.
-  const [fanPos, setFanPos] = useState(0.5);
-  const [attention, setAttention] = useState(40);
+  const [fanPos, setFanPos] = useState(0.5); // log slider → 1,000 fans
+  const [attention, setAttention] = useState(ATTENTION_DEFAULT);
+  const [catalogue, setCatalogue] = useState(100);
   const [splitPercent, setSplitPercent] = useState(defaultSplit);
-  const [tier, setTier] = useState<PricingTier>("founding");
+  const [tier, setTier] = useState<PricingTier>("standard");
 
   const fans = sliderToFans(fanPos);
   const values = useMemo(() => {
     const artistM = raaydrMonthly(fans, attention / 100, tier);
-    const shareM = artistM * (splitPercent / 100);
+    const shareM = artistM * (catalogue / 100) * (splitPercent / 100);
     return { artistM, shareM, shareY: shareM * 12 };
-  }, [fans, attention, splitPercent, tier]);
+  }, [fans, attention, catalogue, splitPercent, tier]);
 
   // Same GSAP counter-tween pattern as the homepage calculator: numbers
   // glide, painted straight to the DOM so React doesn't re-render per frame.
@@ -112,7 +117,7 @@ export default function SplitCalculator({
 
         <div className={styles.control}>
           <div className={styles.tierToggle} role="radiogroup" aria-label="Pricing tier">
-            {(["founding", "standard"] as const).map((t) => (
+            {(["dayOne", "standard"] as const).map((t) => (
               <label
                 key={t}
                 className={`${styles.tierSegment} ${tier === t ? styles.tierSegmentOn : ""}`}
@@ -124,7 +129,7 @@ export default function SplitCalculator({
                   checked={tier === t}
                   onChange={() => setTier(t)}
                 />
-                {t === "founding" ? "Founding · £5.99" : "Standard · £7.99"}
+                {TIER_LABEL[t]}
               </label>
             ))}
           </div>
@@ -161,6 +166,19 @@ export default function SplitCalculator({
               {attention}%
             </output>
           </div>
+          <div className={styles.tierToggle} role="group" aria-label="Attention share presets">
+            {ATTENTION_PRESETS.map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                className={`${styles.tierSegment} ${attention === p.value ? styles.tierSegmentOn : ""}`}
+                aria-pressed={attention === p.value}
+                onClick={() => setAttention(p.value)}
+              >
+                {p.label} {p.value}%
+              </button>
+            ))}
+          </div>
           <input
             id={`${id}-attention`}
             type="range"
@@ -169,6 +187,27 @@ export default function SplitCalculator({
             step={1}
             value={attention}
             onChange={(e) => setAttention(Number(e.target.value))}
+            className={styles.slider}
+          />
+        </div>
+
+        <div className={styles.control}>
+          <div className={styles.controlHead}>
+            <label htmlFor={`${id}-catalogue`}>
+              Share of this artist&rsquo;s catalogue you are credited on
+            </label>
+            <output htmlFor={`${id}-catalogue`} className="mono-figure">
+              {catalogue}%
+            </output>
+          </div>
+          <input
+            id={`${id}-catalogue`}
+            type="range"
+            min={0}
+            max={100}
+            step={1}
+            value={catalogue}
+            onChange={(e) => setCatalogue(Number(e.target.value))}
             className={styles.slider}
           />
         </div>
@@ -213,17 +252,20 @@ export default function SplitCalculator({
             /month in this artist&rsquo;s own RAAYDR earnings, at your{" "}
             {splitPercent}% split.
           </p>
+          <p className={styles.helper}>
+            This is your cut of one artist&rsquo;s earnings. It adds up across
+            every artist you work with.
+          </p>
         </div>
       </div>
 
       <p className={styles.footnote}>
         Illustrative estimate, not a guarantee. This is a per-song, per-artist
-        figure — if you work with several artists, run this once for each
+        figure. If you work with several artists, run this once for each
         collaboration rather than treating it as a single blended platform
-        income. Founding tier assumes £5.99/month, standard assumes £7.99;
-        both before payment processing. The split percentage is whatever
-        you&rsquo;ve agreed with the artist for this song — RAAYDR doesn&rsquo;t
-        set or enforce it.
+        income. The split percentage is whatever you&rsquo;ve agreed with the
+        artist for this song. RAAYDR doesn&rsquo;t set or enforce it. Figures
+        are projections based on your inputs, not a guarantee.
       </p>
     </div>
   );

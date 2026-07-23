@@ -28,7 +28,7 @@ RAAYDR was founded by Ric, a former session vocalist with 16 years in marketing.
 
 Through attention-based payment. Each listener's subscription creates their own artist pool, divided among the artists they actually played that month, proportional to listening time.
 
-The numbers are published, not hidden. A founding listener pays £5.99 a month: £0.99 funds tastemakers, and after RAAYDR's 30% platform share, £3.50 per fan per month flows to artists. On the standard £7.99 tier, £4.20 per fan reaches artists. A fan who gives you 40% of their listening sends you £1.40 that month; 500 such fans is roughly £700 a month. To earn that on Spotify's roughly £0.003 per stream, you would need around 58,000 monthly listeners. The full working is in [our per-stream analysis](/pulse/how-much-does-spotify-pay-per-stream), backed by real distributor data.
+The numbers are published, not hidden. A Day One pays £6.99 a month, locked forever; the standard price is £9.99. After tax, publishing royalties and card fees, 55% of every subscription goes to artists, up to 15% is ring fenced for tastemakers, and RAAYDR keeps 30%. That is up to £3.57 per fan a month to artists on the standard tier, up to £2.46 on the Day One tier. A fan who gives you 40% of their listening sends you about £1.43 that month; 500 such fans is roughly £714 a month. To match that on Spotify, where an engaged fan is worth pennies, you would need around 59,500 monthly listeners. The full working is in [our per-stream analysis](/pulse/how-much-does-spotify-pay-per-stream), backed by real distributor data.
 
 Artists are paid monthly via Stripe, with a £50 minimum payout threshold.
 
@@ -38,7 +38,7 @@ Artists are paid monthly via Stripe, with a £50 minimum payout threshold.
 
 **Producers and songwriters** get their own dashboards and structural splits: an agreed percentage per song applied automatically to the artist's earnings, with a standing promise that we tell you when you're owed something.
 
-**Tastemakers** are paid for curation from a dedicated fund, £0.99 per founding listener and £1.99 per standard listener each month, distributed by the same fan-count and attention mechanics artists enjoy. No one can buy their way onto a tastemaker's list.
+**Tastemakers** are paid for curation from a ring-fenced fund, up to 15% of every subscription, distributed by the same fan-count and attention mechanics artists enjoy. Whatever the fund does not pay out goes to the artists. No one can buy their way onto a tastemaker's list.
 
 **Listeners** get a platform where their money supports the music they actually play. On RAAYDR, people are the algorithm.
 
@@ -46,14 +46,14 @@ Artists are paid monthly via Stripe, with a £50 minimum payout threshold.
 
 | Tier | Price | Notes |
 | --- | --- | --- |
-| Founding listener (Day Ones) | £5.99/month | First 1,000 listeners, price locked forever |
-| Standard listener | £7.99/month | After the founding cohort fills |
-| RAAYDR+ (creator roles) | £1.99/month | Role-specific dashboards and tools |
-| Founding creators | Free RAAYDR+ forever | First 100 artists, 100 producers/songwriters, 50 tastemakers |
+| Founding listener (Day Ones) | £6.99/month | First 1,000 listeners, price locked forever |
+| Standard listener | £9.99/month | After the Day One cohort fills |
+| RAAYDR+ (creator roles) | £3.99/month | Role-specific dashboards and tools |
+| Founding creators | Free RAAYDR+ forever | First 100 artists, 100 producers/songwriters, 25 tastemakers |
 
 ## Is RAAYDR live?
 
-RAAYDR is in pre-launch, with the waitlist open at [raaydr.com](https://raaydr.com) for all four roles. Marketing is UK-focused; signup is open worldwide. Early cohort places, the locked £5.99 listener price and free-forever creator RAAYDR+, are first come, first served.
+RAAYDR is in pre-launch, with the waitlist open at [raaydr.com](https://raaydr.com) for all four roles. Marketing is UK-focused; signup is open worldwide. Early cohort places, the locked £6.99 Day One price and free-forever creator RAAYDR+, are first come, first served.
 
 ## FAQ
 
@@ -70,7 +70,7 @@ The principle is shared; the design differs. RAAYDR's per-fan artist pool is a f
 Monthly, via Stripe, once earnings pass a £50 threshold.
 
 **How do I join?**
-Join the waitlist at [raaydr.com](https://raaydr.com) and pick your role. Founding cohort perks apply until each cohort fills.
+Join the waitlist at [raaydr.com](https://raaydr.com) and pick your role. Early cohort perks apply until each cohort fills.
 
 ---
 
