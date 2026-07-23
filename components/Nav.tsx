@@ -7,13 +7,23 @@ import { ctaCopy } from "@/lib/siteConfig";
 import { InstagramIcon, TikTokIcon } from "./SocialIcons";
 import styles from "./Nav.module.css";
 
-const links = [
+// The four audience routes are the primary row — these are the conversion
+// paths, so they keep the pills to themselves.
+const audienceLinks = [
+  { href: "/for-listeners", label: "For Listeners" },
   { href: "/artists", label: "For Artists" },
   { href: "/producers-songwriters", label: "For Producers & Songwriters" },
   { href: "/tastemakers", label: "For Tastemakers" },
-  { href: "/for-listeners", label: "For Listeners" },
-  { href: "/about", label: "About" },
 ];
+
+// Secondary routes, set lighter and without pills so they read as a tier below
+// the audience pages rather than as peers of them.
+const secondaryLinks = [
+  { href: "/about", label: "About" },
+  { href: "/pulse", label: "The Pulse" },
+];
+
+const allLinks = [...audienceLinks, ...secondaryLinks];
 
 const socials = [
   {
@@ -73,8 +83,14 @@ export default function Nav() {
         </Link>
 
         <nav className={styles.links} aria-label="Primary">
-          {links.map((l) => (
+          {audienceLinks.map((l) => (
             <Link key={l.href} href={l.href} className={styles.pillLink}>
+              {l.label}
+            </Link>
+          ))}
+          <span className={styles.linkDivider} aria-hidden="true" />
+          {secondaryLinks.map((l) => (
+            <Link key={l.href} href={l.href} className={styles.textLink}>
               {l.label}
             </Link>
           ))}
@@ -116,7 +132,7 @@ export default function Nav() {
         className={`${styles.mobileMenu} ${open ? styles.mobileMenuOpen : ""}`}
       >
         <nav aria-label="Primary, mobile">
-          {links.map((l) => (
+          {allLinks.map((l) => (
             <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>
               {l.label}
             </Link>

@@ -51,9 +51,34 @@
 
 .links {
   display: flex;
+  align-items: center;
   gap: 8px;
   font-size: 14px;
   font-weight: 500;
+}
+
+/* Hairline between the audience pills and the secondary routes, so the two
+   tiers read as separate groups rather than one long row. */
+.linkDivider {
+  width: 1px;
+  height: 20px;
+  margin-inline: 6px;
+  background: color-mix(in srgb, var(--ink) 16%, transparent);
+  flex: none;
+}
+
+/* Secondary routes: no pill, quieter ink, so they sit a tier below the
+   audience pages instead of competing with them. */
+.textLink {
+  line-height: 1;
+  padding: 0.65em 0.5em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  transition: color 0.2s ease;
+}
+
+.textLink:hover {
+  color: var(--ink);
 }
 
 .pillLink {
@@ -173,7 +198,10 @@
   display: none;
 }
 
-@media (max-width: 920px) {
+/* The desktop row needs ~1140px to lay out without the pills wrapping and the
+   CTA spilling past the 76px header. Below that it goes to the burger, which
+   carries the same links. */
+@media (max-width: 1140px) {
   .links,
   .actions .cta,
   .navSocial {
