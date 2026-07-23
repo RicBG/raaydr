@@ -68,8 +68,14 @@ type AudiencePageProps = {
     boldNote?: string;
   }[];
   /** Optional ticker marquee rendered just above the tinted sections, in place
-   *  of the first section's heading. Same tilted bands as the homepage. */
-  tintMarquee?: { top: string; middle: string; bottom: string };
+   *  of the first section's heading. Same tilted bands as the homepage. Set
+   *  `beforeCallout` to move it up above the Hero Callout instead. */
+  tintMarquee?: {
+    top: string;
+    middle: string;
+    bottom: string;
+    beforeCallout?: boolean;
+  };
   /** FAQ items for this page's closing FAQ section, rendered after everything
    *  else and before the site footer. Omitted when absent. */
   faqItems?: FaqItem[];
@@ -238,6 +244,16 @@ export default function AudiencePage({
         </section>
       )}
 
+      {/* Above the callout the bands keep their natural bottom overlap, so the
+          callout tucks up under the last band rather than clearing it. */}
+      {tintMarquee?.beforeCallout && (
+        <TickerMarquee
+          top={tintMarquee.top}
+          middle={tintMarquee.middle}
+          bottom={tintMarquee.bottom}
+        />
+      )}
+
       {showCallout && halo && heroCallout && (
         <HeroCallout
           ref={calloutRef}
@@ -249,7 +265,7 @@ export default function AudiencePage({
         />
       )}
 
-      {tintMarquee && (
+      {tintMarquee && !tintMarquee.beforeCallout && (
         <TickerMarquee
           top={tintMarquee.top}
           middle={tintMarquee.middle}
