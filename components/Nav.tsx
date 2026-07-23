@@ -10,10 +10,10 @@ import styles from "./Nav.module.css";
 // The four audience routes are the primary row — these are the conversion
 // paths, so they keep the pills to themselves.
 const audienceLinks = [
-  { href: "/for-listeners", label: "For Listeners" },
-  { href: "/artists", label: "For Artists" },
-  { href: "/producers-songwriters", label: "For Producers & Songwriters" },
-  { href: "/tastemakers", label: "For Tastemakers" },
+  { href: "/for-listeners", label: "Listeners" },
+  { href: "/artists", label: "Artists" },
+  { href: "/producers-songwriters", label: "Producers & Songwriters" },
+  { href: "/tastemakers", label: "Tastemakers" },
 ];
 
 // Secondary routes, set lighter and without pills so they read as a tier below
