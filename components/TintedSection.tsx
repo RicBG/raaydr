@@ -15,12 +15,16 @@ import styles from "./TintedSection.module.css";
  * static, with no animation and no WebGL. Used for the "coming soon" lines and
  * the lighter secondary sections, where the Hero Callout would be too heavy.
  */
+/** A body paragraph. Pass the object form to set one in bold mid-copy, where
+ *  `boldNote` (which always lands last) cannot reach. */
+export type TintedParagraph = string | { text: string; bold?: boolean };
+
 type TintedSectionProps = {
   /** Optional heading. Omitted for single-line "coming soon" notes. */
   heading?: string;
   /** One paragraph, or several to sit together on a single tint band rather
    *  than splitting into consecutive sections (which seams the washes). */
-  body: string | string[];
+  body: TintedParagraph | TintedParagraph[];
   /** The page's audience colour (hex or CSS colour). */
   color: string;
   /** Render a dark pulsing dot-field background (RAAYDR+) with white text
@@ -83,15 +87,23 @@ export default function TintedSection({
               {heading}
             </h2>
           )}
-          {(Array.isArray(body) ? body : [body]).map((para) => (
-            <p
-              key={para}
-              className={heading ? styles.body : styles.note}
-              data-reveal
-            >
-              {para}
-            </p>
-          ))}
+          {(Array.isArray(body) ? body : [body])
+            .map((para) => (typeof para === "string" ? { text: para } : para))
+            .map((para) => (
+              <p
+                key={para.text}
+                className={
+                  para.bold
+                    ? styles.boldNote
+                    : heading
+                      ? styles.body
+                      : styles.note
+                }
+                data-reveal
+              >
+                {para.text}
+              </p>
+            ))}
           {boldNote && (
             <p className={styles.boldNote} data-reveal>
               {boldNote}

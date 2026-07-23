@@ -32,13 +32,15 @@ type HeroCalloutProps = {
   heading: string;
   /** A single paragraph, or several rendered in sequence. */
   body: string | string[];
+  /** A closing line set in bold after the body. */
+  boldNote?: string;
   /** Whether the section is on screen — gates the WebGL context. Controlled by
    *  the parent so PageSpectraNoise can be unmounted from the same signal. */
   active: boolean;
 };
 
 const HeroCallout = forwardRef<HTMLElement, HeroCalloutProps>(function HeroCallout(
-  { audience, color, heading, body, active },
+  { audience, color, heading, body, boldNote, active },
   ref
 ) {
   const reducedMotion = usePrefersReducedMotion();
@@ -101,6 +103,11 @@ const HeroCallout = forwardRef<HTMLElement, HeroCalloutProps>(function HeroCallo
               {para}
             </p>
           ))}
+          {boldNote && (
+            <p className={styles.boldNote} data-reveal>
+              {boldNote}
+            </p>
+          )}
         </div>
       </div>
     </section>

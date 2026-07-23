@@ -13,7 +13,9 @@ import PageSpectraNoise, {
   type RaaydrAudience,
 } from "@/components/PageSpectraNoise";
 import HeroCallout from "@/components/HeroCallout";
-import TintedSection from "@/components/TintedSection";
+import TintedSection, {
+  type TintedParagraph,
+} from "@/components/TintedSection";
 import TickerMarquee from "@/components/TickerMarquee";
 import FaqAccordion from "@/components/FaqAccordion";
 import type { FaqItem } from "@/lib/faqData";
@@ -57,7 +59,7 @@ type AudiencePageProps = {
    *  and before the calculator. Needs `halo` set (it drives the gradient
    *  colour). While it is on screen the page's PageSpectraNoise is unmounted,
    *  so only one heavy WebGL context is ever live. Omitted when absent. */
-  heroCallout?: { heading: string; body: string };
+  heroCallout?: { heading: string; body: string; boldNote?: string };
   /** Lighter tinted add-ons (a softly tinted band, no WebGL) rendered in order
    *  after the Hero Callout and before the calculator — "coming soon" lines and
    *  secondary sections. Omitted when absent. */
@@ -65,9 +67,12 @@ type AudiencePageProps = {
     heading?: string;
     /** Several paragraphs share one tint band rather than seaming two washes
      *  together as consecutive sections. */
-    body: string | string[];
+    body: TintedParagraph | TintedParagraph[];
     dotPulse?: boolean;
     boldNote?: string;
+    /** Sit above the Hero Callout rather than after it — directly under the
+     *  marquee when that is placed above the callout too. */
+    beforeCallout?: boolean;
   }[];
   /** Optional ticker marquee rendered just above the tinted sections, in place
    *  of the first section's heading. Same tilted bands as the homepage. Set
@@ -120,6 +125,11 @@ export default function AudiencePage({
   useReveal(pointsRef);
   useReveal(closingRef);
   useReveal(joinRef);
+
+  // Tinted sections split around the Hero Callout, so a page can seat one
+  // between the marquee and the callout rather than only after it.
+  const beforeCalloutSections = tintSections?.filter((s) => s.beforeCallout) ?? [];
+  const afterCalloutSections = tintSections?.filter((s) => !s.beforeCallout) ?? [];
 
   // Client-only randomness, deferred a frame so server and client markup
   // agree and hydration stays clean. Only used for the static fallback.
@@ -248,8 +258,9 @@ export default function AudiencePage({
         </section>
       )}
 
-      {/* Above the callout the bands keep their natural bottom overlap, so the
-          callout tucks up under the last band rather than clearing it. */}
+      {/* Above the callout the bands keep their natural bottom overlap, so
+          whatever follows tucks up under the last band rather than clearing
+          it — and gets padded to keep its own copy out from behind it. */}
       {tintMarquee?.beforeCallout && (
         <TickerMarquee
           top={tintMarquee.top}
@@ -258,6 +269,18 @@ export default function AudiencePage({
         />
       )}
 
+      {beforeCalloutSections.map((section, i) => (
+        <TintedSection
+          key={section.heading ?? String(section.body)}
+          heading={section.heading}
+          body={section.body}
+          color={color}
+          dotPulse={section.dotPulse}
+          boldNote={section.boldNote}
+          clearsMarquee={i === 0 && tintMarquee?.beforeCallout}
+        />
+      ))}
+
       {showCallout && halo && heroCallout && (
         <HeroCallout
           ref={calloutRef}
@@ -265,6 +288,7 @@ export default function AudiencePage({
           color={color}
           heading={heroCallout.heading}
           body={heroCallout.body}
+          boldNote={heroCallout.boldNote}
           active={calloutActive}
         />
       )}
@@ -278,7 +302,7 @@ export default function AudiencePage({
         />
       )}
 
-      {tintSections?.map((section, i) => (
+      {afterCalloutSections.map((section, i) => (
         <TintedSection
           key={section.heading ?? String(section.body)}
           heading={section.heading}
@@ -286,7 +310,9 @@ export default function AudiencePage({
           color={color}
           dotPulse={section.dotPulse}
           boldNote={section.boldNote}
-          clearsMarquee={i === 0 && tintMarquee?.tuckUnder}
+          clearsMarquee={
+            i === 0 && !tintMarquee?.beforeCallout && tintMarquee?.tuckUnder
+          }
         />
       ))}
 

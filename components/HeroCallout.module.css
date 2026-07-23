@@ -52,3 +52,9 @@
   line-height: 1.55;
   color: color-mix(in srgb, var(--ink) 82%, transparent);
 }
+
+/* Closing line, set bold and at full ink so it lands after the body. */
+.boldNote {
+  font-weight: 700;
+  color: var(--ink);
+}
