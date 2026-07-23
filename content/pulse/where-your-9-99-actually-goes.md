@@ -7,8 +7,8 @@ dateUpdated: "2026-07-22"
 author: "Ric, Founder of RAAYDR"
 accent: "green"
 readingTime: "6 min read"
-heroImage: "/pulse/images/how-much-does-spotify-pay-per-stream.jpg"
-heroAlt: "A vocalist sits alone in a dark studio, lit by a single key light with a green glow"
+heroImage: "/pulse/images/where-your-9-99-actually-goes.png"
+heroAlt: "A single coin on a dark surface, glowing Signal Green, with green flecks scattering off it into the dark"
 ---
 
 # Where Your £9.99 Actually Goes on RAAYDR
