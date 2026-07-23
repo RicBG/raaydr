@@ -39,8 +39,7 @@
   outline-offset: 3px;
 }
 
-/* Segmented bar. Monochrome ink tints, quiet by design, no role colours and no
-   extra Signal Green. */
+/* Segmented bar. Each segment carries the palette colour of whoever it pays. */
 .bar {
   display: flex;
   width: 100%;

@@ -5,14 +5,12 @@ import { PER_FAN, PRICING, SPLIT, type RatesTier } from "@/lib/raaydrRates";
 import styles from "./WhereYourMoneyGoes.module.css";
 
 // Where a listener's subscription goes. Percentages only, no pound figures.
-// The bar is monochrome (graduated ink tints) so it adds no role colour and
-// no extra Signal Green, per the design constraints.
+// Each segment carries the palette colour of whoever it pays: artists amber,
+// RAAYDR its own green, tastemakers orchid, and the deductions coral.
 const TIER_LABEL: Record<RatesTier, string> = {
   dayOne: `Day Ones · £${PRICING.dayOne}`,
   standard: `Standard · £${PRICING.standard}`,
 };
-
-const INK = (a: number) => `color-mix(in srgb, var(--ink) ${a}%, transparent)`;
 
 export default function WhereYourMoneyGoes() {
   const [tier, setTier] = useState<RatesTier>("standard");
@@ -30,28 +28,28 @@ export default function WhereYourMoneyGoes() {
         name: "Artists",
         label: `${SPLIT.artists}%`,
         width: (rest * SPLIT.artists) / 100,
-        shade: INK(82),
+        shade: "var(--amber)",
       },
       {
         key: "raaydr",
         name: "RAAYDR",
         label: `${SPLIT.raaydr}%`,
         width: (rest * SPLIT.raaydr) / 100,
-        shade: INK(52),
+        shade: "var(--green)",
       },
       {
         key: "tastemakers",
         name: "Tastemakers",
         label: `up to ${SPLIT.tastemakers}%`,
         width: (rest * SPLIT.tastemakers) / 100,
-        shade: INK(34),
+        shade: "var(--orchid)",
       },
       {
         key: "costs",
         name: "Tax, publishing royalties, card fees",
         label: `${Math.round(costsPct)}%`,
         width: costsPct,
-        shade: INK(16),
+        shade: "var(--coral)",
       },
     ];
   }, [tier]);

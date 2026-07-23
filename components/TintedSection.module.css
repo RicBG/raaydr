@@ -13,6 +13,13 @@
     var(--canvas);
 }
 
+/* Sits directly under a tucked-in ticker marquee: the bands overlap the top of
+   this section, so the copy needs room to clear them rather than starting
+   behind the bottom band. */
+.clearsMarquee {
+  padding-top: clamp(96px, 12vw, 170px);
+}
+
 /* RAAYDR+ variant: dark section with the pulsing dot field behind, white text
    on top. The dot field covers the tint. */
 .dark {

@@ -63,18 +63,22 @@ type AudiencePageProps = {
    *  secondary sections. Omitted when absent. */
   tintSections?: {
     heading?: string;
-    body: string;
+    /** Several paragraphs share one tint band rather than seaming two washes
+     *  together as consecutive sections. */
+    body: string | string[];
     dotPulse?: boolean;
     boldNote?: string;
   }[];
   /** Optional ticker marquee rendered just above the tinted sections, in place
    *  of the first section's heading. Same tilted bands as the homepage. Set
-   *  `beforeCallout` to move it up above the Hero Callout instead. */
+   *  `beforeCallout` to move it up above the Hero Callout instead, or
+   *  `tuckUnder` to drop the gap below so what follows sits under the bands. */
   tintMarquee?: {
     top: string;
     middle: string;
     bottom: string;
     beforeCallout?: boolean;
+    tuckUnder?: boolean;
   };
   /** FAQ items for this page's closing FAQ section, rendered after everything
    *  else and before the site footer. Omitted when absent. */
@@ -270,18 +274,19 @@ export default function AudiencePage({
           top={tintMarquee.top}
           middle={tintMarquee.middle}
           bottom={tintMarquee.bottom}
-          spaceBelow
+          spaceBelow={!tintMarquee.tuckUnder}
         />
       )}
 
-      {tintSections?.map((section) => (
+      {tintSections?.map((section, i) => (
         <TintedSection
-          key={section.heading ?? section.body}
+          key={section.heading ?? String(section.body)}
           heading={section.heading}
           body={section.body}
           color={color}
           dotPulse={section.dotPulse}
           boldNote={section.boldNote}
+          clearsMarquee={i === 0 && tintMarquee?.tuckUnder}
         />
       ))}
 

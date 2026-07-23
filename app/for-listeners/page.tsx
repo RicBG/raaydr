@@ -35,14 +35,18 @@ export default function ForListenersPage() {
         heading: "Your taste has power here.",
         body: "Every play, share, rating and save moves an artist forward. Not because an algorithm decided you'd like them, because you did. Tastemakers surface what's worth hearing first. The community decides if they were right. You're not bankrolling this from the sidelines. You're part of how the whole thing decides what's next.",
       }}
+      tintMarquee={{
+        top: "What loyalty gets you",
+        middle: "Attention pays",
+        bottom: "Your money, itemised",
+        tuckUnder: true,
+      }}
       tintSections={[
         {
-          heading: "What loyalty gets you.",
-          body: "Early access to new music. Discounts on merch and tickets. A shout-out from the artist themselves, when you've actually shown up. Every artist decides what unlocks and when, but showing up matters here in ways it never did on a platform that only counted your stream.",
-        },
-        {
-          heading: "Your money, itemised.",
-          body: "At the end of every month, we show you where your subscription went. Which artists. Which tastemakers. Actual amounts. Nobody else can show you this, because nobody else knows.",
+          body: [
+            "Early access to new music. Discounts on merch and tickets. A shout-out from the artist themselves, when you've actually shown up. Every artist decides what unlocks and when, but showing up matters here in ways it never did on a platform that only counted your stream.",
+            "At the end of every month, we show you where your subscription went. Which artists. Which tastemakers. Actual amounts. Nobody else can show you this, because nobody else knows.",
+          ],
         },
       ]}
     />

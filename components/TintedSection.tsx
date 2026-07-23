@@ -18,7 +18,9 @@ import styles from "./TintedSection.module.css";
 type TintedSectionProps = {
   /** Optional heading. Omitted for single-line "coming soon" notes. */
   heading?: string;
-  body: string;
+  /** One paragraph, or several to sit together on a single tint band rather
+   *  than splitting into consecutive sections (which seams the washes). */
+  body: string | string[];
   /** The page's audience colour (hex or CSS colour). */
   color: string;
   /** Render a dark pulsing dot-field background (RAAYDR+) with white text
@@ -26,6 +28,8 @@ type TintedSectionProps = {
   dotPulse?: boolean;
   /** An extra bold line rendered after the body (inside the box for RAAYDR+). */
   boldNote?: string;
+  /** Pad the top so the copy clears a ticker marquee tucked over this section. */
+  clearsMarquee?: boolean;
 };
 
 export default function TintedSection({
@@ -34,6 +38,7 @@ export default function TintedSection({
   color,
   dotPulse,
   boldNote,
+  clearsMarquee,
 }: TintedSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -42,7 +47,9 @@ export default function TintedSection({
 
   return (
     <section
-      className={`${styles.section} ${dotPulse ? styles.dark : ""}`}
+      className={`${styles.section} ${dotPulse ? styles.dark : ""} ${
+        clearsMarquee ? styles.clearsMarquee : ""
+      }`}
       style={{ "--tint": color } as React.CSSProperties}
     >
       {dotPulse && (
@@ -76,9 +83,15 @@ export default function TintedSection({
               {heading}
             </h2>
           )}
-          <p className={heading ? styles.body : styles.note} data-reveal>
-            {body}
-          </p>
+          {(Array.isArray(body) ? body : [body]).map((para) => (
+            <p
+              key={para}
+              className={heading ? styles.body : styles.note}
+              data-reveal
+            >
+              {para}
+            </p>
+          ))}
           {boldNote && (
             <p className={styles.boldNote} data-reveal>
               {boldNote}
