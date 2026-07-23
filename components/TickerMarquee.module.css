@@ -1,0 +1,74 @@
+/* Three tilted scroll-ticker bands. Each band sits at a slightly different
+   angle, overlaps its neighbours with a drop shadow for depth, and the whole
+   stack overlaps the sections above and below rather than reserving a gap. */
+
+.tickerStack {
+  position: relative;
+  /* Above adjacent sections (e.g. the Problem section at z-index 10) so the
+     bands sit in front where they overlap, and still below the grain overlay
+     (30) and the nav (50). */
+  z-index: 11;
+  /* Pull into the neighbouring sections so the bands bridge them instead of
+     leaving a gap. Clip the over-wide tilted bands horizontally (so they do not
+     add page width) while letting them spill vertically over the neighbours. */
+  margin-block: clamp(-64px, -9vw, -130px);
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* Each row is wider than the viewport and tilted, so its colour band runs off
+   both edges. Angles differ slightly per row; upper rows sit in front. */
+.tickerRow {
+  position: relative;
+  width: 128%;
+  margin-left: -14%;
+}
+
+.tickerRow:not(:first-child) {
+  margin-top: clamp(-18px, -2.2vw, -38px);
+}
+
+/* Top band angles gently downward and sits at the back. */
+.tickerRow:nth-child(1) {
+  transform: rotate(2deg);
+  z-index: 1;
+}
+/* Middle band sits almost straight, and in front of the other two. */
+.tickerRow:nth-child(2) {
+  transform: rotate(-0.5deg);
+  z-index: 3;
+}
+.tickerRow:nth-child(3) {
+  transform: rotate(-2deg);
+  z-index: 2;
+}
+
+/* The colour band itself. Drop shadow reads as depth over the band behind. */
+.band {
+  box-shadow: 0 14px 34px -12px rgba(21, 21, 26, 0.3);
+}
+
+.tickerItem {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.55rem, 4.2vw, 2.9rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* The middle band is black, so its text is white. The white bands keep the
+   dark text above. The green "//" stays green on all. */
+.tickerRow:nth-child(2) .tickerItem {
+  color: var(--canvas);
+}
+
+/* Green "//" prefix on each phrase, echoing the site's eyebrow motif. */
+.sep {
+  margin-right: 0.4em;
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}

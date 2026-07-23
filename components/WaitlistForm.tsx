@@ -20,12 +20,16 @@ type WaitlistFormProps = {
   /** Analytics source persisted with the signup so captures can be told apart
    *  in the email tool (e.g. "homepage-mid"). */
   source?: string;
+  /** "dark" swaps the input/selected-pill colours for a dark surface (e.g. the
+   *  black MidWave block). Most of the form already tracks currentColor. */
+  theme?: "light" | "dark";
 };
 
 export default function WaitlistForm({
   variant = "hero",
   defaultRole,
   source,
+  theme = "light",
 }: WaitlistFormProps) {
   const id = useId();
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
@@ -82,7 +86,11 @@ export default function WaitlistForm({
   }
 
   return (
-    <form className={styles.form} onSubmit={onSubmit} noValidate>
+    <form
+      className={`${styles.form} ${theme === "dark" ? styles.dark : ""}`}
+      onSubmit={onSubmit}
+      noValidate
+    >
       <div className={styles.row}>
         <div className={styles.emailField}>
           <label htmlFor={`${id}-email`} className={styles.fieldLabel}>

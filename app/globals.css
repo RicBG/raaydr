@@ -77,6 +77,15 @@
   padding: 0;
 }
 
+/* Clip horizontal overflow at the root so full-bleed decorative elements (the
+   hero orb layer, the section Pulse rings) can extend past the viewport without
+   making the page horizontally scrollable. clip (not hidden) does not create a
+   scroll container, so it leaves position: sticky and the pinned sections
+   working. */
+html {
+  overflow-x: clip;
+}
+
 html.lenis,
 html.lenis body {
   height: auto;
@@ -208,13 +217,6 @@ h3 {
   overflow: hidden;
 }
 
-/* The horizontal break between the stance section and pricing. */
-.waveform-divider {
-  display: block;
-  width: 100%;
-  height: auto;
-  opacity: 0.5;
-}
 
 /* ---------- Actions: the only flat use of a spectrum colour ---------- */
 

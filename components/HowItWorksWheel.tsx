@@ -408,7 +408,7 @@ export default function HowItWorksWheel({
   // against it — a solid step-colour background would swallow its own badge.
   const [tintR, tintG, tintB] = (dialColor.match(/\d+/g) || ['0', '0', '0']).map(Number);
   const tint = (a: number) => `rgba(${tintR}, ${tintG}, ${tintB}, ${a})`;
-  const stageBg = `radial-gradient(130% 115% at 60% 40%, ${tint(0.18)} 0%, ${tint(0.05)} 44%, rgba(0,0,0,0) 72%)`;
+  const stageBg = `radial-gradient(130% 115% at 60% 40%, ${tint(0.4)} 0%, ${tint(0.15)} 46%, rgba(0,0,0,0) 78%)`;
   const arcSvgStyle: CSSProperties = {
     position: 'absolute',
     left: cx - R,

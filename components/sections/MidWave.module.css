@@ -1,79 +1,75 @@
-/* Lighter than FirstWave: no orb field, no pricing copy — a quick capture beat
-   between the wheel and the algorithm section. Generous vertical padding keeps
-   it clearly separated from the bottom CTA, which sits many sections below. */
+/* A quick waitlist capture between the wheel and the algorithm section,
+   presented as a single dark block with a little grain, in the style of the
+   About page's "Follow the build" block. The section stays on canvas; the dark
+   block is what breaks the page up with colour. */
 .section {
   position: relative;
-  overflow: hidden;
-  padding: clamp(64px, 10vw, 120px) 0;
-  border-top: 1px solid var(--stone);
-  border-bottom: 1px solid var(--stone);
+  isolation: isolate; /* scope the wave + block stacking to this section */
+  overflow: hidden; /* clip the wave to the section */
+  padding: clamp(56px, 9vw, 120px) 0;
 }
 
-/* The Signal Green noise field, behind everything and never intercepting the
-   form. */
+.block {
+  position: relative;
+  z-index: 1; /* the block floats above the wave field */
+  overflow: hidden; /* clip the grain to the rounded corners */
+  background: var(--ink);
+  color: var(--canvas);
+  border-radius: 24px;
+  padding: clamp(36px, 6vw, 72px);
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: clamp(20px, 3vw, 32px);
+  will-change: transform, opacity;
+}
+
+/* The Signal Green Spectra wave, on the section behind the block. Same dust
+   field used at the top of the audience pages, on the canvas surface here. */
 .noise {
   position: absolute;
   inset: 0;
+  z-index: 0;
+  opacity: 0.85;
   pointer-events: none;
-  overflow: hidden;
 }
 
-/* The static render used on mobile and under reduced motion. */
 .noiseStill {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.5;
 }
 
-/* Soft Canvas scrim concentrated behind the copy/form so the noise stays a
-   texture, not a distraction, and the text reads cleanly. */
-.noiseScrim {
+/* A bit of grain, matching the site's noise texture, lightened so it reads on
+   the dark fill. Sits above the wave but below the copy. */
+.block::after {
+  content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    58% 72% at 50% 50%,
-    color-mix(in srgb, var(--canvas) 86%, transparent) 0%,
-    color-mix(in srgb, var(--canvas) 62%, transparent) 46%,
-    transparent 82%
-  );
-}
-
-.inner {
-  position: relative;
   z-index: 1;
-  display: grid;
-  justify-items: center;
-  text-align: center;
-  gap: clamp(18px, 2.6vw, 26px);
-}
-
-/* The one accent: a short spectrum-tinted rule above the heading, drawn from
-   the same palette as the orb/ring. */
-.accent {
-  width: 64px;
-  height: 3px;
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    var(--coral),
-    var(--amber),
-    var(--green),
-    var(--orchid),
-    var(--violet)
-  );
+  background-image: url("/textures/grain-tile.png");
+  background-repeat: repeat;
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  pointer-events: none;
 }
 
 .heading {
-  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.7rem, 3.6vw, 2.6rem);
   line-height: 1.1;
   letter-spacing: -0.01em;
   max-width: 18ch;
 }
 
 .form {
+  position: relative;
+  z-index: 2;
   width: 100%;
   max-width: 560px;
   display: grid;

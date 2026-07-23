@@ -103,3 +103,20 @@
   font-weight: 600;
   font-size: 26px;
 }
+
+/* Dark surface (the black MidWave block). Labels, borders and unselected pills
+   already track currentColor, so only the input fill, the selected pill and the
+   error colour need swapping for a dark background. */
+.dark .email {
+  background: color-mix(in srgb, var(--canvas) 10%, transparent);
+}
+
+.dark .segmentOn {
+  background: var(--canvas);
+  border-color: var(--canvas);
+  color: var(--ink);
+}
+
+.dark .error {
+  color: var(--coral);
+}

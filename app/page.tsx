@@ -7,7 +7,7 @@ import GradientSpan from "@/components/sections/GradientSpan";
 import FindYourPlace from "@/components/sections/FindYourPlace";
 import RealNumbers from "@/components/sections/RealNumbers";
 import Stance from "@/components/sections/Stance";
-import BrandLine from "@/components/sections/BrandLine";
+import TickerMarquee from "@/components/TickerMarquee";
 import FirstWave from "@/components/sections/FirstWave";
 import ComparePill from "@/components/ComparePill";
 import FaqAccordion from "@/components/FaqAccordion";
@@ -26,14 +26,11 @@ export default function Home() {
       <FindYourPlace />
       <RealNumbers />
       <Stance />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/textures/waveform-divider.svg"
-        alt=""
-        aria-hidden="true"
-        className="waveform-divider"
+      <TickerMarquee
+        top="Built for the culture"
+        middle="Attention pays"
+        bottom="Owned by the community"
       />
-      <BrandLine />
       <FirstWave />
       <FaqAccordion items={faqData.home} />
       <ComparePill />
