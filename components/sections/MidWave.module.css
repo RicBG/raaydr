@@ -1,12 +1,14 @@
 /* A quick waitlist capture between the wheel and the algorithm section,
    presented as a single dark block with a little grain, in the style of the
-   About page's "Follow the build" block. The section stays on canvas; the dark
-   block is what breaks the page up with colour. */
+   About page's "Follow the build" block, over the same pulsing dot field the
+   RAAYDR+ blocks use. The base colour matches the field's own background so the
+   band reads solid before the canvas paints. */
 .section {
   position: relative;
-  isolation: isolate; /* scope the wave + block stacking to this section */
-  overflow: hidden; /* clip the wave to the section */
+  isolation: isolate; /* scope the field + block stacking to this section */
+  overflow: hidden; /* clip the field to the section */
   padding: clamp(56px, 9vw, 120px) 0;
+  background: #05060a;
 }
 
 .block {
@@ -24,26 +26,16 @@
   will-change: transform, opacity;
 }
 
-/* The Signal Green Spectra wave, on the section behind the block. Same dust
-   field used at the top of the audience pages, on the canvas surface here. */
-.noise {
+/* The pulsing dot field, on the section behind the block. */
+.dotBg {
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.85;
   pointer-events: none;
 }
 
-.noiseStill {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 /* A bit of grain, matching the site's noise texture, lightened so it reads on
-   the dark fill. Sits above the wave but below the copy. */
+   the dark fill. Sits above the field but below the copy. */
 .block::after {
   content: "";
   position: absolute;
