@@ -8,6 +8,9 @@
   isolation: isolate; /* scope the field + block stacking to this section */
   overflow: hidden; /* clip the field to the section */
   padding: clamp(56px, 9vw, 120px) 0;
+  /* Extra room up top so the ticker marquee overlapping this section covers the
+     band rather than crowding the block. */
+  padding-top: clamp(104px, 14vw, 190px);
   background: #05060a;
 }
 

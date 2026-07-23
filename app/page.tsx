@@ -19,6 +19,11 @@ export default function Home() {
       <Hero />
       <Problem />
       <HowItWorks />
+      <TickerMarquee
+        top="Be a day one"
+        middle="Attention pays"
+        bottom="Sign up now"
+      />
       <MidWave />
       <GradientSpan>
         <Algorithm />
