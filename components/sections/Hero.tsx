@@ -193,10 +193,10 @@ export default function Hero() {
 
           <div ref={stackRef} className={styles.textStack}>
             <h1 ref={headingRef} className={styles.heading}>
-              The music industry forgot who makes the music.
+              Music streaming is broken. We fixed it. Everyone wins.
             </h1>
             <p ref={subcopyRef} className={styles.subcopy}>
-              Spotify pays for streams. RAAYDR pays for attention.
+              Attention over streams.
             </p>
             <a
               ref={ctaRef}
