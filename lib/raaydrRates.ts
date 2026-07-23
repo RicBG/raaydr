@@ -102,3 +102,8 @@ export function tastemakerEarnings(followers: number, drivenSharePct: number): n
 export function spotifyEquivalentListeners(monthlyEarnings: number): number {
   return Math.round(monthlyEarnings / SPOTIFY.perMonthlyListener);
 }
+
+/** What Spotify would pay for this many monthly listeners, in pounds. */
+export function spotifyMonthlyEarnings(fans: number): number {
+  return fans * SPOTIFY.perMonthlyListener;
+}

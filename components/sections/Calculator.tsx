@@ -7,6 +7,7 @@ import {
   ATTENTION_DEFAULT,
   ATTENTION_PRESETS,
   spotifyEquivalentListeners,
+  spotifyMonthlyEarnings,
 } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Glyph from "@/components/Glyph";
@@ -44,6 +45,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
     return {
       raaydrM,
       raaydrY: raaydrM * 12,
+      spotifyM: spotifyMonthlyEarnings(fans),
       spotifyListeners: spotifyEquivalentListeners(raaydrM),
     };
   }, [fans, attention]);
@@ -53,6 +55,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   // GSAP counter tween: numbers glide ~0.4s, painted straight to the DOM so
   // React never re-renders per frame.
   const display = useRef({ ...values });
+  const spotifyMEl = useRef<HTMLSpanElement>(null);
   const raaydrMEl = useRef<HTMLSpanElement>(null);
   const raaydrYEl = useRef<HTMLSpanElement>(null);
   const fansEl = useRef<HTMLSpanElement>(null);
@@ -61,6 +64,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   useEffect(() => {
     const paint = () => {
       const d = display.current;
+      if (spotifyMEl.current) spotifyMEl.current.textContent = gbp(d.spotifyM);
       if (raaydrMEl.current) raaydrMEl.current.textContent = gbp(d.raaydrM);
       if (raaydrYEl.current)
         raaydrYEl.current.textContent = `${gbp(d.raaydrY)} a year`;
@@ -163,7 +167,18 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
       </div>
 
       <div className={styles.results}>
-        <div className={`${styles.panel} ${styles.raaydr}`} style={{ gridColumn: "1 / -1" }}>
+        <div className={`${styles.panel} ${styles.spotify}`}>
+          <p className={styles.panelName}>
+            Spotify
+            <span className={styles.panelSub}>pays for streams</span>
+          </p>
+          <p className={`mono-figure ${styles.figure}`}>
+            <span ref={spotifyMEl}>{gbp(values.spotifyM)}</span>
+            <span className={styles.per}>/month</span>
+          </p>
+        </div>
+
+        <div className={`${styles.panel} ${styles.raaydr}`}>
           <p className={styles.panelName}>
             RAAYDR
             <span className={styles.panelSub}>pays for attention</span>
