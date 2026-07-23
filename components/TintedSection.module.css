@@ -13,9 +13,60 @@
     var(--canvas);
 }
 
+/* RAAYDR+ variant: dark section with the pulsing dot field behind, white text
+   on top. The dot field covers the tint. */
+.dark {
+  background: #05060a;
+  /* Taller than the plain tint sections, to give the dot field room. */
+  padding-block: clamp(96px, 14vw, 200px);
+}
+
+.dotBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
 .inner {
+  position: relative;
+  z-index: 1;
+}
+
+.content {
   display: grid;
   gap: clamp(16px, 2.5vw, 24px);
+}
+
+/* RAAYDR+: the copy sits in a solid black box over the dot field. */
+.box {
+  display: grid;
+  gap: clamp(16px, 2.5vw, 24px);
+  max-width: 640px;
+  padding: clamp(28px, 4vw, 48px);
+  border-radius: 20px;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.9);
+}
+
+.dark .heading {
+  color: var(--canvas);
+}
+
+.dark .body,
+.dark .note {
+  color: color-mix(in srgb, var(--canvas) 82%, transparent);
+}
+
+.boldNote {
+  max-width: 52ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  line-height: 1.55;
+  font-weight: 700;
+}
+
+.dark .boldNote {
+  color: var(--canvas);
 }
 
 .heading {

@@ -27,6 +27,9 @@ type TickerMarqueeProps = {
   middle: string;
   bottom: string;
   className?: string;
+  /** Keep the top overlap but add a gap below, so following content reads as
+   *  separate rather than tucked under the last band. */
+  spaceBelow?: boolean;
 };
 
 export default function TickerMarquee({
@@ -34,10 +37,11 @@ export default function TickerMarquee({
   middle,
   bottom,
   className,
+  spaceBelow,
 }: TickerMarqueeProps) {
   return (
     <div
-      className={`${styles.tickerStack} ${className ?? ""}`}
+      className={`${styles.tickerStack} ${spaceBelow ? styles.spaceBelow : ""} ${className ?? ""}`}
       aria-hidden="true"
     >
       <div className={styles.tickerRow}>

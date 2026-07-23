@@ -16,6 +16,13 @@
   overflow-y: visible;
 }
 
+/* Keep the top overlap but replace the bottom overlap with a gap, so following
+   content (e.g. a paragraph) reads as separate rather than tucked under the
+   last band. */
+.spaceBelow {
+  margin-bottom: clamp(12px, 2vw, 32px);
+}
+
 /* Each row is wider than the viewport and tilted, so its colour band runs off
    both edges. Angles differ slightly per row; upper rows sit in front. */
 .tickerRow {

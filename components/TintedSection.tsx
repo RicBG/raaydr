@@ -3,6 +3,8 @@
 import { useRef } from "react";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
+import LazyMount from "@/components/LazyMount";
+import DotPulse from "@/components/DotPulse";
 import styles from "./TintedSection.module.css";
 
 /**
@@ -19,9 +21,20 @@ type TintedSectionProps = {
   body: string;
   /** The page's audience colour (hex or CSS colour). */
   color: string;
+  /** Render a dark pulsing dot-field background (RAAYDR+) with white text
+   *  instead of the soft tint. `color` drives the pulse colour. */
+  dotPulse?: boolean;
+  /** An extra bold line rendered after the body (inside the box for RAAYDR+). */
+  boldNote?: string;
 };
 
-export default function TintedSection({ heading, body, color }: TintedSectionProps) {
+export default function TintedSection({
+  heading,
+  body,
+  color,
+  dotPulse,
+  boldNote,
+}: TintedSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useReveal(sectionRef);
@@ -29,21 +42,49 @@ export default function TintedSection({ heading, body, color }: TintedSectionPro
 
   return (
     <section
-      className={styles.section}
+      className={`${styles.section} ${dotPulse ? styles.dark : ""}`}
       style={{ "--tint": color } as React.CSSProperties}
     >
+      {dotPulse && (
+        <div className={styles.dotBg} aria-hidden="true">
+          <LazyMount style={{ position: "absolute", inset: 0 }}>
+            <DotPulse
+              pattern="breathe"
+              followPointer={false}
+              backgroundColor="#05060A"
+              dotColor="#FFFFFF"
+              pulseColor="#FFFFFF"
+              spacing={8}
+              dotSize={1}
+              speed={0.2}
+              ringGap={400}
+              pulseWidth={0.2}
+              swell={3}
+              push={20}
+              jitter={0.15}
+            />
+          </LazyMount>
+        </div>
+      )}
       <div className={`container ${styles.inner}`} ref={sectionRef}>
-        {heading && (
-          <h2 ref={headingRef} className={`display-statement ${styles.heading}`}>
-            {heading}
-          </h2>
-        )}
-        <p
-          className={heading ? styles.body : styles.note}
-          data-reveal
-        >
-          {body}
-        </p>
+        <div className={dotPulse ? styles.box : styles.content}>
+          {heading && (
+            <h2
+              ref={headingRef}
+              className={`display-statement ${styles.heading}`}
+            >
+              {heading}
+            </h2>
+          )}
+          <p className={heading ? styles.body : styles.note} data-reveal>
+            {body}
+          </p>
+          {boldNote && (
+            <p className={styles.boldNote} data-reveal>
+              {boldNote}
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );

@@ -14,6 +14,7 @@ import PageSpectraNoise, {
 } from "@/components/PageSpectraNoise";
 import HeroCallout from "@/components/HeroCallout";
 import TintedSection from "@/components/TintedSection";
+import TickerMarquee from "@/components/TickerMarquee";
 import FaqAccordion from "@/components/FaqAccordion";
 import type { FaqItem } from "@/lib/faqData";
 import WaitlistForm, { type ROLES } from "@/components/WaitlistForm";
@@ -60,7 +61,15 @@ type AudiencePageProps = {
   /** Lighter tinted add-ons (a softly tinted band, no WebGL) rendered in order
    *  after the Hero Callout and before the calculator — "coming soon" lines and
    *  secondary sections. Omitted when absent. */
-  tintSections?: { heading?: string; body: string }[];
+  tintSections?: {
+    heading?: string;
+    body: string;
+    dotPulse?: boolean;
+    boldNote?: string;
+  }[];
+  /** Optional ticker marquee rendered just above the tinted sections, in place
+   *  of the first section's heading. Same tilted bands as the homepage. */
+  tintMarquee?: { top: string; middle: string; bottom: string };
   /** FAQ items for this page's closing FAQ section, rendered after everything
    *  else and before the site footer. Omitted when absent. */
   faqItems?: FaqItem[];
@@ -80,6 +89,7 @@ export default function AudiencePage({
   closing,
   heroCallout,
   tintSections,
+  tintMarquee,
   waitlistSource,
   faqItems,
 }: AudiencePageProps) {
@@ -217,6 +227,17 @@ export default function AudiencePage({
         </div>
       </section>
 
+      {calculator && (
+        <section className={styles.calcSection} id="calculator">
+          <div className="container">
+            <p className="eyebrow" data-reveal>
+              Do the maths
+            </p>
+            {calculator}
+          </div>
+        </section>
+      )}
+
       {showCallout && halo && heroCallout && (
         <HeroCallout
           ref={calloutRef}
@@ -228,25 +249,25 @@ export default function AudiencePage({
         />
       )}
 
+      {tintMarquee && (
+        <TickerMarquee
+          top={tintMarquee.top}
+          middle={tintMarquee.middle}
+          bottom={tintMarquee.bottom}
+          spaceBelow
+        />
+      )}
+
       {tintSections?.map((section) => (
         <TintedSection
           key={section.heading ?? section.body}
           heading={section.heading}
           body={section.body}
           color={color}
+          dotPulse={section.dotPulse}
+          boldNote={section.boldNote}
         />
       ))}
-
-      {calculator && (
-        <section className={styles.calcSection} id="calculator">
-          <div className="container">
-            <p className="eyebrow" data-reveal>
-              Do the maths
-            </p>
-            {calculator}
-          </div>
-        </section>
-      )}
 
       {closing && (
         <section className={styles.closing}>
