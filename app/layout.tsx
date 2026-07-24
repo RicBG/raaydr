@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import LenisProvider from "@/components/LenisProvider";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -63,6 +64,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </LenisProvider>
+        <SpeedInsights />
         {/* Google tag (gtag.js) — GA4 analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-EG7SLYLLMY"
