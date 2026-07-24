@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import LenisProvider from "@/components/LenisProvider";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -62,6 +63,19 @@ export default function RootLayout({
           {children}
           <Footer />
         </LenisProvider>
+        {/* Google tag (gtag.js) — GA4 analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-EG7SLYLLMY"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EG7SLYLLMY');
+          `}
+        </Script>
       </body>
     </html>
   );
