@@ -507,17 +507,21 @@ export default function HowItWorksWheel({
   const renderIcon = (svc: HowItWorksStep, i: number) => (
     <div key={i} style={sStyles[i]}>
       {svc.image ? (
-        // next/image serves an AVIF/WebP downscaled to icon size — the
-        // 1536×2048 source PNG is optimised server-side, so the client
-        // downloads tens of KB instead of ~4.5 MB. Explicit intrinsic
-        // dimensions (not `fill`) keep the requested size deterministic: the
+        // next/image serves an AVIF/WebP downscaled to icon size from an
+        // already-lightweight WebP source, so the client downloads tens of KB.
+        // Explicit intrinsic dimensions (not `fill`) plus a `sizes` matching
+        // the icon layer's real footprint — ~42vw (max 220px) on mobile, 20vw
+        // on desktop — keep the requested variant small and deterministic; the
         // wheel's transform-scaled containers otherwise made `sizes` fall back
-        // to the full-width source.
+        // to the full-width source. Lazy: this sits well below the fold, so
+        // only genuine above-the-fold imagery gets priority.
         <Image
           src={svc.image}
           alt={svc.imageAlt || svc.titleLine1}
           width={600}
           height={800}
+          sizes="(max-width: 810px) 220px, 20vw"
+          loading="lazy"
           className={floatOn ? 'raaydr-icon-float' : undefined}
           style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 34px 42px rgba(21,21,26,0.20))' }}
         />

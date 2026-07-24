@@ -16,7 +16,7 @@ const steps: HowItWorksStep[] = [
     description:
       "Put your music up the same way you would anywhere else. What comes with it is different: proper analytics on who is listening and where, direct contact with the people rating you, and credit splits set at upload so your producers and songwriters get paid without chasing anyone. No label. No gatekeeper. No waiting for a playlist editor to notice you.",
     accentColor: "#EBA83A", // --amber
-    image: "/how-it-works/raaydr-howitworks-01-artists-submit-amber.png",
+    image: "/how-it-works/raaydr-howitworks-01-artists-submit-amber.webp",
     imageAlt: "A vinyl record lit in warm amber light.",
   },
   {
@@ -25,7 +25,7 @@ const steps: HowItWorksStep[] = [
     description:
       "Tastemakers are here because of what they have already done. DJs, A&Rs, producers, journalists, playlisters, people with a track record of hearing things first. They back tracks early, build collections and put their name to artists before the rest of the platform catches up. RAAYDR is curated by people with a reputation on the line. There is no algorithm deciding what deserves your attention.",
     accentColor: "#E585AC", // --orchid
-    image: "/how-it-works/raaydr-howitworks-02-tastemakers-pick-orchid.png",
+    image: "/how-it-works/raaydr-howitworks-02-tastemakers-pick-orchid.webp",
     imageAlt: "A stack of records glowing in orchid pink.",
   },
   {
@@ -34,7 +34,7 @@ const steps: HowItWorksStep[] = [
     description:
       "Rate, save, share and comment. That is what moves a track up the page, and nobody buys their way there. It also earns you points, and points unlock things worth having from the artists you back: early releases, exclusives, access. Back an artist properly and they will know exactly who you are.",
     accentColor: "#3BCE7B", // --green
-    image: "/how-it-works/raaydr-howitworks-03-community-rates-green.png",
+    image: "/how-it-works/raaydr-howitworks-03-community-rates-green.webp",
     imageAlt: "Concentric green light ripples radiating outward.",
   },
   {
@@ -43,7 +43,7 @@ const steps: HowItWorksStep[] = [
     description:
       "Artists, producers, songwriters and tastemakers get paid every month. Splits are set when the track goes up, so artist money reaches the people who made the record without anyone having to chase it. You can see where yours came from.",
     accentColor: "#8C7AE6", // --violet
-    image: "/how-it-works/raaydr-howitworks-04-everyone-earns-spectrum.png",
+    image: "/how-it-works/raaydr-howitworks-04-everyone-earns-spectrum.webp",
     imageAlt: "A vinyl record shimmering across the full colour spectrum.",
   },
 ];
