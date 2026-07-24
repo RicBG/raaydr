@@ -112,7 +112,9 @@ export default function WaitlistForm({
       </div>
 
       <fieldset className={styles.roles}>
-        <legend className={styles.fieldLabel}>I&rsquo;m joining as</legend>
+        <legend className={styles.fieldLabel} style={{ fontWeight: 700 }}>
+          I&rsquo;m joining as
+        </legend>
         <div
           className={styles.segments}
           role="radiogroup"

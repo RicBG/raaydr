@@ -239,10 +239,12 @@ void main() {
         u_swirlIterations: gl.getUniformLocation(program, "u_swirlIterations"),
       };
 
+      // Cap DPR: a full-viewport background gradient gains nothing visible from
+      // full retina but pays its whole fill-rate cost.
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
       const resize = () => {
         const width = container.clientWidth;
         const height = container.clientHeight;
-        const pixelRatio = window.devicePixelRatio || 1;
         canvas.width = width * pixelRatio;
         canvas.height = height * pixelRatio;
         canvas.style.width = `${width}px`;
@@ -256,22 +258,25 @@ void main() {
 
       startTimeRef.current = performance.now();
 
+      // Colours are constant for this effect run (params is an effect dep), so
+      // convert and upload them once here rather than allocating three arrays
+      // and re-uploading every frame.
+      const c1 = hexToRgba(params.color1);
+      const c2 = hexToRgba(params.color2);
+      const c3 = hexToRgba(params.color3);
+      gl.uniform4f(uniforms.u_color1, c1[0], c1[1], c1[2], c1[3]);
+      gl.uniform4f(uniforms.u_color2, c2[0], c2[1], c2[2], c2[3]);
+      gl.uniform4f(uniforms.u_color3, c3[0], c3[1], c3[2], c3[3]);
+
       const animate = (time: number) => {
         const elapsed = (time - startTimeRef.current) / 1000;
         const speed = (params.speed / 100) * 5;
 
         gl.uniform1f(uniforms.u_time, elapsed * speed + params.offset * 0.01);
         gl.uniform2f(uniforms.u_resolution, canvas.width, canvas.height);
-        gl.uniform1f(uniforms.u_pixelRatio, window.devicePixelRatio || 1);
+        gl.uniform1f(uniforms.u_pixelRatio, pixelRatio);
         gl.uniform1f(uniforms.u_scale, params.scale);
         gl.uniform1f(uniforms.u_rotation, (params.rotation * Math.PI) / 180);
-
-        const c1 = hexToRgba(params.color1);
-        const c2 = hexToRgba(params.color2);
-        const c3 = hexToRgba(params.color3);
-        gl.uniform4f(uniforms.u_color1, c1[0], c1[1], c1[2], c1[3]);
-        gl.uniform4f(uniforms.u_color2, c2[0], c2[1], c2[2], c2[3]);
-        gl.uniform4f(uniforms.u_color3, c3[0], c3[1], c3[2], c3[3]);
 
         gl.uniform1f(uniforms.u_proportion, params.proportion / 100);
         gl.uniform1f(uniforms.u_softness, params.softness / 100);

@@ -258,7 +258,10 @@ export default function RaaydrOrb({
 
     function resize() {
       if (!container) return;
-      const dpr = window.devicePixelRatio || 1;
+      // Cap DPR at 2: the orb is the largest above-the-fold surface and renders
+      // continuously through the whole hero scroll; uncapped retina (2–3×) is
+      // pure fill-rate cost with no visible gain on a soft gradient.
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const width = container.clientWidth;
       const height = container.clientHeight;
       renderer.setSize(width * dpr, height * dpr);
@@ -319,7 +322,9 @@ export default function RaaydrOrb({
         currentRot += dt * hoverRotationSpeed;
       }
       program.uniforms.rot.value = currentRot;
-      program.uniforms.backgroundColor.value = hexToVec3(backgroundColor);
+      // backgroundColor is constant for the life of this effect (a change to
+      // the prop re-runs the effect and re-inits the uniform), so it's set once
+      // at init — no per-frame hexToVec3 allocation here.
 
       renderer.render({ scene: mesh });
 

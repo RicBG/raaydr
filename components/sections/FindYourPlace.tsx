@@ -64,13 +64,18 @@ export default function FindYourPlace() {
     const figures = Array.from(
       stage.querySelectorAll<HTMLElement>("[data-figure]")
     );
+    const halos = Array.from(
+      stage.querySelectorAll<HTMLElement>("[data-halo]")
+    );
     const mm = gsap.matchMedia();
 
     mm.add(
       "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
       () => {
         gsap.set(moments.slice(1), { autoAlpha: 0 });
-        gsap.set(stage, { "--halo-color": audiences[0].color });
+        // Only the first audience's halo is lit; the rest fade in on cue.
+        gsap.set(halos[0], { autoAlpha: 1 });
+        gsap.set(halos.slice(1), { autoAlpha: 0 });
 
         const tl = gsap.timeline({
           scrollTrigger: {
@@ -100,13 +105,16 @@ export default function FindYourPlace() {
             { autoAlpha: 0, y: -44, duration: 0.18, ease: "none" },
             at
           )
+            // Cross-fade the outgoing halo colour to the incoming one — opacity
+            // only, so the blurred glow is never re-rasterized mid-scroll.
             .to(
-              stage,
-              {
-                "--halo-color": audiences[i + 1].color,
-                duration: 0.45,
-                ease: "none",
-              },
+              halos[i],
+              { autoAlpha: 0, duration: 0.45, ease: "none" },
+              at
+            )
+            .to(
+              halos[i + 1],
+              { autoAlpha: 1, duration: 0.45, ease: "none" },
               at
             )
             .fromTo(
@@ -163,11 +171,26 @@ export default function FindYourPlace() {
       </div>
 
       <div ref={stageRef} className={styles.stage}>
-        {/* One persistent halo on desktop; the timeline tweens its colour
-            between audiences while the silhouettes crossfade through it. */}
-        <div className={styles.sharedHalo}>
-          <Ring mode="halo" />
-        </div>
+        {/* One halo layer per audience, each a fixed colour. On desktop the
+            timeline cross-fades their OPACITY (compositor-only) as the
+            silhouettes swap — rather than tweening a single --halo-color
+            through a blurred radial gradient, which re-rasterizes the blur on
+            every scroll frame. The blur on each layer rasterizes once. */}
+        {audiences.map((audience, i) => (
+          <div
+            key={audience.name}
+            data-halo
+            className={styles.sharedHalo}
+            style={
+              {
+                "--halo-color": audience.color,
+                opacity: i === 0 ? 1 : 0,
+              } as React.CSSProperties
+            }
+          >
+            <Ring mode="halo" />
+          </div>
+        ))}
 
         <div className={`container ${styles.stageInner}`}>
           {audiences.map((audience) => (

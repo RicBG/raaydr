@@ -1,10 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, type ReactNode } from "react";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
-import { AnimatedGradient } from "@/components/ui/animated-gradient";
 import styles from "./GradientSpan.module.css";
+
+// Code-split the WebGL gradient out of the initial bundle (below the fold).
+const AnimatedGradient = dynamic(
+  () => import("@/components/ui/animated-gradient").then((m) => m.AnimatedGradient),
+  { ssr: false }
+);
 
 /**
  * Wraps the "People are the algorithm" banner section in a continuous

@@ -1,7 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { forwardRef, useRef } from "react";
-import { AnimatedGradient } from "@/components/ui/animated-gradient";
+
+// Code-split the WebGL gradient out of the initial bundle.
+const AnimatedGradient = dynamic(
+  () => import("@/components/ui/animated-gradient").then((m) => m.AnimatedGradient),
+  { ssr: false }
+);
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";

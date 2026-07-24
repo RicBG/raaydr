@@ -17,7 +17,11 @@ export default function LenisProvider({ children }: { children: ReactNode }) {
       return; // native scrolling; ScrollTrigger works against it directly
     }
 
-    const lenis = new Lenis({ lerp: 0.1 });
+    // Tuned for a weighty-but-responsive "luxury" glide: a slightly lower lerp
+    // than the 0.1 default adds glide/inertia without feeling laggy, and a
+    // wheelMultiplier just under 1 makes each notch land more deliberately.
+    // (syncTouch left off so mobile keeps native touch, which reads smoother.)
+    const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
 
     lenis.on("scroll", () => {
       scrollBus.velocity = lenis.velocity;

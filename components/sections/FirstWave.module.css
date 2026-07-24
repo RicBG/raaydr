@@ -15,14 +15,20 @@
   overflow: hidden;
 }
 
-/* The static render used on mobile and under reduced motion — same field,
-   cover-fit so it fills the section at any ratio. */
+/* The static field used on mobile and under reduced motion — a still,
+   multi-blob gradient in the same teal / cyan / purple / violet palette as the
+   live shader, on a soft teal base echoing its background colour, so it reads
+   as the same motif frozen. */
 .fieldStill {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  background-color: color-mix(in srgb, #00FFD4 22%, var(--canvas));
+  background-image:
+    radial-gradient(40% 44% at 26% 26%, color-mix(in srgb, #6F00DE 58%, transparent), transparent 70%),
+    radial-gradient(42% 46% at 76% 30%, color-mix(in srgb, #63F2EB 60%, transparent), transparent 70%),
+    radial-gradient(46% 48% at 72% 76%, color-mix(in srgb, #8B5CF6 52%, transparent), transparent 72%),
+    radial-gradient(44% 46% at 24% 78%, color-mix(in srgb, #009E6F 50%, transparent), transparent 72%),
+    radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, #6366F1 42%, transparent), transparent 75%);
 }
 
 /* Legibility scrim: a soft Canvas wash concentrated behind the centred copy,
@@ -83,5 +89,6 @@
 
 .micro {
   font-size: 13px;
+  font-weight: 700;
   color: color-mix(in srgb, var(--ink) 60%, transparent);
 }

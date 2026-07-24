@@ -1,14 +1,30 @@
 .section {
-  --section-bg: var(--canvas);
   --section-ink: var(--ink);
 
   position: relative;
-  background: var(--section-bg);
+  /* Base is the light Canvas; "backing out of the venue" fades a deep overlay
+     OUT (opacity, compositor-only) rather than repainting background-color
+     every scroll frame. */
+  background: var(--canvas);
   color: var(--section-ink);
   padding: clamp(120px, 16vw, 240px) 0;
 }
 
+/* Deep wash faded out over the scroll. Opacity 0 by default so reduced motion
+   and no-JS rest at the intended light Canvas. */
+.darkLayer {
+  position: absolute;
+  inset: 0;
+  background: var(--deep);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  will-change: opacity;
+}
+
 .inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 32px;
 }

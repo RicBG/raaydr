@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { SILHOUETTES } from "@/lib/silhouettes";
 import { shuffle } from "@/lib/shuffle";
@@ -9,9 +10,13 @@ import { useReveal } from "@/lib/useReveal";
 import Ring from "@/components/Ring";
 import Silhouette from "@/components/Silhouette";
 import HaloVideo from "@/components/HaloVideo";
-import PageSpectraNoise, {
-  type RaaydrAudience,
-} from "@/components/PageSpectraNoise";
+import { type RaaydrAudience } from "@/components/PageSpectraNoise";
+// Code-split the OGL background out of the initial bundle (the type import
+// above is erased at build time, so it doesn't pull the module in).
+const PageSpectraNoise = dynamic(
+  () => import("@/components/PageSpectraNoise"),
+  { ssr: false }
+);
 import HeroCallout from "@/components/HeroCallout";
 import TintedSection, {
   type TintedParagraph,
@@ -329,7 +334,7 @@ export default function AudiencePage({
       <section className={styles.join} id="join">
         <div className="container">
           <div ref={joinRef} className={styles.joinInner}>
-            <p className="eyebrow" data-reveal>
+            <p className="eyebrow" data-reveal style={{ fontWeight: 700 }}>
               Join the first wave
             </p>
             <div data-reveal>

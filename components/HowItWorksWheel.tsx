@@ -14,6 +14,7 @@
 // content and brand tokens before being handed off.
 
 import { useEffect, useRef, useState, useCallback, CSSProperties, Fragment } from 'react';
+import Image from 'next/image';
 
 export interface HowItWorksStep {
   eyebrow?: string;
@@ -506,9 +507,17 @@ export default function HowItWorksWheel({
   const renderIcon = (svc: HowItWorksStep, i: number) => (
     <div key={i} style={sStyles[i]}>
       {svc.image ? (
-        <img
+        // next/image serves an AVIF/WebP downscaled to icon size — the
+        // 1536×2048 source PNG is optimised server-side, so the client
+        // downloads tens of KB instead of ~4.5 MB. Explicit intrinsic
+        // dimensions (not `fill`) keep the requested size deterministic: the
+        // wheel's transform-scaled containers otherwise made `sizes` fall back
+        // to the full-width source.
+        <Image
           src={svc.image}
           alt={svc.imageAlt || svc.titleLine1}
+          width={600}
+          height={800}
           className={floatOn ? 'raaydr-icon-float' : undefined}
           style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 34px 42px rgba(21,21,26,0.20))' }}
         />

@@ -1,13 +1,34 @@
 .section {
-  /* Deep by default: correct for reduced motion and no-JS. The scroll
-     timeline re-seeds these from canvas and tweens them down. */
-  --section-bg: var(--deep);
+  /* Deep-ink by default: correct for reduced motion and no-JS. */
   --section-ink: var(--deep-ink);
 
   position: relative;
-  background: var(--section-bg);
+  /* The section base is the light Canvas; the "walk into the venue" darkening
+     is a deep overlay whose OPACITY is scrubbed (compositor-only) rather than
+     animating this background-color every frame across the full pinned
+     viewport (a per-frame repaint). */
+  background: var(--canvas);
   color: var(--section-ink);
   padding: clamp(96px, 12vw, 170px) 0;
+}
+
+/* Deep wash faded in over the scroll. Opacity 1 by default so reduced motion
+   and no-JS still render the intended deep section. */
+.darkLayer {
+  position: absolute;
+  inset: 0;
+  background: var(--deep);
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+  will-change: opacity;
+}
+
+/* Content sits above the deep overlay (which is a positioned z-index:0 layer,
+   so static content would otherwise paint beneath it). */
+.content {
+  position: relative;
+  z-index: 1;
 }
 
 .header {

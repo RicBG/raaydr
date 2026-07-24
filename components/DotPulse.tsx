@@ -12,6 +12,7 @@
 // are parsed to RGBA for the shader.
 
 import { useEffect, useRef, type CSSProperties } from "react";
+import { createRenderGate } from "@/lib/renderGate";
 
 type Pattern = "ripple" | "wave" | "spiral" | "breathe";
 
@@ -381,25 +382,29 @@ export default function DotPulse({
     }
 
     let raf = 0;
-    let running = true;
-    let visible = true;
+    let running = false;
     const start = performance.now();
 
     const loop = () => {
-      if (!running) return;
-      if (visible) {
-        origin.x += (target.x - origin.x) * 0.06;
-        origin.y += (target.y - origin.y) * 0.06;
-        draw((performance.now() - start) / 1000);
-      }
+      origin.x += (target.x - origin.x) * 0.06;
+      origin.y += (target.y - origin.y) * 0.06;
+      draw((performance.now() - start) / 1000);
       raf = window.requestAnimationFrame(loop);
     };
-    raf = window.requestAnimationFrame(loop);
-
-    const observer = new IntersectionObserver((entries) => {
-      visible = entries[0]?.isIntersecting ?? true;
-    });
-    observer.observe(container);
+    const startRaf = () => {
+      if (running) return;
+      running = true;
+      raf = window.requestAnimationFrame(loop);
+    };
+    const stopRaf = () => {
+      if (!running) return;
+      running = false;
+      window.cancelAnimationFrame(raf);
+    };
+    // Gate the loop to on-screen AND tab-visible, fully stopping the rAF when
+    // off-screen. (The previous bespoke IntersectionObserver only skipped the
+    // draw and kept the loop spinning at 60fps, including on background tabs.)
+    const releaseGate = createRenderGate(container, startRaf, stopRaf);
 
     const resizeObserver = new ResizeObserver(() => rebuild());
     resizeObserver.observe(container);
@@ -421,9 +426,8 @@ export default function DotPulse({
     }
 
     return () => {
-      running = false;
-      window.cancelAnimationFrame(raf);
-      observer.disconnect();
+      releaseGate();
+      stopRaf();
       resizeObserver.disconnect();
       container.removeEventListener("pointermove", onPointerMove);
       container.removeEventListener("pointerleave", onPointerLeave);

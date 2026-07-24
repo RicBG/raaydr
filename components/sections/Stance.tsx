@@ -9,31 +9,34 @@ import styles from "./Stance.module.css";
 
 export default function Stance() {
   const sectionRef = useRef<HTMLElement>(null);
+  const darkRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const statementRef = useRef<HTMLHeadingElement>(null);
   useMaskedReveal(statementRef);
   useReveal(innerRef);
 
-  // Back out of the venue: deep lifts to canvas as the statement arrives.
+  // Back out of the venue: the deep overlay fades OUT (opacity, compositor-
+  // only) and the text ink lifts from light to dark as the statement arrives —
+  // no per-frame background repaint.
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    const dark = darkRef.current;
+    if (!section || !dark) return;
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.fromTo(
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 85%",
+          end: "top 35%",
+          scrub: true,
+        },
+      });
+      tl.fromTo(dark, { opacity: 1 }, { opacity: 0, ease: "none" }, 0).fromTo(
         section,
-        { "--section-bg": "#121216", "--section-ink": "#F2F4F7" },
-        {
-          "--section-bg": "#F5F2EC",
-          "--section-ink": "#15151A",
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 85%",
-            end: "top 35%",
-            scrub: true,
-          },
-        }
+        { "--section-ink": "#F2F4F7" },
+        { "--section-ink": "#15151A", ease: "none" },
+        0
       );
     });
     return () => mm.revert();
@@ -45,6 +48,7 @@ export default function Stance() {
       className={styles.section}
       aria-labelledby="stance-heading"
     >
+      <div ref={darkRef} className={styles.darkLayer} aria-hidden="true" />
       <Pulse color="var(--violet)" />
       <div ref={innerRef} className={`container ${styles.inner}`}>
         <h2

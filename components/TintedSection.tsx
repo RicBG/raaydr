@@ -4,7 +4,8 @@ import { useRef } from "react";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
 import LazyMount from "@/components/LazyMount";
-import DotPulse from "@/components/DotPulse";
+import dynamic from "next/dynamic";
+const DotPulse = dynamic(() => import("@/components/DotPulse"), { ssr: false });
 import styles from "./TintedSection.module.css";
 
 /**

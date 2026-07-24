@@ -4,9 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, SplitText } from "@/lib/gsap";
 import { ctaCopy } from "@/lib/siteConfig";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
+import dynamic from "next/dynamic";
 import Ring from "@/components/Ring";
 import LazyMount from "@/components/LazyMount";
-import RaaydrOrb from "@/components/RaaydrOrb";
+
+// Code-split the OGL orb out of the initial bundle — it's client-only (mounted
+// through LazyMount) and its reveal already waits on onFirstFrame, so the
+// async chunk load is absorbed by that gate rather than blocking first paint.
+const RaaydrOrb = dynamic(() => import("@/components/RaaydrOrb"), {
+  ssr: false,
+});
 import styles from "./Hero.module.css";
 
 export default function Hero() {

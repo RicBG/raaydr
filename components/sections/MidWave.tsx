@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import WaitlistForm from "@/components/WaitlistForm";
 import LazyMount from "@/components/LazyMount";
-import DotPulse from "@/components/DotPulse";
+import dynamic from "next/dynamic";
+const DotPulse = dynamic(() => import("@/components/DotPulse"), { ssr: false });
 import styles from "./MidWave.module.css";
 
 // The second of three waitlist captures, placed straight after the How It Works

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useParallax } from "@/lib/useParallax";
 import { useReveal } from "@/lib/useReveal";
@@ -10,13 +10,12 @@ import Glyph from "@/components/Glyph";
 import Calculator from "./Calculator";
 import styles from "./RealNumbers.module.css";
 
-const CANVAS = "#F5F2EC";
 const INK = "#15151A";
-const DEEP = "#121216";
 const DEEP_INK = "#F2F4F7";
 
 export default function RealNumbers() {
   const sectionRef = useRef<HTMLElement>(null);
+  const darkRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const thesisRef = useRef<HTMLParagraphElement>(null);
   const eyebrowRef = useRef<HTMLParagraphElement>(null);
@@ -30,30 +29,35 @@ export default function RealNumbers() {
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    const dark = darkRef.current;
+    if (!section || !dark) return;
     const mm = gsap.matchMedia();
 
-    // Walking into the venue: canvas tweens to deep over 600px of scroll,
-    // scrubbed, while the section holds. No hard cut.
+    // Walking into the venue: the deep overlay fades IN (opacity, compositor-
+    // only) while the text ink tweens from dark to light — instead of
+    // repainting the full pinned viewport's background every scroll frame.
+    const descend = (
+      trigger: ScrollTrigger.Vars
+    ): void => {
+      const tl = gsap.timeline({ scrollTrigger: trigger });
+      tl.fromTo(dark, { opacity: 0 }, { opacity: 1, ease: "none" }, 0).fromTo(
+        section,
+        { "--section-ink": INK },
+        { "--section-ink": DEEP_INK, ease: "none" },
+        0
+      );
+    };
+
     mm.add(
       "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
       () => {
-        gsap.fromTo(
-          section,
-          { "--section-bg": CANVAS, "--section-ink": INK },
-          {
-            "--section-bg": DEEP,
-            "--section-ink": DEEP_INK,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: "+=600",
-              pin: true,
-              scrub: true,
-            },
-          }
-        );
+        descend({
+          trigger: section,
+          start: "top top",
+          end: "+=600",
+          pin: true,
+          scrub: true,
+        });
       }
     );
 
@@ -61,24 +65,15 @@ export default function RealNumbers() {
     mm.add(
       "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
       () => {
-        gsap.fromTo(
-          section,
-          { "--section-bg": CANVAS, "--section-ink": INK },
-          {
-            "--section-bg": DEEP,
-            "--section-ink": DEEP_INK,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 70%",
-              end: "top 15%",
-              scrub: true,
-            },
-          }
-        );
+        descend({
+          trigger: section,
+          start: "top 70%",
+          end: "top 15%",
+          scrub: true,
+        });
       }
     );
-    // Reduced motion: the CSS default (already deep) stands, no tween.
+    // Reduced motion: the CSS default (overlay opacity 1, deep ink) stands.
 
     return () => mm.revert();
   }, []);
@@ -90,8 +85,9 @@ export default function RealNumbers() {
       className={styles.section}
       aria-labelledby="numbers-heading"
     >
+      <div ref={darkRef} className={styles.darkLayer} aria-hidden="true" />
       <Pulse color="var(--green)" />
-      <div className="container">
+      <div className={`container ${styles.content}`}>
         <div className={styles.header}>
           <p ref={eyebrowRef} className="eyebrow">
             // The real numbers
