@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import LenisProvider from "@/components/LenisProvider";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -76,6 +77,7 @@ export default function RootLayout({
             gtag('config', 'G-EG7SLYLLMY');
           `}
         </Script>
+        <Analytics />
       </body>
     </html>
   );
