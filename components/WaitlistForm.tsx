@@ -1,8 +1,14 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
 import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
+import {
+  getMetaBrowserIds,
+  newEventId,
+  trackSignup,
+  trackWaitlistStart,
+} from "@/lib/analytics";
 import styles from "./WaitlistForm.module.css";
 
 // The human-readable labels shown as role pills. The API/database store the
@@ -35,8 +41,18 @@ export default function WaitlistForm({
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
+  const started = useRef(false);
 
   const label = variant === "hero" ? ctaCopy().primary : ctaCopy().closing;
+  const analyticsSource = source ?? "unknown";
+
+  // Fire waitlist_start once, on the visitor's first interaction with the form,
+  // so we can measure started-but-not-completed drop-off.
+  function markStart() {
+    if (started.current) return;
+    started.current = true;
+    trackWaitlistStart(analyticsSource);
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,6 +69,12 @@ export default function WaitlistForm({
       return;
     }
 
+    const slug = ROLE_LABEL_TO_SLUG[role];
+    // Shared id + Meta cookies let the server-side Conversions API "Lead" event
+    // dedupe against, and match better than, the browser Pixel event.
+    const eventId = newEventId();
+    const { fbp, fbc } = getMetaBrowserIds();
+
     setStatus("submitting");
     try {
       const res = await fetch("/api/waitlist", {
@@ -60,8 +82,11 @@ export default function WaitlistForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          role: ROLE_LABEL_TO_SLUG[role],
+          role: slug,
           ...(source ? { source } : {}),
+          eventId,
+          ...(fbp ? { fbp } : {}),
+          ...(fbc ? { fbc } : {}),
         }),
       });
       if (!res.ok) {
@@ -69,6 +94,8 @@ export default function WaitlistForm({
       }
       setStatus("success");
       setMessage("We'll email you when spots open.");
+      // Conversion — fires to GA4 (sign_up) and Meta Pixel (Lead) together.
+      trackSignup({ role: slug, source: analyticsSource, eventId });
     } catch {
       // No technical detail shown — just a plain, retryable error.
       setStatus("error");
@@ -89,6 +116,7 @@ export default function WaitlistForm({
     <form
       className={`${styles.form} ${theme === "dark" ? styles.dark : ""}`}
       onSubmit={onSubmit}
+      onFocusCapture={markStart}
       noValidate
     >
       <div className={styles.row}>

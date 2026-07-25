@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { isWaitlistRoleSlug } from "@/lib/waitlistRoles";
+import { sendMetaLead } from "@/lib/metaCapi";
 
 // Uses env + the service-role Supabase client, so it must run on the Node
 // runtime, never the edge.
@@ -24,7 +25,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
  * Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (server-only, never NEXT_PUBLIC).
  */
 export async function POST(request: Request) {
-  let body: { email?: unknown; role?: unknown; source?: unknown };
+  let body: {
+    email?: unknown;
+    role?: unknown;
+    source?: unknown;
+    eventId?: unknown;
+    fbp?: unknown;
+    fbc?: unknown;
+  };
   try {
     body = await request.json();
   } catch {
@@ -36,6 +44,10 @@ export async function POST(request: Request) {
   const role = typeof body.role === "string" ? body.role.trim() : "";
   const source =
     typeof body.source === "string" ? body.source.trim().slice(0, 64) : "";
+  // Meta Conversions API fields (optional; only used for ad-conversion tracking).
+  const eventId = typeof body.eventId === "string" ? body.eventId : undefined;
+  const fbp = typeof body.fbp === "string" ? body.fbp : undefined;
+  const fbc = typeof body.fbc === "string" ? body.fbc : undefined;
 
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
@@ -84,6 +96,23 @@ export async function POST(request: Request) {
       { status: 502 }
     );
   }
+
+  // Server-side Meta "Lead" conversion. Deduped against the browser Pixel via
+  // eventId. Awaited but never allowed to fail the signup — a CAPI error only
+  // logs. No-op unless META_PIXEL_ID + META_CAPI_ACCESS_TOKEN are set.
+  await sendMetaLead({
+    email,
+    role,
+    source: source || "unknown",
+    eventId,
+    fbp,
+    fbc,
+    clientIp: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+    userAgent: request.headers.get("user-agent") ?? undefined,
+    eventSourceUrl: request.headers.get("referer") ?? undefined,
+  }).catch((err) => {
+    console.error(`[waitlist] Meta CAPI failed: ${(err as Error).message}`);
+  });
 
   return NextResponse.json({ ok: true });
 }

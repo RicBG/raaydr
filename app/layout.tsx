@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import LenisProvider from "@/components/LenisProvider";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import WaitlistCtaTracker from "@/components/WaitlistCtaTracker";
 import "./globals.css";
 
 const description =
@@ -65,6 +66,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </LenisProvider>
+        <WaitlistCtaTracker />
         <SpeedInsights />
         <Analytics />
         {/* Google tag (gtag.js) — GA4 analytics */}
