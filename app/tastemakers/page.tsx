@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import TastemakerCalculator from "@/components/sections/TastemakerCalculator";
 import { faqData } from "@/lib/faqData";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "RAAYDR for Tastemakers: Back music early. Earn for your taste.",
   description:
     "Up to 15% of every subscription is ring fenced for the people who find music first. Be early and right, and the fund pays you for it.",
-};
+  path: "/tastemakers",
+});
 
 export default function TastemakersPage() {
   return (

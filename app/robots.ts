@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const SITE = "https://raaydr.com";
+import { SITE_URL } from "@/lib/site";
 
 // The site has no prior robots policy, so everything stays crawlable
 // (including AI crawlers such as GPTBot, ClaudeBot and PerplexityBot, which
@@ -9,7 +8,7 @@ const SITE = "https://raaydr.com";
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [{ userAgent: "*", allow: "/" }],
-    sitemap: `${SITE}/sitemap.xml`,
-    host: SITE,
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

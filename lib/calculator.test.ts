@@ -7,17 +7,51 @@ import {
   sliderToFans,
   tastemakerMonthly,
   tastemakerPerFan,
+  PRICING_TIERS,
+  PRICING_TIER_DEFAULT,
+  TIER_LABEL,
 } from "./calculator";
-import { PER_FAN, spotifyEquivalentListeners } from "./raaydrRates";
+import { PER_FAN, floorToPence, spotifyEquivalentListeners } from "./raaydrRates";
+
+describe("floorToPence", () => {
+  it("floors to whole pence rather than rounding", () => {
+    expect(floorToPence(3.5665)).toBeCloseTo(3.56, 10);
+    expect(floorToPence(3.569)).toBeCloseTo(3.56, 10);
+    expect(floorToPence(2.4699)).toBeCloseTo(2.46, 10);
+  });
+
+  it("leaves an exact whole-penny amount alone despite float error", () => {
+    // 3.56 * 100 is 355.99999999999994 in binary floating point.
+    expect(floorToPence(3.56)).toBeCloseTo(3.56, 10);
+    expect(floorToPence(0.97)).toBeCloseTo(0.97, 10);
+    expect(floorToPence(0.1 + 0.2)).toBeCloseTo(0.3, 10);
+  });
+});
 
 describe("artistPerFan", () => {
   it("reads the standard per-fan rate by default", () => {
     expect(artistPerFan()).toBeCloseTo(PER_FAN.artist.standard, 10);
-    expect(artistPerFan("standard")).toBeCloseTo(3.57, 10);
+    expect(artistPerFan("standard")).toBeCloseTo(3.56, 10);
   });
 
   it("reads the Day One per-fan rate", () => {
     expect(artistPerFan("dayOne")).toBeCloseTo(2.46, 10);
+  });
+
+  it("never presents £3.57, the rate the locked economics doc forbids", () => {
+    expect(artistPerFan("standard")).toBeLessThan(3.57);
+  });
+});
+
+describe("tier selector options", () => {
+  it("offers both tiers and defaults to standard", () => {
+    expect([...PRICING_TIERS].sort()).toEqual(["dayOne", "standard"]);
+    expect(PRICING_TIER_DEFAULT).toBe("standard");
+  });
+
+  it("builds its labels from the pricing constants", () => {
+    expect(TIER_LABEL.dayOne).toBe("Day Ones · £6.99");
+    expect(TIER_LABEL.standard).toBe("Standard · £9.99");
   });
 });
 
@@ -39,8 +73,19 @@ describe("raaydrMonthly (standard, default 20% attention)", () => {
   const fans = 1000;
   const attention = 0.2;
 
+  // The headline figure the calculator shows on load. Pinned exactly: it is
+  // the number the locked economics doc constrains, and it drifted to £714
+  // once already by rounding the per-fan rate up to £3.57.
+  it("is exactly £712 at 1,000 fans and 20% attention", () => {
+    expect(raaydrMonthly(fans, attention)).toBeCloseTo(712, 10);
+  });
+
+  it("is exactly £492 on the Day One tier at the same inputs", () => {
+    expect(raaydrMonthly(fans, attention, "dayOne")).toBeCloseTo(492, 10);
+  });
+
   it("multiplies fans, attention and the standard per-fan rate", () => {
-    expect(raaydrMonthly(fans, attention)).toBeCloseTo(1000 * 3.57 * 0.2, 6);
+    expect(raaydrMonthly(fans, attention)).toBeCloseTo(1000 * 3.56 * 0.2, 6);
   });
 
   it("never takes a volume argument — the asymmetry is structural", () => {
@@ -50,7 +95,13 @@ describe("raaydrMonthly (standard, default 20% attention)", () => {
 
 describe("spotifyEquivalentListeners", () => {
   it("divides monthly earnings by the per-monthly-listener rate", () => {
-    expect(spotifyEquivalentListeners(714)).toBe(Math.round(714 / 0.012));
+    expect(spotifyEquivalentListeners(712)).toBe(Math.round(712 / 0.012));
+  });
+
+  // The comparison line is recomputed from the corrected figure, so the
+  // default view reads ~59,300 monthly listeners, not the old ~59,500.
+  it("matches the default view's £712 against Spotify", () => {
+    expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2))).toBe(59333);
   });
 });
 

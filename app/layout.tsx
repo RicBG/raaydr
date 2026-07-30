@@ -6,29 +6,19 @@ import LenisProvider from "@/components/LenisProvider";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import WaitlistCtaTracker from "@/components/WaitlistCtaTracker";
+import JsonLd from "@/components/JsonLd";
+import { organizationSchema, pageMetadata, websiteSchema } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const description =
-  "Your money follows the artists you actually listen to. Producers and songwriters get paid automatically. The people who find music first earn for their taste. Traceable, every month.";
-
+// metadataBase belongs here and nowhere else: every page's canonical and
+// og:url is a relative path resolved against it.
 export const metadata: Metadata = {
-  metadataBase: new URL("https://raaydr.com"),
-  title: "RAAYDR: Music streaming is broken. We fixed it. Now everyone wins.",
-  description,
-  openGraph: {
+  metadataBase: new URL(SITE_URL),
+  ...pageMetadata({
     title: "RAAYDR: Music streaming is broken. We fixed it. Now everyone wins.",
-    description,
-    siteName: "RAAYDR",
-    type: "website",
-    url: "https://raaydr.com",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "RAAYDR" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "RAAYDR: Music streaming is broken. We fixed it. Now everyone wins.",
-    description,
-    images: ["/og.png"],
-  },
+    path: "/",
+  }),
 };
 
 export const viewport: Viewport = {
@@ -60,6 +50,10 @@ export default function RootLayout({
         ))}
       </head>
       <body>
+        {/* Site-wide entity markup. Per-page FAQPage blocks are emitted by the
+            FAQ accordion and are untouched by these. */}
+        <JsonLd data={organizationSchema} />
+        <JsonLd data={websiteSchema} />
         <div className="grain-overlay" aria-hidden="true" />
         <LenisProvider>
           <Nav />

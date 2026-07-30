@@ -5,7 +5,8 @@
  * Do not hardcode a rate anywhere else in the codebase.
  *
  * Derivation lives in raaydr-economics-locked.md. All per-fan figures are net of VAT,
- * PRS/MCPS at 16%, Stripe card, Stripe Billing and Stripe Connect.
+ * PRS/MCPS at 16%, Stripe card, Stripe Billing and Stripe Connect, and are floored to
+ * whole pence per §3 of that doc — see floorToPence below.
  */
 
 export const PRICING = {
@@ -26,13 +27,40 @@ export const SPLIT = {
 } as const;
 
 /**
+ * Floor a money amount to whole pence.
+ *
+ * raaydr-economics-locked.md v1.2 §3: a displayed per-cycle figure is the
+ * floored whole-penny amount, never the rounded one. RAAYDR rounds in the
+ * creator's favour or not at all, so a rate that lands between two pence is
+ * presented as the lower of the two — the doc names £3.57 per fan per month
+ * explicitly as a figure nothing may present.
+ *
+ * The epsilon absorbs binary float error: 3.56 * 100 is 355.99999999999994,
+ * which would otherwise floor a whole penny too far.
+ */
+export function floorToPence(amount: number): number {
+  return Math.floor(amount * 100 + 1e-9) / 100;
+}
+
+type PerTierRate = Record<RatesTier, number>;
+
+const flooredPerTier = (rate: PerTierRate): PerTierRate => ({
+  standard: floorToPence(rate.standard),
+  dayOne: floorToPence(rate.dayOne),
+});
+
+/**
  * What one subscriber is worth per month at 100% attention share.
  * Calculators default to the standard tier because it is the steady state.
+ *
+ * Floored at the source, not at the point of display: every calculator
+ * multiplies this rate by a fan count, so a rate carrying a fraction of a
+ * penny would be magnified a thousand times over before anyone saw it.
  */
-export const PER_FAN = {
-  artist: { standard: 3.57, dayOne: 2.46 },
-  tastemaker: { standard: 0.97, dayOne: 0.67 },
-} as const;
+export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
+  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46 }),
+  tastemaker: flooredPerTier({ standard: 0.97, dayOne: 0.67 }),
+};
 
 /**
  * Published tastemaker ring-fence. Both round the true 15% upward.

@@ -47,14 +47,14 @@ The streaming economy asks you to be huge before it pays you anything like a wag
 
 Yes: change what gets counted. Under attention-based payment, your income is not streams multiplied by a tiny rate. It is fans multiplied by their attention.
 
-On RAAYDR, 55% of each fan's subscription flows to artists every month, after tax, publishing royalties and card fees, split by how much of that fan's listening time each artist earned. On the standard £9.99 tier that is up to £3.57 per fan. So the £1,000 calculation becomes:
+On RAAYDR, 55% of each fan's subscription flows to artists every month, after tax, publishing royalties and card fees, split by how much of that fan's listening time each artist earned. On the standard £9.99 tier that is up to £3.56 per fan. So the £1,000 calculation becomes:
 
 | Attention share per fan | Fans needed for £1,000/month |
 | --- | --- |
-| 100% (you are all they play) | ~280 fans |
-| 60% | ~467 fans |
-| 40% | ~700 fans |
-| 25% | ~1,120 fans |
+| 100% (you are all they play) | ~281 fans |
+| 60% | ~469 fans |
+| 40% | ~703 fans |
+| 25% | ~1,124 fans |
 
 Seven hundred people who genuinely rate you, versus fifty thousand people who vaguely encountered you. Those are different jobs. One of them is achievable for a working independent artist; you can sanity check the numbers yourself with the calculator at [raaydr.com](https://raaydr.com).
 

@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
-import { milestone, raaydrMonthly, sliderToFans } from "@/lib/calculator";
+import {
+  milestone,
+  raaydrMonthly,
+  sliderToFans,
+  PRICING_TIERS,
+  PRICING_TIER_DEFAULT,
+  TIER_LABEL,
+  type PricingTier,
+} from "@/lib/calculator";
 import {
   ATTENTION_DEFAULT,
   ATTENTION_PRESETS,
@@ -34,21 +42,23 @@ type CalculatorProps = {
 };
 
 export default function Calculator({ disclaimer = false }: CalculatorProps) {
+  const id = useId();
   const reduced = usePrefersReducedMotion();
 
   const [fanPos, setFanPos] = useState(0.5); // log position → 1,000 fans
   const [attention, setAttention] = useState(ATTENTION_DEFAULT); // percent
+  const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
 
   const fans = sliderToFans(fanPos);
   const values = useMemo(() => {
-    const raaydrM = raaydrMonthly(fans, attention / 100);
+    const raaydrM = raaydrMonthly(fans, attention / 100, tier);
     return {
       raaydrM,
       raaydrY: raaydrM * 12,
       spotifyM: spotifyMonthlyEarnings(fans),
       spotifyListeners: spotifyEquivalentListeners(raaydrM),
     };
-  }, [fans, attention]);
+  }, [fans, attention, tier]);
 
   const cap = milestone(values.raaydrY);
 
@@ -94,6 +104,40 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   return (
     <div className={styles.calculator}>
       <div className={styles.controls}>
+        <div className={styles.control}>
+          <div className={styles.controlHead}>
+            <p className={styles.groupLabel} id={`${id}-tier-label`}>
+              What your fans are paying
+            </p>
+          </div>
+          <div
+            className={styles.tierToggle}
+            role="radiogroup"
+            aria-labelledby={`${id}-tier-label`}
+          >
+            {PRICING_TIERS.map((t) => (
+              <label
+                key={t}
+                className={`${styles.tierSegment} ${tier === t ? styles.tierSegmentOn : ""}`}
+              >
+                <input
+                  type="radio"
+                  name={`${id}-tier`}
+                  value={t}
+                  checked={tier === t}
+                  onChange={() => setTier(t)}
+                />
+                {TIER_LABEL[t]}
+              </label>
+            ))}
+          </div>
+          <p className={styles.helper}>
+            Day Ones lock the lower price forever, so a Day One fan sends less
+            your way than a standard subscriber does. Standard is the steady
+            state, which is why it&rsquo;s the default here.
+          </p>
+        </div>
+
         <div className={styles.control}>
           <div className={styles.controlHead}>
             <label htmlFor="calc-fans">People who genuinely rate you</label>

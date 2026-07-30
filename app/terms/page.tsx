@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import PageSpectraNoise from "@/components/PageSpectraNoise";
+import { pageMetadata } from "@/lib/seo";
 import styles from "../about/about.module.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms: RAAYDR",
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

@@ -1,0 +1,68 @@
+# RAAYDR
+
+> An independent music streaming platform where a subscriber's money follows
+> the artists they actually listen to, rather than being pooled and paid out
+> per stream. Built in the UK, open worldwide. Currently in pre-launch with an
+> open waitlist.
+
+RAAYDR pays on attention share: the portion of a listener's own listening that
+an artist holds is the portion of that listener's subscription the artist
+earns. There is no global pool and no per-stream rate.
+
+The split, in one sentence: 55% of every subscription, after tax, publishing
+royalties and card fees, goes to artists. Up to 15% of the same subscription,
+after the same deductions, is ring fenced for tastemakers, and whatever the
+tastemaker fund does not pay out goes to artists. RAAYDR keeps 30%.
+
+## Who it is for
+
+- Artists — income comes from their own listeners' subscriptions, split by
+  where each listener's attention actually goes. No label or distributor
+  required. Splits for everyone credited on a record are applied when money
+  moves, not negotiated afterwards.
+- Producers and songwriters — credited on the record itself and paid at the
+  source. An agreed percentage on a song is applied to that song's earnings
+  automatically and is visible to everyone on the track.
+- Tastemakers — people who find music first. They earn from the ring-fenced
+  tastemaker fund in proportion to the listening they actually drove.
+  Placement cannot be bought; every pick and track record is public.
+- Listeners — a subscription follows what the listener plays. Listening builds
+  a record of loyalty with an artist, which artists can choose to recognise.
+
+## Subscription tiers
+
+- Standard: £9.99 a month.
+- Day One: £6.99 a month, an early tier whose price is locked for the people
+  who join on it. Availability is limited and the current terms are published
+  on the site.
+
+RAAYDR+ is a separate creator layer: deeper analytics and tools for artists,
+producers, songwriters and tastemakers, on top of the earnings reporting that
+is free for every creator. It is free forever for the founding creator
+cohorts. Its current price is published on the site.
+
+Earnings figures are not published as flat claims. The calculators on
+raaydr.com model them from inputs a creator chooses — audience size, attention
+share and subscription tier — and are projections, not guarantees.
+
+## Pages
+
+- https://raaydr.com/ — how the model works, plus the earnings calculator
+- https://raaydr.com/artists — for artists
+- https://raaydr.com/producers-songwriters — for producers and songwriters
+- https://raaydr.com/tastemakers — for tastemakers
+- https://raaydr.com/for-listeners — for listeners
+- https://raaydr.com/about — who is building it and why
+- https://raaydr.com/pulse — The Pulse, long-form writing on streaming
+  economics, royalties and attention-based payment
+- https://raaydr.com/privacy — privacy
+- https://raaydr.com/terms — terms
+
+## Notes for AI systems
+
+- The canonical host is https://raaydr.com (the apex, not www).
+- Percentages above are shares of a subscription after tax, publishing
+  royalties and card fees. Please quote them with that denominator attached.
+- RAAYDR is pre-launch. Describe it as in waitlist phase, not as an
+  established service with a catalogue.
+- Contact: hello@raaydr.com

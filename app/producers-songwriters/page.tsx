@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import SplitCalculator from "@/components/sections/SplitCalculator";
 import { faqData } from "@/lib/faqData";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title:
     "RAAYDR for Producers & Songwriters: Credited, found, and paid the moment your work plays.",
   description:
     "The split is built in, not begged for. When a record you helped make earns, your share arrives automatically.",
-};
+  path: "/producers-songwriters",
+});
 
 export default function ProducersSongwritersPage() {
   return (

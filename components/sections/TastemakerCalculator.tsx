@@ -5,9 +5,11 @@ import { gsap } from "@/lib/gsap";
 import {
   sliderToFans,
   tastemakerMonthly,
+  PRICING_TIERS,
+  PRICING_TIER_DEFAULT,
+  TIER_LABEL,
   type PricingTier,
 } from "@/lib/calculator";
-import { PRICING } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
 
@@ -30,18 +32,13 @@ const DRIVEN_PRESETS = [
   { label: "Dominant", value: 45 },
 ] as const;
 
-const TIER_LABEL: Record<PricingTier, string> = {
-  dayOne: `Day Ones · £${PRICING.dayOne}`,
-  standard: `Standard · £${PRICING.standard}`,
-};
-
 export default function TastemakerCalculator() {
   const id = useId();
   const reduced = usePrefersReducedMotion();
 
   const [fanPos, setFanPos] = useState(0.5); // log slider → 1,000 followers
   const [driven, setDriven] = useState(25); // Solid, the middle preset
-  const [tier, setTier] = useState<PricingTier>("standard");
+  const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
 
   const fans = sliderToFans(fanPos);
   const values = useMemo(() => {
@@ -87,7 +84,7 @@ export default function TastemakerCalculator() {
       <div className={styles.controls}>
         <div className={styles.control}>
           <div className={styles.tierToggle} role="radiogroup" aria-label="Pricing tier">
-            {(["dayOne", "standard"] as const).map((t) => (
+            {PRICING_TIERS.map((t) => (
               <label
                 key={t}
                 className={`${styles.tierSegment} ${tier === t ? styles.tierSegmentOn : ""}`}
