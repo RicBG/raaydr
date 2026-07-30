@@ -72,8 +72,8 @@ const flooredPerTier = (rate: PerTierRate): PerTierRate => ({
  * penny would be magnified a thousand times over before anyone saw it.
  */
 export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
-  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46, dayOneNext: 2.82 }),
-  tastemaker: flooredPerTier({ standard: 0.97, dayOne: 0.67, dayOneNext: 0.76 }),
+  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46, dayOneNext: 2.83 }),
+  tastemaker: flooredPerTier({ standard: 0.97, dayOne: 0.67, dayOneNext: 0.77 }),
 };
 
 /**

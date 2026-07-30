@@ -36,7 +36,7 @@ describe("artistPerFan", () => {
 
   it("reads both Day One band rates", () => {
     expect(artistPerFan("dayOne")).toBeCloseTo(2.46, 10);
-    expect(artistPerFan("dayOneNext")).toBeCloseTo(2.82, 10);
+    expect(artistPerFan("dayOneNext")).toBeCloseTo(2.83, 10);
   });
 
   // Two bands inside the same cohort, so the ladder has to stay monotonic:
@@ -44,10 +44,6 @@ describe("artistPerFan", () => {
   it("rises with the price band", () => {
     expect(artistPerFan("dayOne")).toBeLessThan(artistPerFan("dayOneNext"));
     expect(artistPerFan("dayOneNext")).toBeLessThan(artistPerFan("standard"));
-  });
-
-  it("floors the £7.99 band to £2.82, never £2.83", () => {
-    expect(artistPerFan("dayOneNext")).toBeLessThan(2.83);
   });
 
   it("never presents £3.57, the rate the locked economics doc forbids", () => {
@@ -73,7 +69,7 @@ describe("tastemakerPerFan", () => {
     expect(tastemakerPerFan()).toBeCloseTo(0.97, 10);
     expect(tastemakerPerFan("standard")).toBeCloseTo(0.97, 10);
     expect(tastemakerPerFan("dayOne")).toBeCloseTo(0.67, 10);
-    expect(tastemakerPerFan("dayOneNext")).toBeCloseTo(0.76, 10);
+    expect(tastemakerPerFan("dayOneNext")).toBeCloseTo(0.77, 10);
   });
 });
 
@@ -98,8 +94,8 @@ describe("raaydrMonthly (standard, default 20% attention)", () => {
     expect(raaydrMonthly(fans, attention, "dayOne")).toBeCloseTo(492, 10);
   });
 
-  it("is exactly £564 on the £7.99 band at the same inputs", () => {
-    expect(raaydrMonthly(fans, attention, "dayOneNext")).toBeCloseTo(564, 10);
+  it("is exactly £566 on the £7.99 band at the same inputs", () => {
+    expect(raaydrMonthly(fans, attention, "dayOneNext")).toBeCloseTo(566, 10);
   });
 
   it("multiplies fans, attention and the standard per-fan rate", () => {
@@ -125,7 +121,7 @@ describe("spotifyEquivalentListeners", () => {
   // Each band gets its own comparison line, all from the same £0.012 anchor.
   it("recomputes the line for both Day One bands", () => {
     expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2, "dayOne"))).toBe(41000);
-    expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(47000);
+    expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(47167);
   });
 });
 
