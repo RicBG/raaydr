@@ -9,15 +9,28 @@
  * whole pence per §3 of that doc — see floorToPence below.
  */
 
+/**
+ * The Day One cohort is 1,000 listeners, and it holds two price bands: the
+ * earliest pay least. Both bands are locked forever. `dayOne` is the first
+ * band, `dayOneNext` the second — anyone past the 1,000th listener is standard.
+ */
 export const PRICING = {
+  /** Band one: the first 250 listeners of the Day One cohort. */
   dayOne: 6.99,
+  /** Band two: the next 750, still Day Ones, still locked forever. */
+  dayOneNext: 7.99,
   standard: 9.99,
   plus: 3.99,
-  /** Day One tier closes after this many listeners. Price locked forever for those who make it. */
+  /** The Day One cohort closes after this many listeners, across both bands. */
   dayOneCap: 1000,
+  /** How many of that 1,000 get the first band. The rest get the second. */
+  dayOneFirstBand: 250,
   /** RAAYDR+ is included for Day Ones and for the founding creator cohorts. */
   plusIncludedForDayOnes: true,
 } as const;
+
+/** Listeners in the second Day One band: whatever the cohort has left. */
+export const DAY_ONE_NEXT_BAND = PRICING.dayOneCap - PRICING.dayOneFirstBand;
 
 /** Share of distributable revenue. Distributable is net of VAT, publishing and payment costs. */
 export const SPLIT = {
@@ -47,6 +60,7 @@ type PerTierRate = Record<RatesTier, number>;
 const flooredPerTier = (rate: PerTierRate): PerTierRate => ({
   standard: floorToPence(rate.standard),
   dayOne: floorToPence(rate.dayOne),
+  dayOneNext: floorToPence(rate.dayOneNext),
 });
 
 /**
@@ -58,13 +72,16 @@ const flooredPerTier = (rate: PerTierRate): PerTierRate => ({
  * penny would be magnified a thousand times over before anyone saw it.
  */
 export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
-  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46 }),
-  tastemaker: flooredPerTier({ standard: 0.97, dayOne: 0.67 }),
+  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46, dayOneNext: 2.82 }),
+  tastemaker: flooredPerTier({ standard: 0.97, dayOne: 0.67, dayOneNext: 0.76 }),
 };
 
 /**
  * Published tastemaker ring-fence. Both round the true 15% upward.
  * RAAYDR rounds in the creator's favour, never its own.
+ *
+ * The £7.99 band has no entry: this is a published figure, not a derived one,
+ * so it is set when it is ruled, not inferred from the other two.
  */
 export const TASTEMAKER_RINGFENCE = {
   standard: 0.99,
@@ -104,7 +121,7 @@ export const PAYOUT = {
   currency: "GBP",
 } as const;
 
-export type RatesTier = "standard" | "dayOne";
+export type RatesTier = "standard" | "dayOne" | "dayOneNext";
 
 /** Artist monthly earnings from a given fan count and attention share. */
 export function artistEarnings(fans: number, attentionPct: number): number {

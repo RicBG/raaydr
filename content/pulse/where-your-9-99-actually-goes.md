@@ -3,7 +3,7 @@ title: "Where Your £9.99 Actually Goes on RAAYDR"
 slug: "where-your-9-99-actually-goes"
 description: "A full breakdown of a £9.99 RAAYDR subscription: what comes off the top for VAT, publishing and card fees, and how the rest splits between artists, tastemakers and the platform."
 datePublished: "2026-07-22"
-dateUpdated: "2026-07-22"
+dateUpdated: "2026-07-30"
 author: "Ric, Founder of RAAYDR"
 accent: "green"
 readingTime: "6 min read"
@@ -80,7 +80,7 @@ Publishing royalties are owed to songwriters and composers by law, collected thr
 No. Up to 15% is ring fenced for tastemakers, and whatever they do not earn goes to the artists. It never comes back to us.
 
 **Is any of this different on the Day One price?**
-The percentages are the same. Day Ones pay £6.99 a month locked forever, so the pound amounts are smaller, but 55% still goes to artists, up to 15% to tastemakers and 30% to RAAYDR, each after the same costs.
+The percentages are the same. Day Ones pay £6.99 or £7.99 a month locked forever, depending on which band of the first 1,000 they joined in, so the pound amounts are smaller, but 55% still goes to artists, up to 15% to tastemakers and 30% to RAAYDR, each after the same costs.
 
 ---
 

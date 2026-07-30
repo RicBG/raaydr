@@ -32,9 +32,10 @@ tastemaker fund does not pay out goes to artists. RAAYDR keeps 30%.
 ## Subscription tiers
 
 - Standard: £9.99 a month.
-- Day One: £6.99 a month, an early tier whose price is locked for the people
-  who join on it. Availability is limited and the current terms are published
-  on the site.
+- Day One: the first 1,000 listeners, in two price bands, where the earliest
+  pay least. The first 250 pay £6.99 a month and the next 750 pay £7.99, both
+  locked for the people who join on them. Availability is limited and the
+  current terms are published on the site.
 
 RAAYDR+ is a separate creator layer: deeper analytics and tools for artists,
 producers, songwriters and tastemakers, on top of the earnings reporting that

@@ -39,7 +39,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "What's the Day One offer?",
       answer:
-        "The first 1,000 listeners, the Day Ones, get RAAYDR at £6.99 a month, locked forever, instead of the standard £9.99. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.",
+        "The first 1,000 listeners are the Day Ones. The first 250 get RAAYDR at £6.99 a month locked forever, the next 750 at £7.99, against the standard £9.99. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.",
     },
     {
       question: "Where is RAAYDR available?",
@@ -182,7 +182,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "What's the Day One offer?",
       answer:
-        "The first 1,000 listeners, the Day Ones, get RAAYDR at £6.99 a month, locked in forever. After that it's £9.99.",
+        "The first 1,000 listeners are the Day Ones. The first 250 to join lock £6.99 a month for as long as they stay subscribed. The next 750 lock £7.99. Everyone after that pays £9.99. There is no lock in beyond keeping your price.",
     },
     {
       question:

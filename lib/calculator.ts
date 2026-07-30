@@ -1,4 +1,9 @@
-import { PER_FAN, PRICING, type RatesTier } from "./raaydrRates";
+import {
+  DAY_ONE_NEXT_BAND,
+  PER_FAN,
+  PRICING,
+  type RatesTier,
+} from "./raaydrRates";
 
 /**
  * Calculator UI helpers. All money rates live in raaydr-rates.ts
@@ -7,21 +12,27 @@ import { PER_FAN, PRICING, type RatesTier } from "./raaydrRates";
  */
 
 /** Pricing tier used across the calculators. Steady state is standard. */
-export type PricingTier = RatesTier; // "standard" | "dayOne"
+export type PricingTier = RatesTier; // "standard" | "dayOne" | "dayOneNext"
 
 /**
- * Tier selector options, shared so every calculator offers the same two in the
- * same order with the same labels. Prices come from PRICING; no calculator
- * spells a rate or a price out for itself.
+ * Tier selector options, shared so every calculator offers the same three in
+ * the same order with the same labels. Cheapest first, because that is the
+ * order listeners join in. Prices and band sizes come from PRICING; no
+ * calculator spells a rate, a price or a cohort size out for itself.
  */
-export const PRICING_TIERS: readonly PricingTier[] = ["dayOne", "standard"];
+export const PRICING_TIERS: readonly PricingTier[] = [
+  "dayOne",
+  "dayOneNext",
+  "standard",
+];
 
 /** Default tier for every calculator: standard is the steady state. */
 export const PRICING_TIER_DEFAULT: PricingTier = "standard";
 
 export const TIER_LABEL: Record<PricingTier, string> = {
-  dayOne: `Day Ones · £${PRICING.dayOne}`,
-  standard: `Standard · £${PRICING.standard}`,
+  dayOne: `£${PRICING.dayOne} · first ${PRICING.dayOneFirstBand}`,
+  dayOneNext: `£${PRICING.dayOneNext} · next ${DAY_ONE_NEXT_BAND}`,
+  standard: `£${PRICING.standard} · standard`,
 };
 
 /** What one fan is worth to an artist per month at 100% attention share. */

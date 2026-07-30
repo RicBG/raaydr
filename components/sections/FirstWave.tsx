@@ -20,7 +20,7 @@ const copy = {
   waitlist: {
     eyebrow: "Join the first wave",
     headline: `Be one of the first ${siteConfig.pricing.dayOneCap.toLocaleString("en-GB")}.`,
-    body: `Day Ones pay £${siteConfig.pricing.dayOne} a month. Locked in forever. When RAAYDR opens to everyone, it goes to £${siteConfig.pricing.standard}. You were early. On RAAYDR, that counts.`,
+    body: `The first ${siteConfig.pricing.dayOneFirstBand} Day Ones pay £${siteConfig.pricing.dayOne} a month. The next ${siteConfig.pricing.dayOneNextBand} pay £${siteConfig.pricing.dayOneNext}. Both locked in forever. When RAAYDR opens to everyone, it goes to £${siteConfig.pricing.standard}. You were early. On RAAYDR, that counts.`,
     micro:
       "No payment required to join the waitlist. We'll let you know when Day One spots open.",
   },

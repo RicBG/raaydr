@@ -1,19 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PER_FAN, PRICING, SPLIT, type RatesTier } from "@/lib/raaydrRates";
+import {
+  PRICING_TIERS,
+  PRICING_TIER_DEFAULT,
+  TIER_LABEL,
+  type PricingTier,
+} from "@/lib/calculator";
+import { PER_FAN, PRICING, SPLIT } from "@/lib/raaydrRates";
 import styles from "./WhereYourMoneyGoes.module.css";
 
 // Where a listener's subscription goes. Percentages only, no pound figures.
 // Each segment carries the palette colour of whoever it pays: artists amber,
 // RAAYDR its own green, tastemakers orchid, and the deductions coral.
-const TIER_LABEL: Record<RatesTier, string> = {
-  dayOne: `Day Ones · £${PRICING.dayOne}`,
-  standard: `Standard · £${PRICING.standard}`,
-};
+// The tier list, its order and its labels are shared with the calculators.
 
 export default function WhereYourMoneyGoes() {
-  const [tier, setTier] = useState<RatesTier>("standard");
+  const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
 
   const segments = useMemo(() => {
     const price = PRICING[tier];
@@ -57,7 +60,7 @@ export default function WhereYourMoneyGoes() {
   return (
     <div className={styles.wrap}>
       <div className={styles.tierToggle} role="radiogroup" aria-label="Your tier">
-        {(["dayOne", "standard"] as const).map((t) => (
+        {PRICING_TIERS.map((t) => (
           <label
             key={t}
             className={`${styles.tierSegment} ${tier === t ? styles.tierSegmentOn : ""}`}

@@ -103,10 +103,11 @@ export default function AboutContent() {
               automatically from splits built into every record.
             </p>
             <p data-reveal>
-              We&rsquo;re launching in waves. The first 1,000 Day Ones
-              lock in £6.99 forever and back the first cohort of independent
-              artists on the platform. After that, membership opens at £9.99.
-              Early counts here.
+              We&rsquo;re launching in waves. The first 1,000 Day Ones back the
+              first cohort of independent artists on the platform, and the
+              earliest in pay least: £6.99 forever for the first 250, £7.99 for
+              the next 750. After that, membership opens at £9.99. Early counts
+              here.
             </p>
           </div>
 

@@ -132,7 +132,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
             ))}
           </div>
           <p className={styles.helper}>
-            Day Ones lock the lower price forever, so a Day One fan sends less
+            Day Ones lock a lower price forever, so a Day One fan sends less
             your way than a standard subscriber does. Standard is the steady
             state, which is why it&rsquo;s the default here.
           </p>

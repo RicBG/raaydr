@@ -3,7 +3,7 @@ title: "What Is Attention-Based Streaming Payment? User-Centric Royalties Explai
 slug: "what-is-attention-based-streaming-payment"
 description: "Attention-based payment divides each listener's subscription among the artists they actually played, in proportion to listening time. Explained."
 datePublished: "2026-04-21"
-dateUpdated: "2026-04-21"
+dateUpdated: "2026-07-30"
 author: "Ric, Founder of RAAYDR"
 accent: "violet"
 readingTime: "5 min read"
@@ -36,7 +36,7 @@ That last finding matters, and it is why implementation details decide everythin
 
 ## How does RAAYDR's attention-based model work?
 
-RAAYDR is built user-centric from the ground up, with the amounts published rather than buried. A Day One pays £6.99 a month; the standard price is £9.99. After tax, publishing royalties and card fees, 55% of every subscription flows to artists based on that fan's listening share, up to 15% is ring fenced for tastemakers, and RAAYDR keeps 30%. That is up to £3.56 per fan a month to artists on the standard tier, up to £2.46 on the Day One tier.
+RAAYDR is built user-centric from the ground up, with the amounts published rather than buried. The first 250 Day Ones pay £6.99 a month and the next 750 pay £7.99; the standard price is £9.99. After tax, publishing royalties and card fees, 55% of every subscription flows to artists based on that fan's listening share, up to 15% is ring fenced for tastemakers, and RAAYDR keeps 30%. That is up to £3.56 per fan a month to artists on the standard tier, up to £2.82 on the £7.99 band and up to £2.46 on the £6.99 band.
 
 A worked example. A fan gives you 40% of their listening this month. On the standard tier you earn 40% of their per-fan share, about £1.42 from that one fan this month. Five hundred fans at that attention share is roughly £712 a month, about £8,544 a year. The same fan behaviour on a pro-rata platform is worth roughly £48 a month.
 

@@ -34,8 +34,20 @@ describe("artistPerFan", () => {
     expect(artistPerFan("standard")).toBeCloseTo(3.56, 10);
   });
 
-  it("reads the Day One per-fan rate", () => {
+  it("reads both Day One band rates", () => {
     expect(artistPerFan("dayOne")).toBeCloseTo(2.46, 10);
+    expect(artistPerFan("dayOneNext")).toBeCloseTo(2.82, 10);
+  });
+
+  // Two bands inside the same cohort, so the ladder has to stay monotonic:
+  // the earliest band can never be worth more to an artist than a later one.
+  it("rises with the price band", () => {
+    expect(artistPerFan("dayOne")).toBeLessThan(artistPerFan("dayOneNext"));
+    expect(artistPerFan("dayOneNext")).toBeLessThan(artistPerFan("standard"));
+  });
+
+  it("floors the £7.99 band to £2.82, never £2.83", () => {
+    expect(artistPerFan("dayOneNext")).toBeLessThan(2.83);
   });
 
   it("never presents £3.57, the rate the locked economics doc forbids", () => {
@@ -44,14 +56,15 @@ describe("artistPerFan", () => {
 });
 
 describe("tier selector options", () => {
-  it("offers both tiers and defaults to standard", () => {
-    expect([...PRICING_TIERS].sort()).toEqual(["dayOne", "standard"]);
+  it("offers all three bands, cheapest first, and defaults to standard", () => {
+    expect([...PRICING_TIERS]).toEqual(["dayOne", "dayOneNext", "standard"]);
     expect(PRICING_TIER_DEFAULT).toBe("standard");
   });
 
   it("builds its labels from the pricing constants", () => {
-    expect(TIER_LABEL.dayOne).toBe("Day Ones · £6.99");
-    expect(TIER_LABEL.standard).toBe("Standard · £9.99");
+    expect(TIER_LABEL.dayOne).toBe("£6.99 · first 250");
+    expect(TIER_LABEL.dayOneNext).toBe("£7.99 · next 750");
+    expect(TIER_LABEL.standard).toBe("£9.99 · standard");
   });
 });
 
@@ -60,6 +73,7 @@ describe("tastemakerPerFan", () => {
     expect(tastemakerPerFan()).toBeCloseTo(0.97, 10);
     expect(tastemakerPerFan("standard")).toBeCloseTo(0.97, 10);
     expect(tastemakerPerFan("dayOne")).toBeCloseTo(0.67, 10);
+    expect(tastemakerPerFan("dayOneNext")).toBeCloseTo(0.76, 10);
   });
 });
 
@@ -80,8 +94,12 @@ describe("raaydrMonthly (standard, default 20% attention)", () => {
     expect(raaydrMonthly(fans, attention)).toBeCloseTo(712, 10);
   });
 
-  it("is exactly £492 on the Day One tier at the same inputs", () => {
+  it("is exactly £492 on the £6.99 band at the same inputs", () => {
     expect(raaydrMonthly(fans, attention, "dayOne")).toBeCloseTo(492, 10);
+  });
+
+  it("is exactly £564 on the £7.99 band at the same inputs", () => {
+    expect(raaydrMonthly(fans, attention, "dayOneNext")).toBeCloseTo(564, 10);
   });
 
   it("multiplies fans, attention and the standard per-fan rate", () => {
@@ -102,6 +120,12 @@ describe("spotifyEquivalentListeners", () => {
   // default view reads ~59,300 monthly listeners, not the old ~59,500.
   it("matches the default view's £712 against Spotify", () => {
     expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2))).toBe(59333);
+  });
+
+  // Each band gets its own comparison line, all from the same £0.012 anchor.
+  it("recomputes the line for both Day One bands", () => {
+    expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2, "dayOne"))).toBe(41000);
+    expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(47000);
   });
 });
 

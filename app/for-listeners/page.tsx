@@ -30,7 +30,7 @@ export default function ForListenersPage() {
         },
         {
           title: "Loyalty can unlock things.",
-          body: "Artists can choose to open things up to the listeners who show up most. Some will, some won't, and that is theirs to decide. What is certain is that being early counts: the first 1,000 listeners, the Day Ones, lock £6.99 a month, forever.",
+          body: "Artists can choose to open things up to the listeners who show up most. Some will, some won't, and that is theirs to decide. What is certain is that being early counts, and being earliest counts most. The first 250 Day Ones lock £6.99 a month forever, the next 750 lock £7.99.",
         },
       ]}
       heroCallout={{
