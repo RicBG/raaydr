@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/pulse";
+import { SITE_URL } from "@/lib/site";
 import PostCard from "@/components/pulse/PostCard";
 import JsonLd from "@/components/pulse/JsonLd";
 import styles from "./pulse.module.css";
 
-const SITE = "https://raaydr.com";
 const INDEX_DESCRIPTION =
   "The RAAYDR blog. Numbers, models and honest answers about the music economy, streaming royalties and attention-based payment.";
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Pulse · The RAAYDR Blog",
     description: INDEX_DESCRIPTION,
-    url: `${SITE}/pulse`,
+    url: `${SITE_URL}/pulse`,
     siteName: "RAAYDR",
     type: "website",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "RAAYDR" }],
@@ -36,20 +36,20 @@ export default function PulseIndex() {
     "@type": "Blog",
     name: "The Pulse",
     description: INDEX_DESCRIPTION,
-    url: `${SITE}/pulse`,
+    url: `${SITE_URL}/pulse`,
     publisher: {
       "@type": "Organization",
       name: "RAAYDR",
       logo: {
         "@type": "ImageObject",
-        url: `${SITE}/logo/raaydr-wordmark-ink.svg`,
+        url: `${SITE_URL}/logo/raaydr-wordmark-ink.svg`,
       },
     },
     blogPost: posts.map((post) => ({
       "@type": "BlogPosting",
       headline: post.title,
       description: post.description,
-      url: `${SITE}/pulse/${post.slug}`,
+      url: `${SITE_URL}/pulse/${post.slug}`,
       datePublished: post.datePublished,
       dateModified: post.dateUpdated,
       author: { "@type": "Person", name: "Ric" },

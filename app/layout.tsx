@@ -6,13 +6,14 @@ import LenisProvider from "@/components/LenisProvider";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import WaitlistCtaTracker from "@/components/WaitlistCtaTracker";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const description =
   "Your money follows the artists you actually listen to. Producers and songwriters get paid automatically. The people who find music first earn for their taste. Traceable, every month.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://raaydr.com"),
+  metadataBase: new URL(SITE_URL),
   title: "RAAYDR: Music streaming is broken. We fixed it. Now everyone wins.",
   description,
   openGraph: {

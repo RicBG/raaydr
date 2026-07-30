@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate, getAllPosts, getAllSlugs, getPost } from "@/lib/pulse";
+import { SITE_URL } from "@/lib/site";
 import PostBody from "@/components/pulse/PostBody";
 import Faq from "@/components/pulse/Faq";
 import PulseCta from "@/components/pulse/PulseCta";
@@ -11,7 +12,6 @@ import JsonLd from "@/components/pulse/JsonLd";
 import article from "@/components/pulse/Article.module.css";
 import styles from "./post.module.css";
 
-const SITE = "https://raaydr.com";
 
 // Only the six known posts are generated; anything else 404s.
 export const dynamicParams = false;
@@ -29,7 +29,7 @@ export async function generateMetadata({
   const post = getPost(slug);
   if (!post) return {};
 
-  const url = `${SITE}/pulse/${post.slug}`;
+  const url = `${SITE_URL}/pulse/${post.slug}`;
   const title = `${post.title} · The Pulse · RAAYDR`;
 
   return {
@@ -65,7 +65,7 @@ export default async function PulsePost({
   const post = getPost(slug);
   if (!post) notFound();
 
-  const url = `${SITE}/pulse/${post.slug}`;
+  const url = `${SITE_URL}/pulse/${post.slug}`;
   const more = getAllPosts()
     .filter((p) => p.slug !== post.slug)
     .slice(0, 3);
@@ -87,11 +87,11 @@ export default async function PulsePost({
       name: "RAAYDR",
       logo: {
         "@type": "ImageObject",
-        url: `${SITE}/logo/raaydr-wordmark-ink.svg`,
+        url: `${SITE_URL}/logo/raaydr-wordmark-ink.svg`,
       },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    image: `${SITE}${post.heroImage}`,
+    image: `${SITE_URL}${post.heroImage}`,
     url,
   };
 
