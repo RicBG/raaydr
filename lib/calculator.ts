@@ -1,4 +1,4 @@
-import { PER_FAN, type RatesTier } from "./raaydrRates";
+import { PER_FAN, PRICING, type RatesTier } from "./raaydrRates";
 
 /**
  * Calculator UI helpers. All money rates live in raaydr-rates.ts
@@ -8,6 +8,21 @@ import { PER_FAN, type RatesTier } from "./raaydrRates";
 
 /** Pricing tier used across the calculators. Steady state is standard. */
 export type PricingTier = RatesTier; // "standard" | "dayOne"
+
+/**
+ * Tier selector options, shared so every calculator offers the same two in the
+ * same order with the same labels. Prices come from PRICING; no calculator
+ * spells a rate or a price out for itself.
+ */
+export const PRICING_TIERS: readonly PricingTier[] = ["dayOne", "standard"];
+
+/** Default tier for every calculator: standard is the steady state. */
+export const PRICING_TIER_DEFAULT: PricingTier = "standard";
+
+export const TIER_LABEL: Record<PricingTier, string> = {
+  dayOne: `Day Ones · £${PRICING.dayOne}`,
+  standard: `Standard · £${PRICING.standard}`,
+};
 
 /** What one fan is worth to an artist per month at 100% attention share. */
 export function artistPerFan(tier: PricingTier = "standard"): number {

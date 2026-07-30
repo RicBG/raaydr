@@ -7,6 +7,9 @@ import {
   sliderToFans,
   tastemakerMonthly,
   tastemakerPerFan,
+  PRICING_TIERS,
+  PRICING_TIER_DEFAULT,
+  TIER_LABEL,
 } from "./calculator";
 import { PER_FAN, floorToPence, spotifyEquivalentListeners } from "./raaydrRates";
 
@@ -37,6 +40,18 @@ describe("artistPerFan", () => {
 
   it("never presents £3.57, the rate the locked economics doc forbids", () => {
     expect(artistPerFan("standard")).toBeLessThan(3.57);
+  });
+});
+
+describe("tier selector options", () => {
+  it("offers both tiers and defaults to standard", () => {
+    expect([...PRICING_TIERS].sort()).toEqual(["dayOne", "standard"]);
+    expect(PRICING_TIER_DEFAULT).toBe("standard");
+  });
+
+  it("builds its labels from the pricing constants", () => {
+    expect(TIER_LABEL.dayOne).toBe("Day Ones · £6.99");
+    expect(TIER_LABEL.standard).toBe("Standard · £9.99");
   });
 });
 
