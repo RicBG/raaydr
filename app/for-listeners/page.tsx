@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import WhereYourMoneyGoes from "@/components/sections/WhereYourMoneyGoes";
 import { faqData } from "@/lib/faqData";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "RAAYDR for Listeners: Your money follows your ears.",
   description:
     "Every month you pay for music. On RAAYDR, your money follows what you actually play, not what an algorithm pushed at you.",
-};
+  path: "/for-listeners",
+});
 
 export default function ForListenersPage() {
   return (

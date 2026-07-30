@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import Calculator from "@/components/sections/Calculator";
 import { faqData } from "@/lib/faqData";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "RAAYDR for Artists: Get paid for the people who actually listen.",
   description:
     "On RAAYDR your income comes from your fans' subscriptions, not a global pool. Automatic splits for everyone who made the record.",
-};
+  path: "/artists",
+});
 
 export default function ArtistsPage() {
   return (

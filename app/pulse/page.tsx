@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/pulse";
+import { pageMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import PostCard from "@/components/pulse/PostCard";
 import JsonLd from "@/components/pulse/JsonLd";
@@ -8,25 +9,11 @@ import styles from "./pulse.module.css";
 const INDEX_DESCRIPTION =
   "The RAAYDR blog. Numbers, models and honest answers about the music economy, streaming royalties and attention-based payment.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "The Pulse · The RAAYDR Blog",
   description: INDEX_DESCRIPTION,
-  alternates: { canonical: "/pulse" },
-  openGraph: {
-    title: "The Pulse · The RAAYDR Blog",
-    description: INDEX_DESCRIPTION,
-    url: `${SITE_URL}/pulse`,
-    siteName: "RAAYDR",
-    type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "RAAYDR" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "The Pulse · The RAAYDR Blog",
-    description: INDEX_DESCRIPTION,
-    images: ["/og.png"],
-  },
-};
+  path: "/pulse",
+});
 
 export default function PulseIndex() {
   const posts = getAllPosts();
