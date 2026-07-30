@@ -3,7 +3,7 @@ import { getAllPosts } from "@/lib/pulse";
 import { pageMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import PostCard from "@/components/pulse/PostCard";
-import JsonLd from "@/components/pulse/JsonLd";
+import JsonLd from "@/components/JsonLd";
 import styles from "./pulse.module.css";
 
 const INDEX_DESCRIPTION =

@@ -6,7 +6,8 @@ import LenisProvider from "@/components/LenisProvider";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import WaitlistCtaTracker from "@/components/WaitlistCtaTracker";
-import { pageMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { organizationSchema, pageMetadata, websiteSchema } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -49,6 +50,10 @@ export default function RootLayout({
         ))}
       </head>
       <body>
+        {/* Site-wide entity markup. Per-page FAQPage blocks are emitted by the
+            FAQ accordion and are untouched by these. */}
+        <JsonLd data={organizationSchema} />
+        <JsonLd data={websiteSchema} />
         <div className="grain-overlay" aria-hidden="true" />
         <LenisProvider>
           <Nav />

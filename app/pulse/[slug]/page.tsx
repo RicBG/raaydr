@@ -8,7 +8,7 @@ import PostBody from "@/components/pulse/PostBody";
 import Faq from "@/components/pulse/Faq";
 import PulseCta from "@/components/pulse/PulseCta";
 import PostCard from "@/components/pulse/PostCard";
-import JsonLd from "@/components/pulse/JsonLd";
+import JsonLd from "@/components/JsonLd";
 import article from "@/components/pulse/Article.module.css";
 import styles from "./post.module.css";
 
