@@ -52,7 +52,7 @@ The tastemaker share is a ceiling, not a fixed pot. A tastemaker earns from it i
 
 The pool model is the reason streaming pays so little. Every subscription in the country goes into one bucket, and the bucket is divided by every play in the country. Your most devoted fan and a bot farm draw from the same water. Your fan's £9.99 does not follow their listening. It is averaged across everyone, and the average is dominated by whoever has the most plays, which is almost never you.
 
-Per fan breaks that. Your fan's money is theirs to direct, and it follows their attention to the artists they actually play. The practical difference works out at roughly a hundred times per person, because you are no longer sharing your own fan's subscription with the entire platform.
+Per fan breaks that. Your fan's money is theirs to direct, and it follows their attention to the artists they actually play. {{canonical.claim}} That is {{canonical.denominator}} The comparison holds the fan constant: the same person, listening the same amount, on both platforms. What changes is whether their money reaches you or is averaged across a platform they have nothing to do with.
 
 ## What this means if you are an artist
 

@@ -1,5 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import {
+  artistEarnings,
+  spotifyEngagedFanEarnings,
+  CANONICAL,
+  SPOTIFY,
+} from "./raaydrRates";
 
 // The Pulse (RAAYDR blog) content loader. Reads content/pulse/*.md at build
 // time, parses the frontmatter and a small, controlled subset of Markdown
@@ -42,6 +48,66 @@ export interface Post extends PostMeta {
 }
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "pulse");
+
+/**
+ * Figures the posts are not allowed to spell out for themselves.
+ *
+ * Prose drifts. A pound figure typed into a post is a copy of a rate, and
+ * copies go stale silently: the £700 that sat in the alternatives post was the
+ * calculator's £712 from an earlier rate pass, and nothing caught it for two
+ * releases. Anything here is substituted from lib/raaydrRates.ts at build
+ * time, so a rate change rewrites the posts instead of stranding them.
+ *
+ * This covers the recurring cross-post figures, not every number in the blog.
+ * Post-specific working (per-platform estimates, stream-count tables) stays
+ * inline where it is written and argued.
+ */
+/**
+ * The worked example the posts return to. Editorial, not a rate: it is the
+ * audience shape the argument is made about. Both platform figures are
+ * computed from it, so the two sides of the comparison can never drift apart.
+ */
+const SCENARIO_FANS = 500;
+const SCENARIO_ATTENTION = 40;
+
+const CONTENT_TOKENS: Record<string, string> = {
+  "canonical.claim": CANONICAL.claim,
+  "canonical.denominator": CANONICAL.denominator,
+  "canonical.multiple": `${CANONICAL.multiple}x`,
+  "canonical.artistPerFan": money(CANONICAL.artistPerFan),
+  "canonical.spotifyPerFan": money(CANONICAL.spotifyPerFan),
+  "spotify.subscriptionPrice": money(SPOTIFY.subscriptionPrice),
+  // The worked scenario the posts share: 500 genuine fans at a 40% share.
+  "scenario.fans": "500",
+  "scenario.attention": "40%",
+  "scenario.raaydrMonthly": money(artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION)),
+  "scenario.spotifyMonthly": money(
+    spotifyEngagedFanEarnings(SCENARIO_FANS, SCENARIO_ATTENTION)
+  ),
+};
+
+/** Pounds, with the pence dropped when there are none. */
+function money(amount: number): string {
+  return `£${amount.toFixed(2).replace(/\.00$/, "")}`;
+}
+
+/**
+ * Replace {{token}} with its figure. An unknown token throws rather than
+ * rendering braces to a reader: a typo in a post should fail the build, not
+ * ship.
+ */
+function substituteTokens(raw: string, slug: string): string {
+  return raw.replace(/\{\{([\w.]+)\}\}/g, (_match, name: string) => {
+    const value = CONTENT_TOKENS[name];
+    if (value === undefined) {
+      throw new Error(
+        `Unknown content token {{${name}}} in content/pulse/${slug}.md. ` +
+          `Known tokens: ${Object.keys(CONTENT_TOKENS).join(", ")}`
+      );
+    }
+    return value;
+  });
+}
 
 // The launch cohort all share one publish date, so a pure date sort is a tie.
 // This is the intended editorial order (cornerstone per-stream piece first),
@@ -219,7 +285,10 @@ function structure(blocks: Block[]): { blocks: Block[]; faq: FaqItem[]; note?: s
 }
 
 function readPost(slug: string): Post {
-  const raw = fs.readFileSync(path.join(CONTENT_DIR, `${slug}.md`), "utf8");
+  const raw = substituteTokens(
+    fs.readFileSync(path.join(CONTENT_DIR, `${slug}.md`), "utf8"),
+    slug
+  );
   const { meta, body } = parseFrontmatter(raw);
   const { blocks, faq, note } = structure(parseBlocks(body));
   return {

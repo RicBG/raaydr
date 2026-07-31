@@ -3,7 +3,11 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { sliderToFans } from "@/lib/calculator";
-import { ATTENTION_DEFAULT, PER_FAN } from "@/lib/raaydrRates";
+import {
+  ATTENTION_DEFAULT,
+  MODELLED_SHARE_NOTE,
+  PER_FAN,
+} from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
 
@@ -124,6 +128,11 @@ export default function SplitCalculator({
             onChange={(e) => setFanPos(Number(e.target.value))}
             className={styles.slider}
           />
+          <p className={styles.helper}>
+            This assumes each of those people gives the song{" "}
+            {ATTENTION_DEFAULT}% of their listening, the Committed setting on
+            the artist calculator. {MODELLED_SHARE_NOTE.attention}
+          </p>
         </div>
 
         <div className={styles.control}>

@@ -14,6 +14,7 @@ import {
 import {
   ATTENTION_DEFAULT,
   ATTENTION_PRESETS,
+  MODELLED_SHARE_NOTE,
   spotifyEquivalentListeners,
   spotifyMonthlyEarnings,
 } from "@/lib/raaydrRates";
@@ -205,7 +206,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           <p className={styles.helper}>
             Attention share is your slice of each fan&rsquo;s total listening.
             40% means you are close to half of everything that person plays. It
-            happens. It is not the average.
+            happens. It is not the average. {MODELLED_SHARE_NOTE.attention}
           </p>
         </div>
       </div>

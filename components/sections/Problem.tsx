@@ -2,13 +2,18 @@
 
 import Pulse from "@/components/Pulse";
 import ScrollRevealText from "@/components/ScrollRevealText";
+import { SPOTIFY } from "@/lib/raaydrRates";
 import styles from "./Problem.module.css";
 
 // One continuous locked paragraph (copy text unchanged from the previous
 // per-line layout — only concatenated into a single block so
 // ScrollRevealText can light it up word-by-word as it scrolls).
+//
+// The opening price reads from SPOTIFY.subscriptionPrice: it had drifted out
+// of step with the same figure in the Pulse posts, and it moves whenever
+// Spotify raises prices, which it has done twice in 18 months.
 const paragraph = [
-  "You pay £12.99 a month.",
+  `You pay £${SPOTIFY.subscriptionPrice} a month.`,
   "Do you know where it goes?",
   "Into a pool. Divided by total streams.",
   "The artists with the most plays take the biggest share.",

@@ -45,7 +45,7 @@ The honest trade-off is stated in the table: we are new. If you need an audience
 
 ## Which alternative should you actually choose?
 
-Match the platform to the problem. If your fans buy, prioritise Bandcamp. If you live off discovery and remix culture, SoundCloud. If you simply want the pooled model at a better rate, push your audience toward Apple Music or Tidal. If your problem is that a small, real fanbase earns you almost nothing, that is precisely the problem RAAYDR exists to fix: 500 fans at a 40% attention share is roughly £700 a month here, against roughly £48 on Spotify.
+Match the platform to the problem. If your fans buy, prioritise Bandcamp. If you live off discovery and remix culture, SoundCloud. If you simply want the pooled model at a better rate, push your audience toward Apple Music or Tidal. If your problem is that a small, real fanbase earns you almost nothing, that is precisely the problem RAAYDR exists to fix: {{scenario.fans}} fans at a {{scenario.attention}} attention share is roughly {{scenario.raaydrMonthly}} a month here, against roughly {{scenario.spotifyMonthly}} on Spotify.
 
 Most working artists should be on several of these at once. The question is where you send the people who genuinely care.
 

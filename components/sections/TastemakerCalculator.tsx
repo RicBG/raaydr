@@ -10,6 +10,7 @@ import {
   TIER_LABEL,
   type PricingTier,
 } from "@/lib/calculator";
+import { MODELLED_SHARE_NOTE } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
 
@@ -173,7 +174,7 @@ export default function TastemakerCalculator() {
           <p className={styles.helper}>
             Drawn from the ring-fenced tastemaker fund. You earn on what you
             actually drive, so this is what you build toward, not what you start
-            at.
+            at. {MODELLED_SHARE_NOTE.driven}
           </p>
         </div>
       </div>
