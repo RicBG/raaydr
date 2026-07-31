@@ -4,6 +4,7 @@ import {
   artistEarnings,
   spotifyEngagedFanEarnings,
   CANONICAL,
+  PER_FAN,
   SPOTIFY,
 } from "./raaydrRates";
 
@@ -77,6 +78,10 @@ const CONTENT_TOKENS: Record<string, string> = {
   "canonical.artistPerFan": money(CANONICAL.artistPerFan),
   "canonical.spotifyPerFan": money(CANONICAL.spotifyPerFan),
   "spotify.subscriptionPrice": money(SPOTIFY.subscriptionPrice),
+  // Per-fan artist rates, per price band. Cited across four posts.
+  "rates.perFan.standard": money(PER_FAN.artist.standard),
+  "rates.perFan.dayOne": money(PER_FAN.artist.dayOne),
+  "rates.perFan.dayOneNext": money(PER_FAN.artist.dayOneNext),
   // The worked scenario the posts share: 500 genuine fans at a 40% share.
   "scenario.fans": "500",
   "scenario.attention": "40%",

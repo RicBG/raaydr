@@ -69,7 +69,7 @@ Here is what one engaged fan, someone playing your music around 80 times a month
 | YouTube Music | ~£0.0015 (estimate) | ~£0.12 |
 | Spotify | ~£0.003 (verified above) | ~£0.24 |
 | Apple Music | ~£0.008 (estimate) | ~£0.62 |
-| RAAYDR | attention based, no per-stream rate | up to £3.56 (standard tier) |
+| RAAYDR | attention based, no per-stream rate | up to {{rates.perFan.standard}} (standard tier) |
 
 And here is the same comparison at fanbase scale, using a working artist scenario: 500 genuine fans who give you 40% of their listening time.
 
@@ -85,7 +85,7 @@ The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, 
 
 Attention-based payment flips the pool. Instead of your fan's subscription being divided among every artist on the platform, it is divided among the artists that fan actually listened to, in proportion to their listening time.
 
-That is the model RAAYDR is built on. On a standard subscription, up to £3.56 per fan per month flows to artists based on each fan's actual attention. The same engaged fan worth {{canonical.spotifyPerFan}} a month on Spotify is worth up to {{canonical.artistPerFan}} a month here, roughly {{canonical.multiple}} more, because their money follows their ears.
+That is the model RAAYDR is built on. On a standard subscription, up to {{rates.perFan.standard}} per fan per month flows to artists based on each fan's actual attention. The same engaged fan worth {{canonical.spotifyPerFan}} a month on Spotify is worth up to {{canonical.artistPerFan}} a month here, roughly {{canonical.multiple}} more, because their money follows their ears.
 
 At that rate the maths changes shape entirely: 500 fans giving you 40% of their listening time is about £712 a month. To match that on Spotify you would need roughly 59,300 monthly listeners.
 
