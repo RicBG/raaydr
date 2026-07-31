@@ -36,7 +36,7 @@ Three things are taken out before anyone is paid. They come off in this order, a
 
 ## What is left, and how it splits
 
-What remains after those three is the distributable amount. On a £9.99 subscription that is roughly £6.49. It splits three ways:
+What remains after those three is the distributable amount. On a £9.99 subscription that is roughly {{rates.distributable.standard}}. It splits three ways:
 
 | Share | Who | Of the distributable amount |
 |---|---|---|
@@ -71,7 +71,7 @@ No free tier. Playing music requires a subscription. That is deliberate. It is w
 ## FAQ
 
 **What is the denominator for the 55%?**
-It is the distributable amount: your subscription after VAT, publishing royalties and card fees. On £9.99 that is roughly £6.49, and 55% of it goes to artists.
+It is the distributable amount: your subscription after VAT, publishing royalties and card fees. On £9.99 that is roughly {{rates.distributable.standard}}, and 55% of it goes to artists.
 
 **Why is publishing taken out before the split?**
 Publishing royalties are owed to songwriters and composers by law, collected through PRS and MCPS. They are not RAAYDR's to keep or to split, so they come off the top like tax.

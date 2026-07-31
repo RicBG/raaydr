@@ -13,8 +13,12 @@ import {
 } from "./calculator";
 import {
   CANONICAL,
+  DISTRIBUTABLE,
   PER_FAN,
+  PLATFORM_PER_STREAM_ESTIMATES,
+  SPLIT,
   SPOTIFY,
+  engagedFanMonthly,
   floorToPence,
   spotifyEquivalentStreams,
 } from "./raaydrRates";
@@ -145,6 +149,35 @@ describe("spotifyEquivalentStreams", () => {
       const given = 1000 * attention * SPOTIFY.engagedFanStreamsPerMonth;
       expect(needed / given).toBeCloseTo(CANONICAL.artistPerFan / CANONICAL.spotifyPerFan, 3);
     }
+  });
+});
+
+// DISTRIBUTABLE.standard is published from the fitted deduction stack, not
+// derived from PER_FAN, so it cannot be asserted equal to anything. What it
+// must do is stay consistent with the rates the site publishes beside it.
+describe("the published distributable", () => {
+  it("sits inside the range the floored artist rate implies", () => {
+    const low = PER_FAN.artist.standard / (SPLIT.artists / 100);
+    const high = (PER_FAN.artist.standard + 0.01) / (SPLIT.artists / 100);
+    expect(DISTRIBUTABLE.standard).toBeGreaterThanOrEqual(low);
+    expect(DISTRIBUTABLE.standard).toBeLessThan(high);
+  });
+
+  it("reproduces both published standard-tier per-fan rates", () => {
+    const d = DISTRIBUTABLE.standard;
+    expect(floorToPence(d * (SPLIT.artists / 100))).toBeCloseTo(PER_FAN.artist.standard, 10);
+    expect(floorToPence(d * (SPLIT.tastemakers / 100))).toBeCloseTo(PER_FAN.tastemaker.standard, 10);
+  });
+});
+
+// The per-stream comparison table computes both of its columns from these, so
+// a rate and the per-fan figure printed beside it cannot drift apart. Apple's
+// row previously read £0.62 against a stated £0.008, which gives £0.64.
+describe("other platforms' engaged-fan figures", () => {
+  it("derives each from the rate printed beside it", () => {
+    expect(engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.appleMusic)).toBeCloseTo(0.64, 10);
+    expect(engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic)).toBeCloseTo(0.12, 10);
+    expect(engagedFanMonthly(SPOTIFY.perStream)).toBeCloseTo(CANONICAL.spotifyPerFan, 10);
   });
 });
 

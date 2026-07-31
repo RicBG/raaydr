@@ -139,13 +139,50 @@ export const SPOTIFY = {
 } as const;
 
 /**
- * What one engaged fan is worth per month on Spotify: the observed per-stream
- * rate times the modelled 80 streams. Floored on the same rule as PER_FAN so
- * both sides of the canonical comparison are rounded the same way.
+ * What one engaged fan is worth per month on a platform paying `perStream`.
+ * Floored on the same rule as PER_FAN so every side of every comparison is
+ * rounded the same way.
  */
-export const SPOTIFY_ENGAGED_FAN_MONTHLY = floorToPence(
-  SPOTIFY.perStream * SPOTIFY.engagedFanStreamsPerMonth
-);
+export function engagedFanMonthly(perStream: number): number {
+  return floorToPence(perStream * SPOTIFY.engagedFanStreamsPerMonth);
+}
+
+/** What one engaged fan is worth per month on Spotify. */
+export const SPOTIFY_ENGAGED_FAN_MONTHLY = engagedFanMonthly(SPOTIFY.perStream);
+
+/**
+ * UNSOURCED. Commonly cited per-stream estimates for other platforms, used in
+ * the per-stream comparison table. No platform publishes an official rate and
+ * these have no distributor data behind them, unlike SPOTIFY.perStream.
+ *
+ * They live here rather than in the post so the table's "one engaged fan is
+ * worth" column is computed from them. It previously carried £0.62 for Apple
+ * where the stated £0.008 gives £0.64: a hand-typed figure that drifted from
+ * the rate printed beside it, in a table that reads as derived.
+ */
+export const PLATFORM_PER_STREAM_ESTIMATES = {
+  youtubeMusic: 0.0015,
+  appleMusic: 0.008,
+} as const;
+
+/**
+ * Distributable revenue per subscription: what the 55/15/30 split is a share
+ * of, after VAT, publishing royalties and payment costs.
+ *
+ * PUBLISHED FIGURE, NOT DERIVED FROM THE CONSTANTS ABOVE. It comes from the
+ * fitted deduction stack, not from PER_FAN. Deriving it the other way, as
+ * PER_FAN.artist.standard / 55%, gives £6.4727, which is the floor of a range
+ * rather than the value: because the artist rate is floored to whole pence,
+ * any distributable in [£6.4727, £6.4909) produces the published £3.56, and
+ * £6.49 sits inside that range. Both figures are correct and they are not the
+ * same number. Do not "fix" one to match the other.
+ *
+ * calculator.test.ts pins the containment, so if a rate moves and £6.49 falls
+ * out of the implied range, the build says so.
+ */
+export const DISTRIBUTABLE = {
+  standard: 6.49,
+} as const;
 
 /** Pence, for sub-pound per-fan figures. 0.71 to "71p", 0.048 to "4.8p". */
 function pence(amount: number): string {

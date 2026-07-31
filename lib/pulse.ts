@@ -2,10 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   artistEarnings,
+  engagedFanMonthly,
   spotifyEngagedFanEarnings,
   spotifyEquivalentStreams,
   CANONICAL,
+  DISTRIBUTABLE,
   PER_FAN,
+  PLATFORM_PER_STREAM_ESTIMATES,
   SPOTIFY,
 } from "./raaydrRates";
 
@@ -80,6 +83,21 @@ const CONTENT_TOKENS: Record<string, string> = {
   "canonical.artistPerFan": money(CANONICAL.artistPerFan),
   "canonical.spotifyPerFan": money(CANONICAL.spotifyPerFan),
   "spotify.subscriptionPrice": money(SPOTIFY.subscriptionPrice),
+  "spotify.perStream": rate(SPOTIFY.perStream),
+  // Other platforms' per-stream estimates and what they imply for one engaged
+  // fan. Both columns of that table read from the same constant, so the rate
+  // and the figure beside it cannot drift apart again.
+  "platform.youtubeMusic.perStream": rate(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic),
+  "platform.youtubeMusic.perFan": money(
+    engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic)
+  ),
+  "platform.appleMusic.perStream": rate(PLATFORM_PER_STREAM_ESTIMATES.appleMusic),
+  "platform.appleMusic.perFan": money(
+    engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.appleMusic)
+  ),
+  // Distributable revenue. Published figure, not derived from PER_FAN: see the
+  // note on DISTRIBUTABLE in raaydrRates.
+  "rates.distributable.standard": money(DISTRIBUTABLE.standard),
   // Per-fan artist rates, per price band. Cited across four posts.
   "rates.perFan.standard": money(PER_FAN.artist.standard),
   "rates.perFan.dayOne": money(PER_FAN.artist.dayOne),
@@ -91,6 +109,14 @@ const CONTENT_TOKENS: Record<string, string> = {
   "scenario.spotifyMonthly": money(
     spotifyEngagedFanEarnings(SCENARIO_FANS, SCENARIO_ATTENTION)
   ),
+  "scenario.raaydrAnnual": money(
+    artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION) * 12
+  ),
+  "scenario.spotifyAnnual": money(
+    spotifyEngagedFanEarnings(SCENARIO_FANS, SCENARIO_ATTENTION) * 12
+  ),
+  /** What one fan at the scenario's attention share sends you. */
+  "scenario.perFan": money(artistEarnings(1, SCENARIO_ATTENTION)),
   // Reach, in streams. Rounded to the nearest thousand because every use of it
   // is prefixed "roughly"; the exact figure is 237,333.
   "scenario.spotifyStreams": nearestThousand(
@@ -103,9 +129,17 @@ function nearestThousand(value: number): string {
   return (Math.round(value / 1000) * 1000).toLocaleString("en-GB");
 }
 
-/** Pounds, with the pence dropped when there are none. */
+/** Pounds, grouped, with the pence dropped when there are none. */
 function money(amount: number): string {
-  return `£${amount.toFixed(2).replace(/\.00$/, "")}`;
+  const fixed = amount.toFixed(2).replace(/\.00$/, "");
+  const [whole, fraction] = fixed.split(".");
+  const grouped = Number(whole).toLocaleString("en-GB");
+  return `£${grouped}${fraction ? `.${fraction}` : ""}`;
+}
+
+/** Per-stream rates, which run to four decimal places. £0.003, £0.0015. */
+function rate(amount: number): string {
+  return `£${amount.toFixed(4).replace(/0+$/, "").replace(/\.$/, "")}`;
 }
 
 /**

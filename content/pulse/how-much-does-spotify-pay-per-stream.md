@@ -66,17 +66,17 @@ Here is what one engaged fan, someone playing your music around 80 times a month
 
 | Platform | Typical rate per stream | One engaged fan is worth (per month) |
 | --- | --- | --- |
-| YouTube Music | ~£0.0015 (estimate) | ~£0.12 |
-| Spotify | ~£0.003 (verified above) | ~£0.24 |
-| Apple Music | ~£0.008 (estimate) | ~£0.62 |
+| YouTube Music | ~{{platform.youtubeMusic.perStream}} (estimate) | ~{{platform.youtubeMusic.perFan}} |
+| Spotify | ~{{spotify.perStream}} (verified above) | ~{{canonical.spotifyPerFan}} |
+| Apple Music | ~{{platform.appleMusic.perStream}} (estimate) | ~{{platform.appleMusic.perFan}} |
 | RAAYDR | attention based, no per-stream rate | up to {{rates.perFan.standard}} (standard tier) |
 
-And here is the same comparison at fanbase scale, using a working artist scenario: 500 genuine fans who give you 40% of their listening time.
+And here is the same comparison at fanbase scale, using a working artist scenario: {{scenario.fans}} genuine fans who give you {{scenario.attention}} of their listening time.
 
 | | Spotify | RAAYDR (standard) |
 | --- | --- | --- |
-| 500 engaged fans, 40% attention share | ~£48/month | ~£712/month |
-| Over a year | ~£576 | ~£8,544 |
+| {{scenario.fans}} engaged fans, {{scenario.attention}} attention share | ~{{scenario.spotifyMonthly}}/month | ~{{scenario.raaydrMonthly}}/month |
+| Over a year | ~{{scenario.spotifyAnnual}} | ~{{scenario.raaydrAnnual}} |
 | Streams needed to earn {{scenario.raaydrMonthly}}/month | ~{{scenario.spotifyStreams}} streams a month | {{scenario.fans}} fans |
 
 The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, your fans' money follows their listening instead of disappearing into a global pool.
