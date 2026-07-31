@@ -14,8 +14,10 @@ import {
 import {
   ATTENTION_DEFAULT,
   ATTENTION_PRESETS,
-  spotifyEquivalentListeners,
-  spotifyMonthlyEarnings,
+  MODELLED_SHARE_NOTE,
+  SPOTIFY,
+  spotifyEngagedFanEarnings,
+  spotifyEquivalentStreams,
 } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Glyph from "@/components/Glyph";
@@ -31,6 +33,15 @@ const gbp = (v: number) =>
 
 const count = (v: number) =>
   new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(v);
+
+// Stream counts are quoted "roughly", and the rate under them is itself a
+// blended ~£0.0028 to £0.003, so six significant figures would be false
+// precision. Three is as much as the input supports.
+const roughCount = (v: number) => {
+  if (v <= 0) return "0";
+  const magnitude = Math.pow(10, Math.floor(Math.log10(v)) - 2);
+  return count(Math.round(v / magnitude) * magnitude);
+};
 
 const ATTENTION_TICKS = [10, 25, 50, 75, 100];
 
@@ -50,13 +61,21 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
 
   const fans = sliderToFans(fanPos);
+  // Both panels price the SAME people behaving the SAME way: the attention
+  // share applies to each side. That is the whole point of this comparison,
+  // and it is why the multiple sits at a constant 15x instead of climbing
+  // from 30x to 119x as the attention slider moves.
+  //
+  // Never price the Spotify side off a per-monthly-listener rate. That ignores
+  // attention entirely and silently changes the population halfway through the
+  // comparison. The rate that allowed it has been removed from raaydrRates.
   const values = useMemo(() => {
     const raaydrM = raaydrMonthly(fans, attention / 100, tier);
     return {
       raaydrM,
       raaydrY: raaydrM * 12,
-      spotifyM: spotifyMonthlyEarnings(fans),
-      spotifyListeners: spotifyEquivalentListeners(raaydrM),
+      spotifyM: spotifyEngagedFanEarnings(fans, attention),
+      spotifyStreams: spotifyEquivalentStreams(raaydrM),
     };
   }, [fans, attention, tier]);
 
@@ -69,7 +88,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   const raaydrMEl = useRef<HTMLSpanElement>(null);
   const raaydrYEl = useRef<HTMLSpanElement>(null);
   const fansEl = useRef<HTMLSpanElement>(null);
-  const listenersEl = useRef<HTMLSpanElement>(null);
+  const streamsEl = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const paint = () => {
@@ -79,8 +98,8 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
       if (raaydrYEl.current)
         raaydrYEl.current.textContent = `${gbp(d.raaydrY)} a year`;
       if (fansEl.current) fansEl.current.textContent = count(fans);
-      if (listenersEl.current)
-        listenersEl.current.textContent = count(Math.round(d.spotifyListeners));
+      if (streamsEl.current)
+        streamsEl.current.textContent = roughCount(d.spotifyStreams);
     };
 
     if (reduced) {
@@ -205,7 +224,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           <p className={styles.helper}>
             Attention share is your slice of each fan&rsquo;s total listening.
             40% means you are close to half of everything that person plays. It
-            happens. It is not the average.
+            happens. It is not the average. {MODELLED_SHARE_NOTE.attention}
           </p>
         </div>
       </div>
@@ -214,7 +233,9 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
         <div className={`${styles.panel} ${styles.spotify}`}>
           <p className={styles.panelName}>
             Spotify
-            <span className={styles.panelSub}>pays for streams</span>
+            <span className={styles.panelSub}>
+              the same people, paid per stream
+            </span>
           </p>
           <p className={`mono-figure ${styles.figure}`}>
             <span ref={spotifyMEl}>{gbp(values.spotifyM)}</span>
@@ -225,7 +246,9 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
         <div className={`${styles.panel} ${styles.raaydr}`}>
           <p className={styles.panelName}>
             RAAYDR
-            <span className={styles.panelSub}>pays for attention</span>
+            <span className={styles.panelSub}>
+              the same people, paid for attention
+            </span>
           </p>
           <p className={`mono-figure ${styles.figure}`}>
             <span ref={raaydrMEl}>{gbp(values.raaydrM)}</span>
@@ -241,15 +264,22 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           </p>
         </div>
 
+        {/* Both sides are the same population at the same attention share, so
+            this states what is being held constant rather than converting one
+            unit into another. The old line here compared these fans against a
+            count of bare Spotify monthly listeners, which is a different set
+            of people listening far less each. */}
         <p className={styles.hook} style={{ gridColumn: "1 / -1" }}>
+          The same{" "}
           <span className={styles.hookFigure} ref={fansEl}>
             {count(fans)}
           </span>{" "}
-          fans on RAAYDR earns the same as{" "}
-          <span className={styles.hookFigure} ref={listenersEl}>
-            {count(values.spotifyListeners)}
+          people, listening exactly the same amount, on both platforms. To earn
+          the RAAYDR figure through Spotify instead you would need roughly{" "}
+          <span className={styles.hookFigure} ref={streamsEl}>
+            {roughCount(values.spotifyStreams)}
           </span>{" "}
-          monthly listeners on Spotify.
+          streams a month.
         </p>
       </div>
 
@@ -257,9 +287,13 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
         <p className={styles.footnote}>
           Your share is 55% of every subscription, after tax, publishing
           royalties and card fees, divided by how much of each fan&rsquo;s
-          listening you hold. The Spotify comparison is per monthly listener,
-          the number Spotify for Artists actually shows you, not per stream.
-          Figures are projections based on your inputs, not a guarantee.
+          listening you hold. The Spotify side prices the same people listening
+          the same amount: an engaged fan playing around{" "}
+          {SPOTIFY.engagedFanStreamsPerMonth} tracks a month at roughly £
+          {SPOTIFY.perStream} a stream, with your attention share applied to
+          both sides. That per-stream rate is from a real distributor
+          dashboard. The play count is an assumption. Figures are projections
+          based on your inputs, not a guarantee.
         </p>
       )}
     </div>

@@ -1,5 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
+import {
+  artistEarnings,
+  engagedFanMonthly,
+  spotifyEngagedFanEarnings,
+  spotifyEquivalentStreams,
+  CANONICAL,
+  DISTRIBUTABLE,
+  PER_FAN,
+  PLATFORM_PER_STREAM_ESTIMATES,
+  SPOTIFY,
+} from "./raaydrRates";
 
 // The Pulse (RAAYDR blog) content loader. Reads content/pulse/*.md at build
 // time, parses the frontmatter and a small, controlled subset of Markdown
@@ -42,6 +53,112 @@ export interface Post extends PostMeta {
 }
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "pulse");
+
+/**
+ * Figures the posts are not allowed to spell out for themselves.
+ *
+ * Prose drifts. A pound figure typed into a post is a copy of a rate, and
+ * copies go stale silently: the £700 that sat in the alternatives post was the
+ * calculator's £712 from an earlier rate pass, and nothing caught it for two
+ * releases. Anything here is substituted from lib/raaydrRates.ts at build
+ * time, so a rate change rewrites the posts instead of stranding them.
+ *
+ * This covers the recurring cross-post figures, not every number in the blog.
+ * Post-specific working (per-platform estimates, stream-count tables) stays
+ * inline where it is written and argued.
+ */
+/**
+ * The worked example the posts return to. Editorial, not a rate: it is the
+ * audience shape the argument is made about. Both platform figures are
+ * computed from it, so the two sides of the comparison can never drift apart.
+ */
+const SCENARIO_FANS = 500;
+const SCENARIO_ATTENTION = 40;
+
+const CONTENT_TOKENS: Record<string, string> = {
+  "canonical.claim": CANONICAL.claim,
+  "canonical.denominator": CANONICAL.denominator,
+  "canonical.typicalPair": CANONICAL.typicalPair,
+  "canonical.multiple": `${CANONICAL.multiple}x`,
+  "canonical.artistPerFan": money(CANONICAL.artistPerFan),
+  "canonical.spotifyPerFan": money(CANONICAL.spotifyPerFan),
+  "spotify.subscriptionPrice": money(SPOTIFY.subscriptionPrice),
+  "spotify.perStream": rate(SPOTIFY.perStream),
+  // Other platforms' per-stream estimates and what they imply for one engaged
+  // fan. Both columns of that table read from the same constant, so the rate
+  // and the figure beside it cannot drift apart again.
+  "platform.youtubeMusic.perStream": rate(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic),
+  "platform.youtubeMusic.perFan": money(
+    engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic)
+  ),
+  "platform.appleMusic.perStream": rate(PLATFORM_PER_STREAM_ESTIMATES.appleMusic),
+  "platform.appleMusic.perFan": money(
+    engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.appleMusic)
+  ),
+  // Distributable revenue. Published figure, not derived from PER_FAN: see the
+  // note on DISTRIBUTABLE in raaydrRates.
+  "rates.distributable.standard": money(DISTRIBUTABLE.standard),
+  // Per-fan artist rates, per price band. Cited across four posts.
+  "rates.perFan.standard": money(PER_FAN.artist.standard),
+  "rates.perFan.dayOne": money(PER_FAN.artist.dayOne),
+  "rates.perFan.dayOneNext": money(PER_FAN.artist.dayOneNext),
+  // The worked scenario the posts share: 500 genuine fans at a 40% share.
+  "scenario.fans": "500",
+  "scenario.attention": "40%",
+  "scenario.raaydrMonthly": money(artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION)),
+  "scenario.spotifyMonthly": money(
+    spotifyEngagedFanEarnings(SCENARIO_FANS, SCENARIO_ATTENTION)
+  ),
+  "scenario.raaydrAnnual": money(
+    artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION) * 12
+  ),
+  "scenario.spotifyAnnual": money(
+    spotifyEngagedFanEarnings(SCENARIO_FANS, SCENARIO_ATTENTION) * 12
+  ),
+  /** What one fan at the scenario's attention share sends you. */
+  "scenario.perFan": money(artistEarnings(1, SCENARIO_ATTENTION)),
+  // Reach, in streams. Rounded to the nearest thousand because every use of it
+  // is prefixed "roughly"; the exact figure is 237,333.
+  "scenario.spotifyStreams": nearestThousand(
+    spotifyEquivalentStreams(artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION))
+  ),
+};
+
+/** Thousands separator, rounded to the nearest thousand for prose. */
+function nearestThousand(value: number): string {
+  return (Math.round(value / 1000) * 1000).toLocaleString("en-GB");
+}
+
+/** Pounds, grouped, with the pence dropped when there are none. */
+function money(amount: number): string {
+  const fixed = amount.toFixed(2).replace(/\.00$/, "");
+  const [whole, fraction] = fixed.split(".");
+  const grouped = Number(whole).toLocaleString("en-GB");
+  return `£${grouped}${fraction ? `.${fraction}` : ""}`;
+}
+
+/** Per-stream rates, which run to four decimal places. £0.003, £0.0015. */
+function rate(amount: number): string {
+  return `£${amount.toFixed(4).replace(/0+$/, "").replace(/\.$/, "")}`;
+}
+
+/**
+ * Replace {{token}} with its figure. An unknown token throws rather than
+ * rendering braces to a reader: a typo in a post should fail the build, not
+ * ship.
+ */
+function substituteTokens(raw: string, slug: string): string {
+  return raw.replace(/\{\{([\w.]+)\}\}/g, (_match, name: string) => {
+    const value = CONTENT_TOKENS[name];
+    if (value === undefined) {
+      throw new Error(
+        `Unknown content token {{${name}}} in content/pulse/${slug}.md. ` +
+          `Known tokens: ${Object.keys(CONTENT_TOKENS).join(", ")}`
+      );
+    }
+    return value;
+  });
+}
 
 // The launch cohort all share one publish date, so a pure date sort is a tie.
 // This is the intended editorial order (cornerstone per-stream piece first),
@@ -219,7 +336,10 @@ function structure(blocks: Block[]): { blocks: Block[]; faq: FaqItem[]; note?: s
 }
 
 function readPost(slug: string): Post {
-  const raw = fs.readFileSync(path.join(CONTENT_DIR, `${slug}.md`), "utf8");
+  const raw = substituteTokens(
+    fs.readFileSync(path.join(CONTENT_DIR, `${slug}.md`), "utf8"),
+    slug
+  );
   const { meta, body } = parseFrontmatter(raw);
   const { blocks, faq, note } = structure(parseBlocks(body));
   return {

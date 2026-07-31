@@ -5,6 +5,16 @@
 // Copy rules (see the site build spec): earnings are stated as a percentage
 // with its denominator, never as a standalone pound figure. Pricing and the
 // payout threshold may use pounds. No em dashes or en dashes anywhere.
+//
+// One sanctioned exception to the standalone-pound rule: the canonical per-fan
+// comparison in lib/raaydrRates.ts. It carries its own denominator in the
+// sentence that follows it, so it is never standalone. Interpolate CANONICAL
+// rather than typing the figure or the multiple out, and always keep
+// CANONICAL.denominator with it. These answers also generate FAQPage JSON-LD,
+// so anything asserted here is eligible for rich results and AI citation and
+// has to reproduce from the rate model.
+
+import { CANONICAL } from "./raaydrRates";
 
 export type FaqItem = {
   question: string;
@@ -29,7 +39,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "How is RAAYDR different from Spotify or Apple Music?",
       answer:
-        "On Spotify your money goes into a global pool and gets averaged out across everyone. On RAAYDR your subscription goes to the artists you actually listen to, in proportion to how much of your listening each one holds. The practical difference is roughly a hundred times per person.",
+        `On Spotify your money goes into a global pool and gets averaged out across everyone. On RAAYDR your subscription goes to the artists you actually listen to, in proportion to how much of your listening each one holds. ${CANONICAL.claim} That is ${CANONICAL.denominator}`,
     },
     {
       question: "Is RAAYDR live yet?",
@@ -77,7 +87,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "How is this different from Spotify?",
       answer:
-        "On Spotify your earnings come from a global pool, so your fans' money gets averaged out across everyone. On RAAYDR your fans' money goes to you, in proportion to how much of their listening you hold. The practical difference is roughly a hundred times per person.",
+        `On Spotify your earnings come from a global pool, so your fans' money gets averaged out across everyone. On RAAYDR your fans' money goes to you, in proportion to how much of their listening you hold. ${CANONICAL.claim} That is ${CANONICAL.denominator}`,
     },
     {
       question: 'What counts as "attention share"?',

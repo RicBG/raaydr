@@ -36,7 +36,7 @@ Three things are taken out before anyone is paid. They come off in this order, a
 
 ## What is left, and how it splits
 
-What remains after those three is the distributable amount. On a £9.99 subscription that is roughly £6.49. It splits three ways:
+What remains after those three is the distributable amount. On a £9.99 subscription that is roughly {{rates.distributable.standard}}. It splits three ways:
 
 | Share | Who | Of the distributable amount |
 |---|---|---|
@@ -52,13 +52,13 @@ The tastemaker share is a ceiling, not a fixed pot. A tastemaker earns from it i
 
 The pool model is the reason streaming pays so little. Every subscription in the country goes into one bucket, and the bucket is divided by every play in the country. Your most devoted fan and a bot farm draw from the same water. Your fan's £9.99 does not follow their listening. It is averaged across everyone, and the average is dominated by whoever has the most plays, which is almost never you.
 
-Per fan breaks that. Your fan's money is theirs to direct, and it follows their attention to the artists they actually play. The practical difference works out at roughly a hundred times per person, because you are no longer sharing your own fan's subscription with the entire platform.
+Per fan breaks that. Your fan's money is theirs to direct, and it follows their attention to the artists they actually play. {{canonical.claim}} That is {{canonical.denominator}} The comparison holds the fan constant: the same person, listening the same amount, on both platforms. What changes is whether their money reaches you or is averaged across a platform they have nothing to do with.
 
 ## What this means if you are an artist
 
 Because the money is per fan and not per stream, the useful question is not how many plays you have. It is how many people genuinely listen to you, and how much of their listening you hold.
 
-The comparison that matters is monthly listeners, the figure Spotify for Artists actually shows you, not a per-stream rate. A modest number of real fans on RAAYDR earns the same as a far larger monthly listener count on Spotify, because most monthly listeners heard one track once and moved on. The artist calculator on the artists page lets you put in your own fan count and attention share and see the monthly listener equivalent for yourself.
+The comparison that matters is what one real fan is worth, not what one play is worth. {{canonical.claim}} That is {{canonical.denominator}} The artist calculator on the artists page lets you put in your own fan count and attention share and see both sides for yourself, along with the number of streams it would take to earn the same money through Spotify instead.
 
 ## What we are not doing
 
@@ -71,7 +71,7 @@ No free tier. Playing music requires a subscription. That is deliberate. It is w
 ## FAQ
 
 **What is the denominator for the 55%?**
-It is the distributable amount: your subscription after VAT, publishing royalties and card fees. On £9.99 that is roughly £6.49, and 55% of it goes to artists.
+It is the distributable amount: your subscription after VAT, publishing royalties and card fees. On £9.99 that is roughly {{rates.distributable.standard}}, and 55% of it goes to artists.
 
 **Why is publishing taken out before the split?**
 Publishing royalties are owed to songwriters and composers by law, collected through PRS and MCPS. They are not RAAYDR's to keep or to split, so they come off the top like tax.

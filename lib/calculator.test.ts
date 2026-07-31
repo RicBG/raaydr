@@ -11,7 +11,17 @@ import {
   PRICING_TIER_DEFAULT,
   TIER_LABEL,
 } from "./calculator";
-import { PER_FAN, floorToPence, spotifyEquivalentListeners } from "./raaydrRates";
+import {
+  CANONICAL,
+  DISTRIBUTABLE,
+  PER_FAN,
+  PLATFORM_PER_STREAM_ESTIMATES,
+  SPLIT,
+  SPOTIFY,
+  engagedFanMonthly,
+  floorToPence,
+  spotifyEquivalentStreams,
+} from "./raaydrRates";
 
 describe("floorToPence", () => {
   it("floors to whole pence rather than rounding", () => {
@@ -111,21 +121,90 @@ describe("raaydrMonthly (standard, default 20% attention)", () => {
   });
 });
 
-describe("spotifyEquivalentListeners", () => {
-  it("divides monthly earnings by the per-monthly-listener rate", () => {
-    expect(spotifyEquivalentListeners(712)).toBe(Math.round(712 / 0.012));
+// Was spotifyEquivalentListeners, pinned at 59,333 / 41,000 / 47,000 against a
+// £0.012 per-monthly-listener rate. That rate was unsourced and contradicted by
+// our own copy, so it was retired rather than re-picked. The reach line is now
+// expressed in streams, which needs only the observed per-stream rate and makes
+// no claim about how many people are doing the listening.
+describe("spotifyEquivalentStreams", () => {
+  it("divides monthly earnings by the observed per-stream rate", () => {
+    expect(spotifyEquivalentStreams(712)).toBe(Math.round(712 / 0.003));
   });
 
-  // The comparison line is recomputed from the corrected figure, so the
-  // default view reads ~59,300 monthly listeners, not the old ~59,500.
   it("matches the default view's £712 against Spotify", () => {
-    expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2))).toBe(59333);
+    expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2))).toBe(237333);
   });
 
-  // Each band gets its own comparison line, all from the same £0.012 anchor.
   it("recomputes the line for both Day One bands", () => {
-    expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2, "dayOne"))).toBe(41000);
-    expect(spotifyEquivalentListeners(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(47000);
+    expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2, "dayOne"))).toBe(164000);
+    expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(188000);
+  });
+
+  // The invariance check: the streams you would need is a fixed multiple of the
+  // streams your actual fans give you, at every attention share. If this ever
+  // drifts, the two sides of the comparison have stopped matching.
+  it("stays at the canonical multiple across every attention share", () => {
+    for (const attention of [0.1, 0.2, 0.4, 1]) {
+      const needed = spotifyEquivalentStreams(raaydrMonthly(1000, attention));
+      const given = 1000 * attention * SPOTIFY.engagedFanStreamsPerMonth;
+      expect(needed / given).toBeCloseTo(CANONICAL.artistPerFan / CANONICAL.spotifyPerFan, 3);
+    }
+  });
+});
+
+// DISTRIBUTABLE.standard is published from the fitted deduction stack, not
+// derived from PER_FAN, so it cannot be asserted equal to anything. What it
+// must do is stay consistent with the rates the site publishes beside it.
+describe("the published distributable", () => {
+  it("sits inside the range the floored artist rate implies", () => {
+    const low = PER_FAN.artist.standard / (SPLIT.artists / 100);
+    const high = (PER_FAN.artist.standard + 0.01) / (SPLIT.artists / 100);
+    expect(DISTRIBUTABLE.standard).toBeGreaterThanOrEqual(low);
+    expect(DISTRIBUTABLE.standard).toBeLessThan(high);
+  });
+
+  it("reproduces both published standard-tier per-fan rates", () => {
+    const d = DISTRIBUTABLE.standard;
+    expect(floorToPence(d * (SPLIT.artists / 100))).toBeCloseTo(PER_FAN.artist.standard, 10);
+    expect(floorToPence(d * (SPLIT.tastemakers / 100))).toBeCloseTo(PER_FAN.tastemaker.standard, 10);
+  });
+});
+
+// The per-stream comparison table computes both of its columns from these, so
+// a rate and the per-fan figure printed beside it cannot drift apart. Apple's
+// row previously read £0.62 against a stated £0.008, which gives £0.64.
+describe("other platforms' engaged-fan figures", () => {
+  it("derives each from the rate printed beside it", () => {
+    expect(engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.appleMusic)).toBeCloseTo(0.64, 10);
+    expect(engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic)).toBeCloseTo(0.12, 10);
+    expect(engagedFanMonthly(SPOTIFY.perStream)).toBeCloseTo(CANONICAL.spotifyPerFan, 10);
+  });
+});
+
+describe("the canonical claim", () => {
+  it("leads with the realistic figure, not the ceiling", () => {
+    expect(CANONICAL.claim).toBe(
+      "A fan who gives you a fifth of their listening is worth 71p a month, " +
+        "against 4.8p on Spotify. One who plays nothing but you is worth £3.56."
+    );
+  });
+
+  // "a fifth" is ATTENTION_DEFAULT in words. If the default moves, the wording
+  // is wrong and this catches it before it ships.
+  it("states the share the wording claims", () => {
+    expect(CANONICAL.typicalAttentionPct).toBe(20);
+  });
+
+  it("never exposes the realistic figure without its comparison", () => {
+    expect(CANONICAL.typicalPair).toContain("71p");
+    expect(CANONICAL.typicalPair).toContain("4.8p");
+  });
+
+  it("derives the multiple rather than carrying a typed one", () => {
+    expect(CANONICAL.multiple).toBe(
+      Math.round(CANONICAL.artistPerFan / CANONICAL.spotifyPerFan)
+    );
+    expect(CANONICAL.multiple).toBe(15);
   });
 });
 

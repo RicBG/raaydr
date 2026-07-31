@@ -54,7 +54,7 @@ Sit with that. Your most dedicated listener, someone who plays you daily, someon
 
 ## Why is the per-stream rate the wrong question?
 
-Because under Spotify's pro-rata model, your fans' subscription money does not go to you. Each subscriber's £11.99 goes into the collective pool and is divided by total platform streams. If your biggest fan listens to you exclusively all month, most of their money still flows to whoever generated the most streams globally that month.
+Because under Spotify's pro-rata model, your fans' subscription money does not go to you. Each subscriber's {{spotify.subscriptionPrice}} goes into the collective pool and is divided by total platform streams. If your biggest fan listens to you exclusively all month, most of their money still flows to whoever generated the most streams globally that month.
 
 Since 2024 there is also a floor: tracks with fewer than 1,000 streams in a year earn nothing at all, with that money redistributed up the pool. The system structurally favours scale, and punishes exactly the artists building real, deep fanbases.
 
@@ -66,18 +66,18 @@ Here is what one engaged fan, someone playing your music around 80 times a month
 
 | Platform | Typical rate per stream | One engaged fan is worth (per month) |
 | --- | --- | --- |
-| YouTube Music | ~£0.0015 (estimate) | ~£0.12 |
-| Spotify | ~£0.003 (verified above) | ~£0.24 |
-| Apple Music | ~£0.008 (estimate) | ~£0.62 |
-| RAAYDR | attention based, no per-stream rate | up to £3.56 (standard tier) |
+| YouTube Music | ~{{platform.youtubeMusic.perStream}} (estimate) | ~{{platform.youtubeMusic.perFan}} |
+| Spotify | ~{{spotify.perStream}} (verified above) | ~{{canonical.spotifyPerFan}} |
+| Apple Music | ~{{platform.appleMusic.perStream}} (estimate) | ~{{platform.appleMusic.perFan}} |
+| RAAYDR | attention based, no per-stream rate | up to {{rates.perFan.standard}} (standard tier) |
 
-And here is the same comparison at fanbase scale, using a working artist scenario: 500 genuine fans who give you 40% of their listening time.
+And here is the same comparison at fanbase scale, using a working artist scenario: {{scenario.fans}} genuine fans who give you {{scenario.attention}} of their listening time.
 
 | | Spotify | RAAYDR (standard) |
 | --- | --- | --- |
-| 500 engaged fans, 40% attention share | ~£48/month | ~£712/month |
-| Over a year | ~£576 | ~£8,544 |
-| Audience needed to earn £712/month | ~59,300 monthly listeners | 500 fans |
+| {{scenario.fans}} engaged fans, {{scenario.attention}} attention share | ~{{scenario.spotifyMonthly}}/month | ~{{scenario.raaydrMonthly}}/month |
+| Over a year | ~{{scenario.spotifyAnnual}} | ~{{scenario.raaydrAnnual}} |
+| Streams needed to earn {{scenario.raaydrMonthly}}/month | ~{{scenario.spotifyStreams}} streams a month | {{scenario.fans}} fans |
 
 The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, your fans' money follows their listening instead of disappearing into a global pool.
 
@@ -85,9 +85,9 @@ The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, 
 
 Attention-based payment flips the pool. Instead of your fan's subscription being divided among every artist on the platform, it is divided among the artists that fan actually listened to, in proportion to their listening time.
 
-That is the model RAAYDR is built on. On a standard subscription, up to £3.56 per fan per month flows to artists based on each fan's actual attention. The same engaged fan worth 24p a month on Spotify is worth up to £3.56 a month here, roughly fifteen times more, because their money follows their ears.
+That is the model RAAYDR is built on. On a standard subscription, up to {{rates.perFan.standard}} per fan per month flows to artists based on each fan's actual attention. {{canonical.claim}} Their money follows their ears instead of a global chart they have nothing to do with.
 
-At that rate the maths changes shape entirely: 500 fans giving you 40% of their listening time is about £712 a month. To match that on Spotify you would need roughly 59,300 monthly listeners.
+At that rate the maths changes shape entirely: {{scenario.fans}} fans giving you {{scenario.attention}} of their listening time is about {{scenario.raaydrMonthly}} a month. To match that on Spotify you would need roughly {{scenario.spotifyStreams}} streams a month.
 
 We wrote a full breakdown of how attention-based payment works, and you can run your own numbers with the earnings calculator on [raaydr.com](https://raaydr.com).
 
