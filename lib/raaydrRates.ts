@@ -90,29 +90,38 @@ export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
  */
 
 /**
+ * Attention share is an artist's slice of each fan's total listening.
+ * Default is Committed. Superfan is the top of the range, not the expectation.
+ *
+ * Declared above the Spotify anchors because the canonical comparison is
+ * stated at the default share, so CANONICAL reads from it.
+ */
+export const ATTENTION_PRESETS = [
+  { label: "Casual", value: 10 },
+  { label: "Committed", value: 20 },
+  { label: "Superfan", value: 40 },
+] as const;
+
+export const ATTENTION_DEFAULT = 20;
+
+/**
  * Spotify comparison anchors.
  *
- * Only `perStream` is observed: it comes from a real independent artist's
- * distributor dashboard ($24.6K over 6.92 million lifetime streams, roughly
- * £0.0028 to £0.003 per stream), published in the per-stream Pulse post.
- * Everything else here is an assumption about listener behaviour and is
- * labelled as such.
+ * `perStream` is the only observed number on this side of any comparison: it
+ * comes from a real independent artist's distributor dashboard ($24.6K over
+ * 6.92 million lifetime streams, roughly £0.0028 to £0.003 per stream),
+ * published in the per-stream Pulse post. Everything else here is an
+ * assumption about listener behaviour and is labelled as such.
+ *
+ * There is deliberately no per-monthly-listener rate. One existed (£0.012,
+ * implying 4 plays a month) and drove the "monthly listeners needed to match"
+ * figures, but it was unsourced and contradicted by our own copy, which puts
+ * an average listener at 5 to 10 plays. Rather than pick between two numbers
+ * we cannot stand behind, comparisons are now expressed in streams, which
+ * needs only `perStream`. Do not reintroduce a per-listener rate: it smuggles
+ * a listening-behaviour assumption into a figure that reads as a headcount.
  */
 export const SPOTIFY = {
-  /**
-   * MODELLED, AND DISPUTED IN OUR OWN COPY. Per monthly listener, not per
-   * stream. Monthly listener is the metric artists actually see in Spotify for
-   * Artists, so it is the right unit for a listener-facing comparison.
-   *
-   * £0.012 implies 4 streams per monthly listener per month at `perStream`.
-   * content/pulse/how-many-streams-for-1000-a-month.md asserts 5 to 10 plays
-   * per monthly listener per month, which would put this at £0.015 to £0.030
-   * and cut the "monthly listeners needed to match" figures by 20% to 60%.
-   * Neither number is sourced. Both are still live. This is recorded, not
-   * resolved: changing either moves published headline figures, so it needs a
-   * ruling rather than a quiet edit.
-   */
-  perMonthlyListener: 0.012,
   /** OBSERVED. Blended effective rate from the distributor dashboard above. */
   perStream: 0.003,
   /**
@@ -138,34 +147,67 @@ export const SPOTIFY_ENGAGED_FAN_MONTHLY = floorToPence(
   SPOTIFY.perStream * SPOTIFY.engagedFanStreamsPerMonth
 );
 
-/**
- * THE CANONICAL COMPARISON. One claim, one place, every surface reads it.
- *
- * This is the only sanctioned RAAYDR-versus-streaming multiple. It holds one
- * variable constant: the same person, with the same listening behaviour, on
- * both platforms. Every other framing that has been in circulation changed
- * either the unit (fan versus bare monthly listener) or the behaviour (80
- * streams versus 4) partway through the comparison, which is how four
- * different multiples came to exist for one model.
- *
- * `multiple` is derived, never typed. If a rate moves, the claim moves with
- * it. The exact ratio is currently 14.83, presented as "around 15x".
- *
- * The denominator is not optional decoration. Quote it wherever the per-fan
- * pound figure appears: the figure is a ceiling on one fan at full attention,
- * not an expected monthly income.
- */
+/** Pence, for sub-pound per-fan figures. 0.71 to "71p", 0.048 to "4.8p". */
+function pence(amount: number): string {
+  const rounded = Math.round(amount * 1000) / 10;
+  return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)}p`;
+}
+
 const CANONICAL_MULTIPLE = Math.round(
   PER_FAN.artist.standard / SPOTIFY_ENGAGED_FAN_MONTHLY
 );
 
+// The per-fan figures at the default attention share: what a fan is actually
+// worth, as opposed to the ceiling. Floored on the artist side per §3; the
+// Spotify side is sub-penny so it is presented to one decimal place.
+//
+// "a fifth" in the claim below is ATTENTION_DEFAULT in words. If that default
+// ever moves off 20, the wording has to move with it.
+const TYPICAL_ARTIST = floorToPence(
+  (PER_FAN.artist.standard * ATTENTION_DEFAULT) / 100
+);
+const TYPICAL_SPOTIFY =
+  (SPOTIFY_ENGAGED_FAN_MONTHLY * ATTENTION_DEFAULT) / 100;
+
+/**
+ * THE CANONICAL COMPARISON. One claim, one place, every surface reads it.
+ *
+ * This is the only sanctioned RAAYDR-versus-streaming comparison. It holds one
+ * variable constant: the same person, with the same listening behaviour, on
+ * both platforms. Every framing that has been in circulation changed either
+ * the unit (fan versus bare monthly listener) or the behaviour (80 streams
+ * versus 4) partway through, which is how four different multiples came to
+ * exist for one model.
+ *
+ * The claim leads with what a fan is really worth at the default attention
+ * share, not with the ceiling. £3.56 is reached only by a fan who plays
+ * literally nothing else, so leading with it states a bound nobody hits. This
+ * costs nothing: the ratio between the two platforms is attention-invariant
+ * at 14.83, so an honest level keeps the whole multiple.
+ *
+ * `multiple` is derived, never typed. If a rate moves, the claim moves with it.
+ *
+ * The denominator is not optional decoration. Quote it wherever a per-fan
+ * figure appears.
+ */
 export const CANONICAL = {
-  /** Ceiling for one fan at 100% attention, standard tier. */
+  /** Ceiling: one fan at 100% attention, standard tier. */
   artistPerFan: PER_FAN.artist.standard,
-  /** The same fan on Spotify, at 80 streams a month. */
+  /** The same fan on Spotify, at 80 streams a month. Also a ceiling. */
   spotifyPerFan: SPOTIFY_ENGAGED_FAN_MONTHLY,
   multiple: CANONICAL_MULTIPLE,
-  claim: `On RAAYDR, one engaged fan is worth up to £${PER_FAN.artist.standard.toFixed(2)} a month to an artist, around ${CANONICAL_MULTIPLE}x what the same fan is worth on Spotify.`,
+  typicalAttentionPct: ATTENTION_DEFAULT,
+  /**
+   * The realistic per-fan figure and its comparison, as ONE string.
+   *
+   * Deliberately not two exported numbers. 71p on its own undersells badly and
+   * invites being quoted alone; it only means anything beside the 4.8p the
+   * same fan is worth on Spotify. Keeping them welded together is the only
+   * enforcement the type system can give us, so do not add a constant that
+   * returns the artist side by itself.
+   */
+  typicalPair: `${pence(TYPICAL_ARTIST)} a month, against ${pence(TYPICAL_SPOTIFY)} on Spotify`,
+  claim: `A fan who gives you a fifth of their listening is worth ${pence(TYPICAL_ARTIST)} a month, against ${pence(TYPICAL_SPOTIFY)} on Spotify. One who plays nothing but you is worth £${PER_FAN.artist.standard.toFixed(2)}.`,
   denominator: `${SPLIT.artists}% of a £${PRICING.standard} subscription after VAT, publishing royalties and card fees. Actual earnings depend on your share of each fan's listening.`,
 } as const;
 
@@ -182,18 +224,6 @@ export const MODELLED_SHARE_NOTE = {
   driven:
     "Driven share is an assumption, not an observed rate. RAAYDR is pre-launch, so there is no measured average yet.",
 } as const;
-
-/**
- * Attention share is an artist's slice of each fan's total listening.
- * Default is Committed. Superfan is the top of the range, not the expectation.
- */
-export const ATTENTION_PRESETS = [
-  { label: "Casual", value: 10 },
-  { label: "Committed", value: 20 },
-  { label: "Superfan", value: 40 },
-] as const;
-
-export const ATTENTION_DEFAULT = 20;
 
 /** Founding creator cohorts. RAAYDR+ free forever. */
 export const FOUNDING_COHORTS = {
@@ -229,24 +259,27 @@ export function tastemakerEarnings(followers: number, drivenSharePct: number): n
   return followers * PER_FAN.tastemaker.standard * (drivenSharePct / 100);
 }
 
-/** Spotify monthly listeners required to earn the same amount. */
-export function spotifyEquivalentListeners(monthlyEarnings: number): number {
-  return Math.round(monthlyEarnings / SPOTIFY.perMonthlyListener);
-}
-
-/** What Spotify would pay for this many monthly listeners, in pounds. */
-export function spotifyMonthlyEarnings(fans: number): number {
-  return fans * SPOTIFY.perMonthlyListener;
+/**
+ * Spotify streams required to earn the same amount.
+ *
+ * Replaces spotifyEquivalentListeners(), which divided by a per-monthly-
+ * listener rate and so answered "how many people" using an unsourced
+ * assumption about how much each of them listens. Streams need only the
+ * observed per-stream rate and make no claim about headcount at all.
+ */
+export function spotifyEquivalentStreams(monthlyEarnings: number): number {
+  return Math.round(monthlyEarnings / SPOTIFY.perStream);
 }
 
 /**
  * The Spotify side of the canonical, matched-fan comparison: the same engaged
  * fans, at the same attention share, on Spotify instead.
  *
- * This is deliberately not spotifyMonthlyEarnings. That function prices a bare
- * monthly listener and ignores attention entirely, so the two are not
- * interchangeable and must never be swapped for each other to make a number
- * look better. Use this one wherever the copy says "the same fan".
+ * Both sides of any comparison must take the same attention share. Pricing the
+ * Spotify side off a flat per-listener rate ignores attention entirely and
+ * changes the population halfway through, which is what produced four
+ * different multiples for one model. Use this wherever the copy says "the
+ * same fan".
  */
 export function spotifyEngagedFanEarnings(
   fans: number,

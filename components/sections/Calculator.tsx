@@ -17,6 +17,7 @@ import {
   MODELLED_SHARE_NOTE,
   SPOTIFY,
   spotifyEngagedFanEarnings,
+  spotifyEquivalentStreams,
 } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Glyph from "@/components/Glyph";
@@ -32,6 +33,15 @@ const gbp = (v: number) =>
 
 const count = (v: number) =>
   new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(v);
+
+// Stream counts are quoted "roughly", and the rate under them is itself a
+// blended ~£0.0028 to £0.003, so six significant figures would be false
+// precision. Three is as much as the input supports.
+const roughCount = (v: number) => {
+  if (v <= 0) return "0";
+  const magnitude = Math.pow(10, Math.floor(Math.log10(v)) - 2);
+  return count(Math.round(v / magnitude) * magnitude);
+};
 
 const ATTENTION_TICKS = [10, 25, 50, 75, 100];
 
@@ -56,15 +66,16 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   // and it is why the multiple sits at a constant 15x instead of climbing
   // from 30x to 119x as the attention slider moves.
   //
-  // Do not swap the Spotify side for spotifyMonthlyEarnings(). That prices a
-  // bare monthly listener, ignores attention entirely, and silently changes
-  // the population halfway through the comparison.
+  // Never price the Spotify side off a per-monthly-listener rate. That ignores
+  // attention entirely and silently changes the population halfway through the
+  // comparison. The rate that allowed it has been removed from raaydrRates.
   const values = useMemo(() => {
     const raaydrM = raaydrMonthly(fans, attention / 100, tier);
     return {
       raaydrM,
       raaydrY: raaydrM * 12,
       spotifyM: spotifyEngagedFanEarnings(fans, attention),
+      spotifyStreams: spotifyEquivalentStreams(raaydrM),
     };
   }, [fans, attention, tier]);
 
@@ -77,6 +88,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   const raaydrMEl = useRef<HTMLSpanElement>(null);
   const raaydrYEl = useRef<HTMLSpanElement>(null);
   const fansEl = useRef<HTMLSpanElement>(null);
+  const streamsEl = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const paint = () => {
@@ -86,6 +98,8 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
       if (raaydrYEl.current)
         raaydrYEl.current.textContent = `${gbp(d.raaydrY)} a year`;
       if (fansEl.current) fansEl.current.textContent = count(fans);
+      if (streamsEl.current)
+        streamsEl.current.textContent = roughCount(d.spotifyStreams);
     };
 
     if (reduced) {
@@ -260,7 +274,12 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           <span className={styles.hookFigure} ref={fansEl}>
             {count(fans)}
           </span>{" "}
-          people, listening exactly the same amount, on both platforms.
+          people, listening exactly the same amount, on both platforms. To earn
+          the RAAYDR figure through Spotify instead you would need roughly{" "}
+          <span className={styles.hookFigure} ref={streamsEl}>
+            {roughCount(values.spotifyStreams)}
+          </span>{" "}
+          streams a month.
         </p>
       </div>
 

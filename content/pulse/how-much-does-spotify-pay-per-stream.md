@@ -77,7 +77,7 @@ And here is the same comparison at fanbase scale, using a working artist scenari
 | --- | --- | --- |
 | 500 engaged fans, 40% attention share | ~£48/month | ~£712/month |
 | Over a year | ~£576 | ~£8,544 |
-| Audience needed to earn £712/month | ~59,300 monthly listeners | 500 fans |
+| Streams needed to earn {{scenario.raaydrMonthly}}/month | ~{{scenario.spotifyStreams}} streams a month | {{scenario.fans}} fans |
 
 The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, your fans' money follows their listening instead of disappearing into a global pool.
 
@@ -85,9 +85,9 @@ The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, 
 
 Attention-based payment flips the pool. Instead of your fan's subscription being divided among every artist on the platform, it is divided among the artists that fan actually listened to, in proportion to their listening time.
 
-That is the model RAAYDR is built on. On a standard subscription, up to {{rates.perFan.standard}} per fan per month flows to artists based on each fan's actual attention. The same engaged fan worth {{canonical.spotifyPerFan}} a month on Spotify is worth up to {{canonical.artistPerFan}} a month here, roughly {{canonical.multiple}} more, because their money follows their ears.
+That is the model RAAYDR is built on. On a standard subscription, up to {{rates.perFan.standard}} per fan per month flows to artists based on each fan's actual attention. {{canonical.claim}} Their money follows their ears instead of a global chart they have nothing to do with.
 
-At that rate the maths changes shape entirely: 500 fans giving you 40% of their listening time is about £712 a month. To match that on Spotify you would need roughly 59,300 monthly listeners.
+At that rate the maths changes shape entirely: {{scenario.fans}} fans giving you {{scenario.attention}} of their listening time is about {{scenario.raaydrMonthly}} a month. To match that on Spotify you would need roughly {{scenario.spotifyStreams}} streams a month.
 
 We wrote a full breakdown of how attention-based payment works, and you can run your own numbers with the earnings calculator on [raaydr.com](https://raaydr.com).
 

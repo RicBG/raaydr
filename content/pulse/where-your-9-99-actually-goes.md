@@ -58,7 +58,7 @@ Per fan breaks that. Your fan's money is theirs to direct, and it follows their 
 
 Because the money is per fan and not per stream, the useful question is not how many plays you have. It is how many people genuinely listen to you, and how much of their listening you hold.
 
-The comparison that matters is monthly listeners, the figure Spotify for Artists actually shows you, not a per-stream rate. A modest number of real fans on RAAYDR earns the same as a far larger monthly listener count on Spotify, because most monthly listeners heard one track once and moved on. The artist calculator on the artists page lets you put in your own fan count and attention share and see the monthly listener equivalent for yourself.
+The comparison that matters is what one real fan is worth, not what one play is worth. {{canonical.claim}} That is {{canonical.denominator}} The artist calculator on the artists page lets you put in your own fan count and attention share and see both sides for yourself, along with the number of streams it would take to earn the same money through Spotify instead.
 
 ## What we are not doing
 

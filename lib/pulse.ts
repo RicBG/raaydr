@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   artistEarnings,
   spotifyEngagedFanEarnings,
+  spotifyEquivalentStreams,
   CANONICAL,
   PER_FAN,
   SPOTIFY,
@@ -74,6 +75,7 @@ const SCENARIO_ATTENTION = 40;
 const CONTENT_TOKENS: Record<string, string> = {
   "canonical.claim": CANONICAL.claim,
   "canonical.denominator": CANONICAL.denominator,
+  "canonical.typicalPair": CANONICAL.typicalPair,
   "canonical.multiple": `${CANONICAL.multiple}x`,
   "canonical.artistPerFan": money(CANONICAL.artistPerFan),
   "canonical.spotifyPerFan": money(CANONICAL.spotifyPerFan),
@@ -89,7 +91,17 @@ const CONTENT_TOKENS: Record<string, string> = {
   "scenario.spotifyMonthly": money(
     spotifyEngagedFanEarnings(SCENARIO_FANS, SCENARIO_ATTENTION)
   ),
+  // Reach, in streams. Rounded to the nearest thousand because every use of it
+  // is prefixed "roughly"; the exact figure is 237,333.
+  "scenario.spotifyStreams": nearestThousand(
+    spotifyEquivalentStreams(artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION))
+  ),
 };
+
+/** Thousands separator, rounded to the nearest thousand for prose. */
+function nearestThousand(value: number): string {
+  return (Math.round(value / 1000) * 1000).toLocaleString("en-GB");
+}
 
 /** Pounds, with the pence dropped when there are none. */
 function money(amount: number): string {
