@@ -288,3 +288,23 @@ h3 {
   white-space: nowrap;
   border: 0;
 }
+
+/* ---------- Signup confirmation, pre-paint cover ----------
+   The script in <head> stamps data-joined on <html> before first paint when a
+   role page is opened with the joined flag. This covers the page from the very
+   first frame, so the confirmation modal never arrives after a flash of the
+   role page underneath it. JoinedModal removes the attribute when dismissed. */
+html[data-joined="1"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: rgba(5, 6, 10, 0.82);
+  pointer-events: none;
+}
+
+/* The cover must not trap a visitor whose JS never runs, so it is torn down if
+   hydration has not replaced it. Nothing else sets this attribute. */
+html[data-joined="1"] {
+  scroll-behavior: auto;
+}

@@ -1,0 +1,98 @@
+/* Signup confirmation modal.
+   The matching pre-paint cover lives in globals.css under html[data-joined],
+   so the screen is already dark before this component mounts. */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 5vw, 2rem);
+  background: rgba(5, 6, 10, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overscroll-behavior: contain;
+}
+
+.panel {
+  position: relative;
+  width: min(30rem, 100%);
+  /* 63% of traffic is mobile: cap the height and let the panel scroll rather
+     than pushing the button off a short landscape viewport. */
+  max-height: min(90dvh, 100%);
+  overflow-y: auto;
+  padding: clamp(1.75rem, 6vw, 2.5rem);
+  border-radius: 1.25rem;
+  background: var(--deep, #05060a);
+  color: #f2f4f7;
+  text-align: center;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.55);
+}
+
+.dismiss {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  /* 44px, the minimum comfortable touch target. */
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  opacity: 0.65;
+}
+
+.dismiss:hover,
+.dismiss:focus-visible {
+  opacity: 1;
+}
+
+.title {
+  font-family: var(--font-display, inherit);
+  font-size: clamp(1.75rem, 6vw, 2.25rem);
+  line-height: 1.1;
+  margin: 0 0 0.75rem;
+}
+
+.line {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+.action {
+  margin-top: 1.5rem;
+  /* Full width on phones, shrink to content once there is room. */
+  width: 100%;
+}
+
+@media (min-width: 30rem) {
+  .action {
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel {
+    animation: joined-in 0.28s ease-out both;
+  }
+}
+
+@keyframes joined-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

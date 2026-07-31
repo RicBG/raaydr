@@ -207,7 +207,7 @@ export default function Hero() {
             </p>
             <a
               ref={ctaRef}
-              href="#join"
+              href="#waitlist"
               className={`btn ${styles.heroCta}`}
             >
               {ctaCopy().primary} <span aria-hidden="true">↓</span>

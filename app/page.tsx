@@ -28,8 +28,14 @@ export default function Home() {
       <GradientSpan>
         <Algorithm />
       </GradientSpan>
-      <FindYourPlace />
+      {/* The calculator sits directly after "People are the algorithm": the
+          section that explains attention is immediately followed by the one
+          that prices it. The role cards, which ask the visitor to place
+          themselves, come after. Swapping these two changes ScrollTrigger
+          order, so both sections and Stance were re-checked for pinning and
+          scroll progress. */}
       <RealNumbers />
+      <FindYourPlace />
       <Stance />
       <TickerMarquee
         top="Built for the culture"

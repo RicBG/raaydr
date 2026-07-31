@@ -3,6 +3,8 @@
 import { useId, useRef, useState, type FormEvent } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
 import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
+import { ANALYTICS_FLUSH_MS, joinedDestination } from "@/lib/joined";
+import { offerFor } from "@/lib/waitlistOffers";
 import {
   getMetaBrowserIds,
   newEventId,
@@ -29,6 +31,10 @@ type WaitlistFormProps = {
   /** "dark" swaps the input/selected-pill colours for a dark surface (e.g. the
    *  black MidWave block). Most of the form already tracks currentColor. */
   theme?: "light" | "dark";
+  /** Show the one-line offer under the role selector, changing with the role.
+   *  On for the two homepage captures; off elsewhere, because the role pages
+   *  already state their own offer in the page copy above the form. */
+  showOffer?: boolean;
 };
 
 export default function WaitlistForm({
@@ -36,6 +42,7 @@ export default function WaitlistForm({
   defaultRole,
   source,
   theme = "light",
+  showOffer = false,
 }: WaitlistFormProps) {
   const id = useId();
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
@@ -93,9 +100,17 @@ export default function WaitlistForm({
         throw new Error("request-failed");
       }
       setStatus("success");
-      setMessage("We'll email you when spots open.");
+      setMessage("Taking you to your page\u2026");
       // Conversion — fires to GA4 (sign_up) and Meta Pixel (Lead) together.
+      // This must happen BEFORE the document is replaced below.
       trackSignup({ role: slug, source: analyticsSource, eventId });
+      // Hand off to the role page, which shows the confirmation as a modal on
+      // arrival. location.replace, not assign: the form must not be left in
+      // history, or Back lands a signed-up visitor back on it to resubmit.
+      // The short hold lets the GA4 and Pixel beacons leave first.
+      window.setTimeout(() => {
+        window.location.replace(joinedDestination(slug));
+      }, ANALYTICS_FLUSH_MS);
     } catch {
       // No technical detail shown — just a plain, retryable error.
       setStatus("error");
@@ -106,7 +121,7 @@ export default function WaitlistForm({
   if (status === "success") {
     return (
       <div className={styles.success} role="status">
-        <p className={styles.successTitle}>On the list.</p>
+        <p className={styles.successTitle}>You&rsquo;re in.</p>
         <p>{message}</p>
       </div>
     );
@@ -168,6 +183,12 @@ export default function WaitlistForm({
           ))}
         </div>
       </fieldset>
+
+      {showOffer && (
+        <p className={styles.offer} aria-live="polite">
+          {offerFor(role)}
+        </p>
+      )}
 
       {status === "error" && (
         <p className={styles.error} role="alert">

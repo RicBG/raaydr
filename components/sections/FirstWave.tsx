@@ -117,7 +117,7 @@ export default function FirstWave() {
           {copy.body}
         </p>
         <div className={styles.form} data-reveal>
-          <WaitlistForm variant="closing" source="homepage-bottom" />
+          <WaitlistForm variant="closing" source="homepage-bottom" showOffer />
         </div>
         <p className={styles.micro} data-reveal>
           {copy.micro}

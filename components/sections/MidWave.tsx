@@ -55,7 +55,11 @@ export default function MidWave() {
   }, []);
 
   return (
-    <section className={styles.section} aria-labelledby="midwave-heading">
+    <section
+      id="waitlist"
+      className={styles.section}
+      aria-labelledby="midwave-heading"
+    >
       {/* Pulsing dot field on the section behind the block. */}
       <div className={styles.dotBg} aria-hidden="true">
         <LazyMount style={{ position: "absolute", inset: 0 }}>
@@ -86,6 +90,7 @@ export default function MidWave() {
               variant="closing"
               source="homepage-mid"
               theme="dark"
+              showOffer
             />
           </div>
         </div>
