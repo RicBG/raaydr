@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   artistPerFan,
+  formatGbp,
   fansToSlider,
   milestone,
   raaydrMonthly,
@@ -20,6 +21,7 @@ import {
   SPOTIFY,
   engagedFanMonthly,
   floorToPence,
+  spotifyEngagedFanEarnings,
   spotifyEquivalentStreams,
 } from "./raaydrRates";
 
@@ -35,6 +37,40 @@ describe("floorToPence", () => {
     expect(floorToPence(3.56)).toBeCloseTo(3.56, 10);
     expect(floorToPence(0.97)).toBeCloseTo(0.97, 10);
     expect(floorToPence(0.1 + 0.2)).toBeCloseTo(0.3, 10);
+  });
+});
+
+describe("formatGbp", () => {
+  // The bug this rule exists for: the Spotify panel rendered "£48.00" beside
+  // RAAYDR's "£712". Two figures meant to be read against each other must not
+  // disagree on format.
+  it("drops the pence when a sub-£100 figure has none", () => {
+    expect(formatGbp(48)).toBe("£48");
+    expect(formatGbp(712)).toBe("£712");
+  });
+
+  it("survives the float error these values actually arrive with", () => {
+    // 1,000 fans at 20% of £0.24 is 48.00000000000001, not an integer.
+    expect(formatGbp(1000 * 0.2 * 0.24)).toBe("£48");
+    expect(formatGbp(0.1 + 0.2)).toBe("£0.30");
+  });
+
+  it("keeps the pence on sub-£100 figures that have them", () => {
+    expect(formatGbp(0.24)).toBe("£0.24");
+    expect(formatGbp(3.56)).toBe("£3.56");
+    expect(formatGbp(48.5)).toBe("£48.50");
+  });
+
+  it("still drops the pence at £100 and above", () => {
+    expect(formatGbp(783.2)).toBe("£783");
+    expect(formatGbp(8544)).toBe("£8,544");
+  });
+
+  it("formats both sides of the default view the same way", () => {
+    const raaydr = raaydrMonthly(1000, 0.2);
+    const spotify = spotifyEngagedFanEarnings(1000, 20);
+    expect(formatGbp(spotify)).toBe("£48");
+    expect(formatGbp(raaydr)).toBe("£712");
   });
 });
 

@@ -9,18 +9,11 @@ import {
   PRICING_TIER_DEFAULT,
   TIER_LABEL,
   type PricingTier,
+  formatGbp as gbp,
 } from "@/lib/calculator";
 import { MODELLED_SHARE_NOTE } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
-
-const gbp = (v: number) =>
-  new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    maximumFractionDigits: v >= 100 ? 0 : 2,
-    minimumFractionDigits: v >= 100 ? 0 : 2,
-  }).format(v);
 
 const count = (v: number) =>
   new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(v);
