@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
-import { sliderToFans } from "@/lib/calculator";
+import { sliderToFans, formatGbp as gbp } from "@/lib/calculator";
 import {
   ATTENTION_DEFAULT,
   MODELLED_SHARE_NOTE,
@@ -10,14 +10,6 @@ import {
 } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
-
-const gbp = (v: number) =>
-  new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    maximumFractionDigits: v >= 100 ? 0 : 2,
-    minimumFractionDigits: v >= 100 ? 0 : 2,
-  }).format(v);
 
 const count = (v: number) =>
   new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }).format(v);

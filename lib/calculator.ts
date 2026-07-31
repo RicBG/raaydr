@@ -35,6 +35,35 @@ export const TIER_LABEL: Record<PricingTier, string> = {
   standard: `£${PRICING.standard} · standard`,
 };
 
+/**
+ * Money for the calculator readouts. Shared by all three so a pair of figures
+ * shown side by side is always formatted the same way.
+ *
+ * Two rules, in order:
+ *   - At £100 and up, drop the pence. Precision that fine is noise next to a
+ *     three-figure number, and the pence move on every slider step.
+ *   - Below £100, keep the pence only when there are any. This is the rule
+ *     that was missing: the Spotify panel rendered "£48.00" beside RAAYDR's
+ *     "£712", so two figures meant to be read against each other disagreed on
+ *     format. Sub-pound figures like £0.24 still need their pence and keep
+ *     them.
+ *
+ * The whole-pound test is done on the rounded pence rather than with
+ * Number.isInteger, because these values arrive from floating point
+ * multiplication: 1000 * 0.2 * 0.24 is 48.00000000000001, which is not an
+ * integer but must still print as "£48".
+ */
+export function formatGbp(value: number): string {
+  const hasPence = Math.round(value * 100) % 100 !== 0;
+  const digits = value >= 100 || !hasPence ? 0 : 2;
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits,
+  }).format(value);
+}
+
 /** What one fan is worth to an artist per month at 100% attention share. */
 export function artistPerFan(tier: PricingTier = "standard"): number {
   return PER_FAN.artist[tier];
