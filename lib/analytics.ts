@@ -24,18 +24,38 @@ function fbq(...args: unknown[]) {
   }
 }
 
+/**
+ * NEVER SEND A GA4 EVENT PARAMETER NAMED `source`, `medium` OR `campaign`.
+ *
+ * GA4 folds those names into its manual campaign dimensions. Between roughly
+ * 27 July and 1 August 2026 these events sent a parameter named `source`
+ * carrying our own form labels, and GA4 reported "homepage-mid",
+ * "homepage-bottom", "page" and "nav" as session_manual_source: about 21
+ * sessions in seven days, none of which converted, because arriving campaign
+ * values restart acquisition and detach the visitor from the campaign that
+ * actually brought them.
+ *
+ * The tell was "page". It is a literal in WaitlistCtaTracker and appears in no
+ * URL anywhere on the site, so no link could have carried it. Nothing in this
+ * repo has ever appended a utm_ parameter to an internal link.
+ *
+ * GA4 therefore uses `cta_placement`. Meta keeps `source`: it has no reserved
+ * name collision, and renaming it would break Meta reporting continuity for no
+ * benefit. The two deliberately differ; that is not an oversight.
+ */
+
 /** A CTA that jumps to the waitlist form was clicked (e.g. the nav/hero "Join"
- *  button). `source` says roughly where it was clicked from. */
-export function trackWaitlistCtaClick(source: string) {
-  gtag("event", "waitlist_cta_click", { source });
-  fbq("trackCustom", "WaitlistCtaClick", { source });
+ *  button). `placement` says roughly where it was clicked from. */
+export function trackWaitlistCtaClick(placement: string) {
+  gtag("event", "waitlist_cta_click", { cta_placement: placement });
+  fbq("trackCustom", "WaitlistCtaClick", { source: placement });
 }
 
 /** The visitor started filling the waitlist form (first field interaction).
  *  Paired with the signup event, this gives the started-vs-completed funnel. */
-export function trackWaitlistStart(source: string) {
-  gtag("event", "waitlist_start", { source });
-  fbq("trackCustom", "WaitlistStart", { source });
+export function trackWaitlistStart(placement: string) {
+  gtag("event", "waitlist_start", { cta_placement: placement });
+  fbq("trackCustom", "WaitlistStart", { source: placement });
 }
 
 /** A waitlist signup succeeded — the conversion. `eventId` is echoed to the
@@ -47,7 +67,8 @@ export function trackSignup(params: {
 }) {
   const { role, source, eventId } = params;
   // GA4 recommended "sign_up" event — mark it as a key event in the GA4 UI.
-  gtag("event", "sign_up", { method: "waitlist", role, source });
+  // cta_placement, not source: see the warning above this file's trackers.
+  gtag("event", "sign_up", { method: "waitlist", role, cta_placement: source });
   // Meta standard "Lead" event; eventID matches the CAPI event for dedup.
   fbq("track", "Lead", { content_category: role, source }, { eventID: eventId });
 }
