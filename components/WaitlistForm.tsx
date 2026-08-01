@@ -5,6 +5,7 @@ import { ctaCopy } from "@/lib/siteConfig";
 import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
 import { ANALYTICS_FLUSH_MS, joinedDestination } from "@/lib/joined";
 import { offerFor } from "@/lib/waitlistOffers";
+import { readAttribution } from "@/lib/attribution";
 import {
   getMetaBrowserIds,
   newEventId,
@@ -81,6 +82,9 @@ export default function WaitlistForm({
     // dedupe against, and match better than, the browser Pixel event.
     const eventId = newEventId();
     const { fbp, fbc } = getMetaBrowserIds();
+    // Whatever brought this session here. Empty object if unavailable: this
+    // must never be able to block a conversion.
+    const attribution = readAttribution();
 
     setStatus("submitting");
     try {
@@ -94,6 +98,7 @@ export default function WaitlistForm({
           eventId,
           ...(fbp ? { fbp } : {}),
           ...(fbc ? { fbc } : {}),
+          ...attribution,
         }),
       });
       if (!res.ok) {
@@ -103,7 +108,13 @@ export default function WaitlistForm({
       setMessage("Taking you to your page\u2026");
       // Conversion — fires to GA4 (sign_up) and Meta Pixel (Lead) together.
       // This must happen BEFORE the document is replaced below.
-      trackSignup({ role: slug, source: analyticsSource, eventId });
+      trackSignup({
+        role: slug,
+        source: analyticsSource,
+        eventId,
+        utmSource: attribution.utm_source,
+        utmCampaign: attribution.utm_campaign,
+      });
       // Hand off to the role page, which shows the confirmation as a modal on
       // arrival. location.replace, not assign: the form must not be left in
       // history, or Back lands a signed-up visitor back on it to resubmit.
