@@ -92,6 +92,33 @@ as $function$
     landing_path = coalesce(public.waitlist_signups.landing_path, excluded.landing_path);
 $function$;
 
+-- 3. Re-apply the execute lock down.
+--
+-- REQUIRED, not tidiness. Migration 20260719015942
+-- waitlist_upsert_fn_lock_down_execute revoked EXECUTE on this function from
+-- everyone except service_role: the ACL before this migration reads
+-- {postgres=X/postgres,service_role=X/postgres}. Dropping a function discards
+-- its ACL, and a newly created function grants EXECUTE to PUBLIC by default, so
+-- steps 1 and 2 above would silently hand the anon role the ability to call the
+-- signup RPC directly.
+--
+-- RLS would still refuse the write, since the function is not SECURITY DEFINER
+-- and the table has RLS on with no policies. That is not a reason to skip this.
+-- The lock down was applied deliberately and is the layer that stops anon
+-- reaching the function at all, rather than reaching it and being refused.
+
+revoke all on function public.upsert_waitlist_signup(
+  text, text, text, text, text, text, text, text, text, text
+) from public;
+
+revoke all on function public.upsert_waitlist_signup(
+  text, text, text, text, text, text, text, text, text, text
+) from anon, authenticated;
+
+grant execute on function public.upsert_waitlist_signup(
+  text, text, text, text, text, text, text, text, text, text
+) to service_role;
+
 -- No RLS policy change is needed. The table has RLS enabled with zero policies,
 -- and inserts run server side through the service role key, which bypasses RLS
 -- entirely. Verified against pg_policies on 1 August 2026: there is no column
