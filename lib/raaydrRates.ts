@@ -132,8 +132,15 @@ export const SPOTIFY = {
   engagedFanStreamsPerMonth: 80,
   /**
    * Spotify Premium Individual, UK. £12.99 since November 2025, up from
-   * £11.99 (announced 25 October 2025). Checked July 2026. Listener-facing
-   * copy must read this rather than spelling a price out.
+   * £11.99 (announced 25 October 2025).
+   *
+   * Verified against Spotify's own pricing page by Ric on 1 August 2026. Worth
+   * recording, because it was first taken from search-result summaries: every
+   * direct fetch of spotify.com and of the trade coverage returns 403 to an
+   * automated request, so this figure cannot be re-checked from here. When it
+   * next moves, a human has to look.
+   *
+   * Listener-facing copy must read this rather than spelling a price out.
    */
   subscriptionPrice: 12.99,
 } as const;
