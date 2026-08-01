@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import WaitlistCtaTracker from "@/components/WaitlistCtaTracker";
 import JsonLd from "@/components/JsonLd";
 import JoinedModal from "@/components/JoinedModal";
+import AttributionCapture from "@/components/AttributionCapture";
 import { JOINED_PREPAINT_SCRIPT } from "@/lib/joined";
 import { organizationSchema, pageMetadata, websiteSchema } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
@@ -70,6 +71,7 @@ export default function RootLayout({
           <Footer />
         </LenisProvider>
         <WaitlistCtaTracker />
+        <AttributionCapture />
         {/* Mounted once here rather than on each role page, so the role pages
             themselves are untouched and any page can receive the handoff. */}
         <JoinedModal />

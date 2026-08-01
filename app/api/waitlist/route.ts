@@ -32,6 +32,13 @@ export async function POST(request: Request) {
     eventId?: unknown;
     fbp?: unknown;
     fbc?: unknown;
+    utm_source?: unknown;
+    utm_medium?: unknown;
+    utm_campaign?: unknown;
+    utm_content?: unknown;
+    utm_term?: unknown;
+    referrer?: unknown;
+    landing_path?: unknown;
   };
   try {
     body = await request.json();
@@ -48,6 +55,24 @@ export async function POST(request: Request) {
   const eventId = typeof body.eventId === "string" ? body.eventId : undefined;
   const fbp = typeof body.fbp === "string" ? body.fbp : undefined;
   const fbc = typeof body.fbc === "string" ? body.fbc : undefined;
+
+  // Attribution. Already sanitised client side; re-trimmed here because a
+  // request body is never trusted, and length-capped to match the columns.
+  const attr = (key: keyof typeof body) => {
+    const value = body[key];
+    return typeof value === "string" && value.trim()
+      ? value.trim().slice(0, 200)
+      : null;
+  };
+  const attribution = {
+    p_utm_source: attr("utm_source"),
+    p_utm_medium: attr("utm_medium"),
+    p_utm_campaign: attr("utm_campaign"),
+    p_utm_content: attr("utm_content"),
+    p_utm_term: attr("utm_term"),
+    p_referrer: attr("referrer"),
+    p_landing_path: attr("landing_path"),
+  };
 
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
@@ -82,11 +107,29 @@ export async function POST(request: Request) {
     );
   }
 
-  const { error } = await supabase.rpc("upsert_waitlist_signup", {
+  const core = {
     p_email: email,
     p_role: role,
     p_source: source || "unknown",
+  };
+
+  let { error } = await supabase.rpc("upsert_waitlist_signup", {
+    ...core,
+    ...attribution,
   });
+
+  // If the attribution migration has not been applied yet, PostgREST cannot
+  // find a ten-argument function and returns PGRST202. Retry with the original
+  // three so the signup still lands. Attribution is worth having and is never
+  // worth losing a conversion over, and this removes the deploy ordering trap
+  // where shipping the code before running the migration would reject every
+  // signup.
+  if (error?.code === "PGRST202") {
+    console.error(
+      "[waitlist] attribution migration not applied; saved without attribution"
+    );
+    ({ error } = await supabase.rpc("upsert_waitlist_signup", core));
+  }
 
   if (error) {
     // Log server-side only; never surface Supabase/Postgres detail to clients.

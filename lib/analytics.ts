@@ -64,13 +64,40 @@ export function trackSignup(params: {
   role: WaitlistRoleSlug;
   source: string;
   eventId: string;
+  /** This session's captured campaign, if any. Lets a GA4 conversion be
+   *  reconciled against the database row rather than read as a separate
+   *  story. */
+  utmSource?: string;
+  utmCampaign?: string;
 }) {
-  const { role, source, eventId } = params;
+  const { role, source, eventId, utmSource, utmCampaign } = params;
   // GA4 recommended "sign_up" event — mark it as a key event in the GA4 UI.
   // cta_placement, not source: see the warning above this file's trackers.
-  gtag("event", "sign_up", { method: "waitlist", role, cta_placement: source });
+  //
+  // The campaign values are prefixed attr_ for the same reason. They are our
+  // record of what we captured, not an instruction to GA4 about how to
+  // attribute the session, and a bare utm_ prefix sits close enough to GA4's
+  // campaign vocabulary that it is not worth the risk of finding out.
+  gtag("event", "sign_up", {
+    method: "waitlist",
+    role,
+    cta_placement: source,
+    ...(utmSource ? { attr_utm_source: utmSource } : {}),
+    ...(utmCampaign ? { attr_utm_campaign: utmCampaign } : {}),
+  });
   // Meta standard "Lead" event; eventID matches the CAPI event for dedup.
-  fbq("track", "Lead", { content_category: role, source }, { eventID: eventId });
+  // Meta has no reserved name collision, so these keep the plain names.
+  fbq(
+    "track",
+    "Lead",
+    {
+      content_category: role,
+      source,
+      ...(utmSource ? { utm_source: utmSource } : {}),
+      ...(utmCampaign ? { utm_campaign: utmCampaign } : {}),
+    },
+    { eventID: eventId }
+  );
 }
 
 /** A collision-resistant id shared between the browser Pixel event and the
