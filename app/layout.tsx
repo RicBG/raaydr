@@ -7,6 +7,8 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import WaitlistCtaTracker from "@/components/WaitlistCtaTracker";
 import JsonLd from "@/components/JsonLd";
+import JoinedModal from "@/components/JoinedModal";
+import { JOINED_PREPAINT_SCRIPT } from "@/lib/joined";
 import { organizationSchema, pageMetadata, websiteSchema } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -48,6 +50,13 @@ export default function RootLayout({
             crossOrigin="anonymous"
           />
         ))}
+        {/* Runs before first paint. Stamps the document when a role page is
+            opened with the post-signup flag so the cover in globals.css is on
+            screen from the first frame, and the confirmation modal never
+            arrives after a flash of the page underneath it. Deliberately a raw
+            inline script, not next/script: every loading strategy runs after
+            paint, which is exactly the flash this prevents. */}
+        <script dangerouslySetInnerHTML={{ __html: JOINED_PREPAINT_SCRIPT }} />
       </head>
       <body>
         {/* Site-wide entity markup. Per-page FAQPage blocks are emitted by the
@@ -61,6 +70,9 @@ export default function RootLayout({
           <Footer />
         </LenisProvider>
         <WaitlistCtaTracker />
+        {/* Mounted once here rather than on each role page, so the role pages
+            themselves are untouched and any page can receive the handoff. */}
+        <JoinedModal />
         <SpeedInsights />
         <Analytics />
         {/* Google tag (gtag.js) — GA4 analytics */}

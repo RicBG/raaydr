@@ -120,3 +120,15 @@
 .dark .error {
   color: var(--coral);
 }
+
+/* Role-dependent offer line, sitting directly under the role selector.
+   One short line, so it must not reflow the form when the role changes. */
+.offer {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  opacity: 0.75;
+  /* Two lines' worth of room on the narrowest phones, so switching role never
+     nudges the submit button. */
+  min-height: 2.5em;
+}

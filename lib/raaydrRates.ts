@@ -169,19 +169,25 @@ export const PLATFORM_PER_STREAM_ESTIMATES = {
  * Distributable revenue per subscription: what the 55/15/30 split is a share
  * of, after VAT, publishing royalties and payment costs.
  *
- * PUBLISHED FIGURE, NOT DERIVED FROM THE CONSTANTS ABOVE. It comes from the
- * fitted deduction stack, not from PER_FAN. Deriving it the other way, as
- * PER_FAN.artist.standard / 55%, gives £6.4727, which is the floor of a range
- * rather than the value: because the artist rate is floored to whole pence,
- * any distributable in [£6.4727, £6.4909) produces the published £3.56, and
- * £6.49 sits inside that range. Both figures are correct and they are not the
- * same number. Do not "fix" one to match the other.
+ * NOT DERIVED FROM THE CONSTANTS ABOVE. It comes from the waterfall, not from
+ * PER_FAN. Deriving it backwards, as PER_FAN.artist.standard / 55%, gives
+ * £6.4727, which is the floor of a range rather than the value: because the
+ * artist rate is floored to whole pence, any distributable in
+ * [£6.4727, £6.4909) produces the published £3.56. Both figures are right and
+ * they are not the same number. Do not "fix" one to match the other.
  *
- * calculator.test.ts pins the containment, so if a rate moves and £6.49 falls
- * out of the implied range, the build says so.
+ * £6.48, corrected from £6.49 on 1 August 2026. Reproduced from
+ * packages/rates/src/raaydr-rates.ts in the platform repo, which is the
+ * executable source of truth: distributableMinor('standard') returns 648
+ * (648.3220p before flooring), and that repo's own test pins it. The economics
+ * doc agrees at v1.3 §3 and lists the old £6.49 as superseded in §8. £6.49 was
+ * a presentation rounding that predated the rates file.
+ *
+ * calculator.test.ts pins the containment, so if a rate moves and this figure
+ * falls out of the implied range, the build says so.
  */
 export const DISTRIBUTABLE = {
-  standard: 6.49,
+  standard: 6.48,
 } as const;
 
 /** Pence, for sub-pound per-fan figures. 0.71 to "71p", 0.048 to "4.8p". */

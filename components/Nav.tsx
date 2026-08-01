@@ -39,7 +39,10 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const pathname = usePathname();
-  const ctaHref = pathname === "/" ? "#join" : "/#join";
+  // The waitlist CTAs point at the mid page form (#waitlist), not the closing
+  // one (#join): it sits right after How It Works, so it catches people at the
+  // moment they have understood the model rather than after the whole page.
+  const ctaHref = pathname === "/" ? "#waitlist" : "/#waitlist";
 
   // Hide on scroll down, reveal on scroll up; blurred canvas background once
   // past the hero.
