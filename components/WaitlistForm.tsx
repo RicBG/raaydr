@@ -6,6 +6,7 @@ import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
 import { ANALYTICS_FLUSH_MS, joinedDestination } from "@/lib/joined";
 import { offerFor } from "@/lib/waitlistOffers";
 import { readAttribution } from "@/lib/attribution";
+import { effectiveConsent } from "@/lib/consent";
 import {
   getMetaBrowserIds,
   newEventId,
@@ -81,7 +82,14 @@ export default function WaitlistForm({
     // Shared id + Meta cookies let the server-side Conversions API "Lead" event
     // dedupe against, and match better than, the browser Pixel event.
     const eventId = newEventId();
-    const { fbp, fbc } = getMetaBrowserIds();
+    // Advertising consent decides what leaves the browser for Meta. Without it
+    // the _fbp/_fbc cookies should not exist at all (the Pixel is revoked
+    // before init), but they are withheld explicitly rather than relied on to
+    // be absent — a stale cookie from before the banner shipped would
+    // otherwise still be forwarded.
+    const consent = effectiveConsent();
+    const { fbp, fbc } =
+      consent === "granted" ? getMetaBrowserIds() : { fbp: "", fbc: "" };
     // Whatever brought this session here. Empty object if unavailable: this
     // must never be able to block a conversion.
     const attribution = readAttribution();
@@ -96,6 +104,7 @@ export default function WaitlistForm({
           role: slug,
           ...(source ? { source } : {}),
           eventId,
+          consent,
           ...(fbp ? { fbp } : {}),
           ...(fbc ? { fbc } : {}),
           ...attribution,

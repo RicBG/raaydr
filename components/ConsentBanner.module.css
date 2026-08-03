@@ -1,0 +1,111 @@
+/* Cookie consent banner.
+   Fixed to the bottom rather than a full-screen modal: it must be dismissible
+   without trapping the page, and a blocking overlay on first visit reads as a
+   dark pattern in the other direction. */
+
+.banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 190; /* under JoinedModal (200), over page content */
+  padding: clamp(0.875rem, 3vw, 1.25rem);
+  background: var(--deep, #05060a);
+  border-top: 1px solid rgba(242, 244, 247, 0.14);
+  color: #f2f4f7;
+  animation: consent-rise 0.28s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    animation: none;
+  }
+}
+
+@keyframes consent-rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(0.75rem, 3vw, 1.75rem);
+  width: min(72rem, 100%);
+  margin: 0 auto;
+}
+
+.copy {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.body {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  opacity: 0.92;
+}
+
+.link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.link:hover {
+  opacity: 0.75;
+}
+
+/* Both buttons share one class. Identical weight is a compliance requirement,
+   not a style choice: a reject that is quieter than the accept invalidates the
+   consent. Do not restyle one of these without the other. */
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.625rem;
+}
+
+.button {
+  flex: 1 1 auto;
+  padding: 0.6875rem 1.5rem;
+  border: 1px solid rgba(242, 244, 247, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: #f2f4f7;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.button:hover {
+  background: rgba(242, 244, 247, 0.1);
+  border-color: rgba(242, 244, 247, 0.45);
+}
+
+.button:focus-visible {
+  outline: 2px solid #f2f4f7;
+  outline-offset: 2px;
+}
+
+@media (max-width: 34rem) {
+  .actions {
+    width: 100%;
+  }
+}
