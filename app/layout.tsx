@@ -9,7 +9,9 @@ import WaitlistCtaTracker from "@/components/WaitlistCtaTracker";
 import JsonLd from "@/components/JsonLd";
 import JoinedModal from "@/components/JoinedModal";
 import AttributionCapture from "@/components/AttributionCapture";
+import ConsentBanner from "@/components/ConsentBanner";
 import { JOINED_PREPAINT_SCRIPT } from "@/lib/joined";
+import { CONSENT_PREPAINT_SCRIPT, META_PIXEL_SCRIPT } from "@/lib/consent";
 import { organizationSchema, pageMetadata, websiteSchema } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -58,6 +60,12 @@ export default function RootLayout({
             inline script, not next/script: every loading strategy runs after
             paint, which is exactly the flash this prevents. */}
         <script dangerouslySetInnerHTML={{ __html: JOINED_PREPAINT_SCRIPT }} />
+        {/* Consent Mode v2 defaults. MUST stay above the Google tag below and
+            must stay a raw inline script in <head>: Consent Mode only binds if
+            the default command reaches the dataLayer before gtag.js
+            initialises. Set it any later and the tag has already written its
+            cookies, which is precisely what the banner exists to prevent. */}
+        <script dangerouslySetInnerHTML={{ __html: CONSENT_PREPAINT_SCRIPT }} />
       </head>
       <body>
         {/* Site-wide entity markup. Per-page FAQPage blocks are emitted by the
@@ -75,9 +83,18 @@ export default function RootLayout({
         {/* Mounted once here rather than on each role page, so the role pages
             themselves are untouched and any page can receive the handoff. */}
         <JoinedModal />
+        <ConsentBanner />
+        {/* Vercel Analytics and Speed Insights are cookieless and set no
+            identifier, so they are outside PECR's consent requirement and are
+            not gated. If either is ever configured to identify visitors, it
+            moves behind the banner with the rest. */}
         <SpeedInsights />
         <Analytics />
-        {/* Google tag (gtag.js) — GA4 analytics */}
+        {/* Google tag (gtag.js) — GA4 analytics.
+            Loads unconditionally but starts fully denied via the Consent Mode
+            defaults set in <head>. Denied means no cookies and no identifiers,
+            while still letting GA4 model conversions for visitors who decline,
+            which is why the tag is held closed rather than withheld. */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-EG7SLYLLMY"
           strategy="afterInteractive"
@@ -90,30 +107,16 @@ export default function RootLayout({
             gtag('config', 'G-EG7SLYLLMY');
           `}
         </Script>
-        {/* Meta Pixel */}
+        {/* Meta Pixel. Revoked before init, so no _fbp cookie is set until the
+            visitor accepts; see META_PIXEL_SCRIPT for why the order matters. */}
         <Script id="meta-pixel" strategy="afterInteractive">
-          {`
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '1071993162391254');
-            fbq('track', 'PageView');
-          `}
+          {META_PIXEL_SCRIPT("1071993162391254")}
         </Script>
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            src="https://www.facebook.com/tr?id=1071993162391254&ev=PageView&noscript=1"
-            alt=""
-          />
-        </noscript>
+        {/* The <noscript> tracking pixel that used to sit here has been
+            removed. It fired an unconditional PageView to Meta from an <img>,
+            which no script can gate — and consent cannot be obtained without
+            JavaScript in the first place, so it could only ever have tracked
+            people who had no way to agree. */}
       </body>
     </html>
   );

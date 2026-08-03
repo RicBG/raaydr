@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     eventId?: unknown;
     fbp?: unknown;
     fbc?: unknown;
+    consent?: unknown;
     utm_source?: unknown;
     utm_medium?: unknown;
     utm_campaign?: unknown;
@@ -55,6 +56,18 @@ export async function POST(request: Request) {
   const eventId = typeof body.eventId === "string" ? body.eventId : undefined;
   const fbp = typeof body.fbp === "string" ? body.fbp : undefined;
   const fbc = typeof body.fbc === "string" ? body.fbc : undefined;
+
+  /**
+   * Advertising consent, as reported by the browser.
+   *
+   * Absent means no. The Conversions API runs server-side, so the banner and
+   * the Pixel's own revoke cannot reach it: without this check a visitor who
+   * rejected cookies would still have their hashed email sent to Meta by the
+   * signup itself, which is the one leak that would make the whole banner
+   * decorative. An old client that does not send the field is treated as a
+   * rejection rather than trusted, because that is the safe direction to fail.
+   */
+  const marketingConsent = body.consent === "granted";
 
   // Attribution. Already sanitised client side; re-trimmed here because a
   // request body is never trusted, and length-capped to match the columns.
@@ -143,19 +156,24 @@ export async function POST(request: Request) {
   // Server-side Meta "Lead" conversion. Deduped against the browser Pixel via
   // eventId. Awaited but never allowed to fail the signup — a CAPI error only
   // logs. No-op unless META_PIXEL_ID + META_CAPI_ACCESS_TOKEN are set.
-  await sendMetaLead({
-    email,
-    role,
-    source: source || "unknown",
-    eventId,
-    fbp,
-    fbc,
-    clientIp: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
-    userAgent: request.headers.get("user-agent") ?? undefined,
-    eventSourceUrl: request.headers.get("referer") ?? undefined,
-  }).catch((err) => {
-    console.error(`[waitlist] Meta CAPI failed: ${(err as Error).message}`);
-  });
+  //
+  // Skipped entirely without advertising consent. The signup itself still
+  // saves: consent governs what we tell Meta, never whether someone can join.
+  if (marketingConsent) {
+    await sendMetaLead({
+      email,
+      role,
+      source: source || "unknown",
+      eventId,
+      fbp,
+      fbc,
+      clientIp: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      userAgent: request.headers.get("user-agent") ?? undefined,
+      eventSourceUrl: request.headers.get("referer") ?? undefined,
+    }).catch((err) => {
+      console.error(`[waitlist] Meta CAPI failed: ${(err as Error).message}`);
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }
