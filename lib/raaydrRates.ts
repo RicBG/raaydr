@@ -177,6 +177,35 @@ export const SPOTIFY = {
 } as const;
 
 /**
+ * How much a fan plays in a month, for the calculator only.
+ *
+ * THIS IS AN INPUT THE VISITOR CHOOSES, NOT A RATE RAAYDR PUBLISHES. That
+ * distinction is the whole reason it is allowed to exist. §6 of the economics
+ * doc permits pound figures "only as calculator outputs where the user chose
+ * the inputs", and §5 forbids any *published* Spotify figure denominated per
+ * fan or per month. A slider the visitor moves is the first thing; a constant
+ * baked into copy is the second.
+ *
+ * The retired 80-a-month failed because it was fixed, invisible and load
+ * bearing: it set a published 15x that nobody could see the input to. Here the
+ * number is on screen, adjustable, and labelled — and moving it is the point,
+ * because the RAAYDR side does not move with it and the Spotify side does.
+ *
+ * NEVER let these values reach CANONICAL, a Pulse token, or any static copy.
+ */
+export const LISTENING_PRESETS = [
+  { label: "Light", value: 150 },
+  { label: "Regular", value: 500 },
+  { label: "Heavy", value: 1000 },
+] as const;
+
+/** Roughly an hour of listening a day. Modelled, and the visitor can change it. */
+export const LISTENING_DEFAULT = 500;
+
+export const LISTENING_MIN = 50;
+export const LISTENING_MAX = 2000;
+
+/**
  * How many streams on a platform paying `perStream` it takes to earn a given
  * amount. The only honest bridge between the two models: RAAYDR pays per fan
  * and does not care about volume, Spotify pays per play and cares about
@@ -392,16 +421,26 @@ export function spotifyEquivalentStreams(monthlyEarnings: number): number {
   return equivalentStreams(monthlyEarnings, SPOTIFY.perStream);
 }
 
-/*
- * spotifyEngagedFanEarnings(fans, attentionPct) was removed here on 3 August
- * 2026. It returned `fans × attention × £0.24`, and the £0.24 was £0.003 ×
- * 80 assumed streams a month. It was the only way the site ever produced a
- * pounds-versus-pounds comparison, and it could not survive its own input
- * moving: at 800 to 1,000 streams a month, figures nobody could rule out, the
- * Spotify column rose eightfold to twelvefold and the headline multiple fell
- * from 15x to about 1.2x.
+/**
+ * What the same fans are worth per month on Spotify, in pounds.
  *
- * Use spotifyEquivalentStreams() instead. It answers the same question the
- * comparison was for — what would this take on Spotify — in a unit the
- * observed rate can actually support.
+ * `streamsPerMonth` is a REQUIRED PARAMETER, and that is the entire design.
+ * Its predecessor, spotifyEngagedFanEarnings(fans, attentionPct), read an
+ * assumed 80 plays a month from a constant, so every caller produced a pound
+ * figure without knowing it had assumed anything — which is how a published
+ * 15x came to rest on a number nobody could see. Here the volume cannot be
+ * omitted, so no caller can pretend it does not exist.
+ *
+ * Pass a value the visitor chose. Do not default it, do not read it from a
+ * constant at the call site, and do not use this to build any published claim:
+ * per §5 of the economics doc, no Spotify figure denominated per fan may be
+ * published without a citable source for monthly listening volume, and there
+ * still is none. CANONICAL stays in plays for exactly that reason.
  */
+export function spotifyFanEarnings(
+  fans: number,
+  attentionPct: number,
+  streamsPerMonth: number
+): number {
+  return fans * (attentionPct / 100) * streamsPerMonth * SPOTIFY.perStream;
+}

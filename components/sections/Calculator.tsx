@@ -15,9 +15,14 @@ import {
 import {
   ATTENTION_DEFAULT,
   ATTENTION_PRESETS,
+  LISTENING_DEFAULT,
+  LISTENING_MAX,
+  LISTENING_MIN,
+  LISTENING_PRESETS,
   MODELLED_SHARE_NOTE,
   SPOTIFY,
   spotifyEquivalentStreams,
+  spotifyFanEarnings,
 } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Glyph from "@/components/Glyph";
@@ -50,33 +55,40 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
 
   const [fanPos, setFanPos] = useState(0.5); // log position → 1,000 fans
   const [attention, setAttention] = useState(ATTENTION_DEFAULT); // percent
+  const [listening, setListening] = useState(LISTENING_DEFAULT); // plays/month
   const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
 
   const fans = sliderToFans(fanPos);
-  // The Spotify side is stated in plays, not pounds. Putting a pound figure
-  // there requires knowing how much a person listens in a month, and we have
-  // never had a source for that: the £48 that used to sit in this panel was
-  // £0.003 × 80 assumed plays × attention, and at 800 to 1,000 plays a month
-  // it would have read £480 to £600 instead. The stream count needs only the
-  // observed per-stream rate, so it is the same question asked in a unit the
-  // evidence can carry.
+  // Pounds against pounds, with the listening volume supplied by the visitor
+  // rather than assumed on their behalf.
   //
-  // Never price the Spotify side in pounds, off a per-listener or per-fan
-  // rate. Both have been tried and both were removed from raaydrRates.
+  // The version of this that had to be torn out read £0.003 x 80 assumed plays
+  // from a constant, so the Spotify column looked like a measured rate when it
+  // was a guess, and the 15x it implied collapsed to 1.2x the moment anyone
+  // questioned the 80. The fix is not to hide the number, it is to hand it over:
+  // `listening` is on screen with its own control, and spotifyFanEarnings takes
+  // it as a required argument so it cannot be quietly defaulted again.
+  //
+  // Watch what the slider does. RAAYDR does not move with it — a fan is worth
+  // the same whether they play you once or a thousand times — while Spotify
+  // rises and falls with every notch. That contrast is the argument, and it is
+  // the visitor's own assumption driving it rather than ours.
   const values = useMemo(() => {
     const raaydrM = raaydrMonthly(fans, attention / 100, tier);
     return {
       raaydrM,
       raaydrY: raaydrM * 12,
+      spotifyM: spotifyFanEarnings(fans, attention, listening),
       spotifyStreams: spotifyEquivalentStreams(raaydrM),
     };
-  }, [fans, attention, tier]);
+  }, [fans, attention, listening, tier]);
 
   const cap = milestone(values.raaydrY);
 
   // GSAP counter tween: numbers glide ~0.4s, painted straight to the DOM so
   // React never re-renders per frame.
   const display = useRef({ ...values });
+  const spotifyMEl = useRef<HTMLSpanElement>(null);
   const spotifyStreamsEl = useRef<HTMLSpanElement>(null);
   const raaydrMEl = useRef<HTMLSpanElement>(null);
   const raaydrYEl = useRef<HTMLSpanElement>(null);
@@ -85,6 +97,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   useEffect(() => {
     const paint = () => {
       const d = display.current;
+      if (spotifyMEl.current) spotifyMEl.current.textContent = gbp(d.spotifyM);
       if (spotifyStreamsEl.current)
         spotifyStreamsEl.current.textContent = roughCount(d.spotifyStreams);
       if (raaydrMEl.current) raaydrMEl.current.textContent = gbp(d.raaydrM);
@@ -218,6 +231,55 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
             happens. It is not the average. {MODELLED_SHARE_NOTE.attention}
           </p>
         </div>
+
+        <div className={styles.control}>
+          <div className={styles.controlHead}>
+            <label htmlFor="calc-listening">
+              How much they listen, all in
+            </label>
+            <output htmlFor="calc-listening" className="mono-figure">
+              {count(listening)} plays
+            </output>
+          </div>
+          <div
+            className={styles.tierToggle}
+            role="group"
+            aria-label="Monthly listening presets"
+          >
+            {LISTENING_PRESETS.map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                className={`${styles.tierSegment} ${listening === p.value ? styles.tierSegmentOn : ""}`}
+                aria-pressed={listening === p.value}
+                onClick={() => setListening(p.value)}
+              >
+                {p.label} {count(p.value)}
+              </button>
+            ))}
+          </div>
+          <input
+            id="calc-listening"
+            type="range"
+            min={LISTENING_MIN}
+            max={LISTENING_MAX}
+            step={10}
+            value={listening}
+            aria-valuetext={`${count(listening)} plays a month`}
+            onChange={(e) => setListening(Number(e.target.value))}
+            className={styles.slider}
+          />
+          {/* This control only moves the Spotify side, and saying so is the
+              point of it: on RAAYDR a fan is worth the same whether they play
+              you once or a thousand times. */}
+          <p className={styles.helper}>
+            Total plays a month per fan, across everything they listen to, not
+            just you. It changes the Spotify column and nothing else &mdash; on
+            RAAYDR a fan is worth the same however much they play. Nobody
+            publishes a reliable figure for this, so it is yours to set: move it
+            and see what it does.
+          </p>
+        </div>
       </div>
 
       <div className={styles.results}>
@@ -225,13 +287,11 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           <p className={styles.panelName}>
             Spotify
             <span className={styles.panelSub}>
-              plays needed to earn the same
+              the same people, paid per play
             </span>
           </p>
           <p className={`mono-figure ${styles.figure}`}>
-            <span ref={spotifyStreamsEl}>
-              {roughCount(values.spotifyStreams)}
-            </span>
+            <span ref={spotifyMEl}>{gbp(values.spotifyM)}</span>
             <span className={styles.per}>/month</span>
           </p>
         </div>
@@ -257,19 +317,20 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           </p>
         </div>
 
-        {/* States what separates the two models rather than converting one
-            unit into the other. Earlier versions of this line put a pound
-            figure on the Spotify side, which needed an assumed play count to
-            exist at all; the panel above now answers the same question in
-            plays, which the observed per-stream rate supports on its own. */}
+        {/* The reach line stays, because it is the one figure here that needs
+            no assumption at all: earnings divided by the observed per-stream
+            rate, and nothing else. */}
         <p className={styles.hook} style={{ gridColumn: "1 / -1" }}>
           The same{" "}
           <span className={styles.hookFigure} ref={fansEl}>
             {count(fans)}
           </span>{" "}
-          people, either way. RAAYDR pays for their attention, so how often they
-          press play never enters it. Spotify pays per play, so it is the only
-          thing that does.
+          people, either way. To earn the RAAYDR figure through Spotify instead
+          you would need roughly{" "}
+          <span className={styles.hookFigure} ref={spotifyStreamsEl}>
+            {roughCount(values.spotifyStreams)}
+          </span>{" "}
+          plays a month.
         </p>
       </div>
 
@@ -277,13 +338,14 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
         <p className={styles.footnote}>
           Your share is 55% of every subscription, after tax, publishing
           royalties and card fees, divided by how much of each fan&rsquo;s
-          listening you hold. The Spotify figure is the number of plays it would
-          take to earn the same money at roughly £{SPOTIFY.perStream} a stream,
-          a rate taken from a real distributor dashboard. It is stated in plays
-          rather than pounds on purpose: converting it would mean assuming how
-          much each person listens in a month, and we have no measured figure
-          for that. Figures are projections based on your inputs, not a
-          guarantee.
+          listening you hold. The Spotify column is that same fan&rsquo;s plays
+          at roughly £{SPOTIFY.perStream} a stream, a rate taken from a real
+          distributor dashboard. The rate is observed; how much anyone listens
+          is not, and no reliable figure for it is published anywhere, which is
+          why that one is a control rather than a number we picked. Move it and
+          the Spotify column moves; the RAAYDR column does not, because a fan is
+          worth the same to you however much they play. Figures are projections
+          based on your inputs, not a guarantee.
         </p>
       )}
     </div>

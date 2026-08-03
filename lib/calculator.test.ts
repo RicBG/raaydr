@@ -20,9 +20,13 @@ import {
   PLATFORM_PER_STREAM_ESTIMATES,
   SPLIT,
   SPOTIFY,
+  LISTENING_DEFAULT,
+  LISTENING_MAX,
+  LISTENING_MIN,
   equivalentStreams,
   floorToPence,
   spotifyEquivalentStreams,
+  spotifyFanEarnings,
 } from "./raaydrRates";
 
 describe("floorToPence", () => {
@@ -201,6 +205,55 @@ describe("spotifyEquivalentStreams", () => {
   it("takes no input but earnings", () => {
     expect(spotifyEquivalentStreams.length).toBe(1);
     expect(Object.keys(SPOTIFY)).toEqual(["perStream", "subscriptionPrice"]);
+  });
+});
+
+// The pounds-versus-pounds Spotify figure, restored 3 August 2026 with the
+// listening volume handed to the visitor instead of assumed for them.
+describe("spotifyFanEarnings", () => {
+  // The structural guard. The retired spotifyEngagedFanEarnings took two
+  // arguments and read the third from a constant, so every caller assumed 80
+  // plays a month without saying so. Requiring the volume is what stops that
+  // returning: a caller cannot omit what it does not have a default for.
+  it("cannot be called without a listening volume", () => {
+    expect(spotifyFanEarnings.length).toBe(3);
+  });
+
+  it("is plays times the observed rate, scaled by attention", () => {
+    expect(spotifyFanEarnings(1000, 20, 500)).toBeCloseTo(1000 * 0.2 * 500 * 0.003, 6);
+    expect(spotifyFanEarnings(1, 100, 1000)).toBeCloseTo(3, 10);
+  });
+
+  // The comparison the calculator is actually making, at its defaults.
+  it("prices the default view against RAAYDR", () => {
+    expect(spotifyFanEarnings(1000, 20, LISTENING_DEFAULT)).toBeCloseTo(300, 6);
+    expect(raaydrMonthly(1000, 0.2)).toBeCloseTo(712, 10);
+  });
+
+  // The whole point of putting the volume on screen: it moves one side only.
+  // If this ever fails, the two columns have stopped telling the truth about
+  // what separates the models.
+  it("moves the Spotify side with listening while RAAYDR stays put", () => {
+    const low = spotifyFanEarnings(1000, 20, 150);
+    const high = spotifyFanEarnings(1000, 20, 1000);
+    expect(high).toBeGreaterThan(low);
+    expect(high / low).toBeCloseTo(1000 / 150, 6);
+    // RAAYDR takes no volume argument at all, which is the asymmetry.
+    expect(raaydrMonthly.length).toBe(2);
+  });
+
+  // Published claims stay in plays. §5 forbids a per-fan Spotify figure in
+  // copy without a sourced volume, and there still is none — the calculator is
+  // allowed it only because the visitor supplies the input.
+  it("never reaches the canonical claim", () => {
+    // Asserted positively: the claim's Spotify clause must be denominated in
+    // plays. A negative /Spotify.*£/ would false-positive on the £3.56 that
+    // follows it, which is the RAAYDR figure.
+    expect(CANONICAL.claim).toMatch(/from Spotify instead takes around [\d,]+ plays/);
+    expect(CANONICAL).not.toHaveProperty("spotifyPerFan");
+    expect(CANONICAL).not.toHaveProperty("multiple");
+    expect(LISTENING_DEFAULT).toBeGreaterThanOrEqual(LISTENING_MIN);
+    expect(LISTENING_DEFAULT).toBeLessThanOrEqual(LISTENING_MAX);
   });
 });
 
