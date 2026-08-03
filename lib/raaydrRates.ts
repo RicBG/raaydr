@@ -72,9 +72,29 @@ const flooredPerTier = (rate: PerTierRate): PerTierRate => ({
  * penny would be magnified a thousand times over before anyone saw it.
  */
 export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
-  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46, dayOneNext: 2.82 }),
-  tastemaker: flooredPerTier({ standard: 0.97, dayOne: 0.67, dayOneNext: 0.76 }),
+  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46, dayOneNext: 2.83 }),
+  tastemaker: flooredPerTier({ standard: 0.97, dayOne: 0.67, dayOneNext: 0.77 }),
 };
+
+/*
+ * dayOneNext corrected from £2.82 / £0.76 to £2.83 / £0.77 on 3 August 2026,
+ * closing the open discrepancy in raaydr-economics-locked.md §3a.
+ *
+ * Settled by running the platform repo's own distributableExact() — the
+ * executable source of truth — rather than by argument. That function
+ * reproduces every figure this file publishes for the other two bands
+ * (648.322p and 447.922p unrounded, giving 3.56/0.97 and 2.46/0.67 exactly),
+ * so putting £7.99 through the identical maths is the same computation, not a
+ * reconstruction of it. At the floor-in-pence Connect rule's 7p it gives
+ * 514.722p, and 55% / 15% of that floor to 283p and 77p.
+ *
+ * §3a attributed the old £2.82 to an implementation that invented 8p for
+ * Connect. That explains the artist figure and only the artist figure: 8p
+ * gives 513.722p, whose 15% still floors to 77p. No whole-penny Connect value
+ * reaches £0.76 — it needs distributable in [512.73p, 513.33p), and nothing in
+ * the stated inputs lands there. The two wrong figures had two different
+ * causes, and one of them had no derivation at all.
+ */
 
 /*
  * TASTEMAKER_RINGFENCE (standard 0.99, dayOne 0.69) was removed here.
@@ -202,6 +222,29 @@ export const PLATFORM_PER_STREAM_ESTIMATES = {
  */
 export const DISTRIBUTABLE = {
   standard: 6.48,
+  dayOneNext: 5.14,
+  dayOne: 4.47,
+} as const;
+
+/**
+ * The same waterfall, unrounded. This is what the split is actually taken of.
+ *
+ * Reproduced by running distributableExact() from the platform repo, the
+ * executable source of truth, on 3 August 2026. The £9.99 and £6.99 values are
+ * that function's own output for the two tiers it defines; £7.99 is the
+ * identical function applied to a 799p gross with the floor-in-pence Connect
+ * allocation of 7p, because the platform repo has no £7.99 band to call.
+ *
+ * Its purpose is to make PER_FAN checkable rather than merely typed.
+ * calculator.test.ts derives every artist and tastemaker rate from these, so a
+ * hand-typed figure can no longer drift from the model that produced it — which
+ * is exactly how £2.82 and £0.76 survived on the live site for four days while
+ * three independent routes said £2.83 and £0.77.
+ */
+export const DISTRIBUTABLE_EXACT = {
+  standard: 6.48322,
+  dayOneNext: 5.14722,
+  dayOne: 4.47922,
 } as const;
 
 /** Pence, for sub-pound per-fan figures. 0.71 to "71p". */
