@@ -20,9 +20,10 @@ import {
   PLATFORM_PER_STREAM_ESTIMATES,
   SPLIT,
   SPOTIFY,
-  LISTENING_DEFAULT,
-  LISTENING_MAX,
-  LISTENING_MIN,
+  SPOTIFY_PLAYS_DEFAULT,
+  SPOTIFY_PLAYS_MAX,
+  SPOTIFY_PLAYS_MIN,
+  SPOTIFY_PLAYS_PER_MONTHLY_LISTENER,
   equivalentStreams,
   floorToPence,
   spotifyEquivalentStreams,
@@ -208,52 +209,56 @@ describe("spotifyEquivalentStreams", () => {
   });
 });
 
-// The pounds-versus-pounds Spotify figure, restored 3 August 2026 with the
-// listening volume handed to the visitor instead of assumed for them.
+// The pounds-versus-pounds Spotify figure. Rebuilt 3 August 2026 after the
+// first attempt was found to overstate Spotify by 25x.
 describe("spotifyFanEarnings", () => {
-  // The structural guard. The retired spotifyEngagedFanEarnings took two
-  // arguments and read the third from a constant, so every caller assumed 80
-  // plays a month without saying so. Requiring the volume is what stops that
-  // returning: a caller cannot omit what it does not have a default for.
-  it("cannot be called without a listening volume", () => {
-    expect(spotifyFanEarnings.length).toBe(3);
+  // THE BUG THIS EXISTS TO PREVENT.
+  //
+  // The broken version took (fans, attentionPct, totalPlays) and multiplied all
+  // three: 500 total plays x 20% attention = 100 plays of your music per fan
+  // per month. Against Ric's own Spotify for Artists data — about 4 plays per
+  // monthly listener — that is twenty-five times reality, and it claimed
+  // Spotify pays £300 a month for 1,000 fans.
+  //
+  // Dropping attention from the signature is what makes that unrepeatable: the
+  // play count already is your share of that fan, so there is nothing left to
+  // multiply it by.
+  it("takes plays of your music, and no attention share to multiply it by", () => {
+    expect(spotifyFanEarnings.length).toBe(2);
   });
 
-  it("is plays times the observed rate, scaled by attention", () => {
-    expect(spotifyFanEarnings(1000, 20, 500)).toBeCloseTo(1000 * 0.2 * 500 * 0.003, 6);
-    expect(spotifyFanEarnings(1, 100, 1000)).toBeCloseTo(3, 10);
+  it("is fans times plays times the observed rate", () => {
+    expect(spotifyFanEarnings(1000, 16)).toBeCloseTo(1000 * 16 * 0.003, 6);
+    expect(spotifyFanEarnings(1, 1000)).toBeCloseTo(3, 10);
   });
 
-  // The comparison the calculator is actually making, at its defaults.
+  // The anchor is measured, not estimated: 1,089 monthly listeners generating
+  // about £13 a month is 4,333 streams, which is 4 plays each.
+  it("reproduces the observed Spotify for Artists figure it is anchored on", () => {
+    expect(SPOTIFY_PLAYS_PER_MONTHLY_LISTENER).toBe(4);
+    const earned = spotifyFanEarnings(1089, SPOTIFY_PLAYS_PER_MONTHLY_LISTENER);
+    expect(earned).toBeGreaterThan(12);
+    expect(earned).toBeLessThan(14);
+  });
+
+  // The default view, and the sanity check that caught the 25x error: 1,000
+  // real fans do not earn hundreds a month on Spotify.
   it("prices the default view against RAAYDR", () => {
-    expect(spotifyFanEarnings(1000, 20, LISTENING_DEFAULT)).toBeCloseTo(300, 6);
+    expect(spotifyFanEarnings(1000, SPOTIFY_PLAYS_DEFAULT)).toBeCloseTo(48, 6);
     expect(raaydrMonthly(1000, 0.2)).toBeCloseTo(712, 10);
   });
 
-  // The whole point of putting the volume on screen: it moves one side only.
-  // If this ever fails, the two columns have stopped telling the truth about
-  // what separates the models.
-  it("moves the Spotify side with listening while RAAYDR stays put", () => {
-    const low = spotifyFanEarnings(1000, 20, 150);
-    const high = spotifyFanEarnings(1000, 20, 1000);
-    expect(high).toBeGreaterThan(low);
-    expect(high / low).toBeCloseTo(1000 / 150, 6);
-    // RAAYDR takes no volume argument at all, which is the asymmetry.
-    expect(raaydrMonthly.length).toBe(2);
+  it("keeps 1,000 fans on Spotify inside a believable range", () => {
+    for (const plays of [SPOTIFY_PLAYS_MIN, SPOTIFY_PLAYS_DEFAULT, SPOTIFY_PLAYS_MAX]) {
+      expect(spotifyFanEarnings(1000, plays)).toBeLessThan(310);
+    }
+    // The retired model's default landed exactly here, and it was the tell.
+    expect(spotifyFanEarnings(1000, 100)).toBeCloseTo(300, 6);
   });
 
-  // Published claims stay in plays. §5 forbids a per-fan Spotify figure in
-  // copy without a sourced volume, and there still is none — the calculator is
-  // allowed it only because the visitor supplies the input.
   it("never reaches the canonical claim", () => {
-    // Asserted positively: the claim's Spotify clause must be denominated in
-    // plays. A negative /Spotify.*£/ would false-positive on the £3.56 that
-    // follows it, which is the RAAYDR figure.
-    expect(CANONICAL.claim).toMatch(/from Spotify instead takes around [\d,]+ plays/);
-    expect(CANONICAL).not.toHaveProperty("spotifyPerFan");
-    expect(CANONICAL).not.toHaveProperty("multiple");
-    expect(LISTENING_DEFAULT).toBeGreaterThanOrEqual(LISTENING_MIN);
-    expect(LISTENING_DEFAULT).toBeLessThanOrEqual(LISTENING_MAX);
+    expect(SPOTIFY_PLAYS_DEFAULT).toBeGreaterThanOrEqual(SPOTIFY_PLAYS_MIN);
+    expect(SPOTIFY_PLAYS_DEFAULT).toBeLessThanOrEqual(SPOTIFY_PLAYS_MAX);
   });
 });
 
@@ -374,15 +379,22 @@ describe("attention share scales earnings linearly", () => {
   });
 });
 
+// Raised 3 August 2026. "Rent covered" started at £3,000 a year — £250 a month
+// — so the default view's £8,544 was captioned as covering rent when it plainly
+// does not. £14,400 is £1,200 a month, roughly a one-bed outside London.
 describe("milestone captions on the annual figure", () => {
+  it("does not call the default view rent covered", () => {
+    expect(milestone(raaydrMonthly(1000, 0.2) * 12)).toBe("Side income");
+  });
+
   it("matches the thresholds", () => {
     expect(milestone(0)).toBe("Side income");
-    expect(milestone(2999)).toBe("Side income");
-    expect(milestone(3000)).toBe("Rent covered");
-    expect(milestone(11999)).toBe("Rent covered");
-    expect(milestone(12000)).toBe("This is a living");
-    expect(milestone(21999)).toBe("This is a living");
-    expect(milestone(22000)).toBe("Full time musician");
+    expect(milestone(14399)).toBe("Side income");
+    expect(milestone(14400)).toBe("Rent covered");
+    expect(milestone(29999)).toBe("Rent covered");
+    expect(milestone(30000)).toBe("This is a living");
+    expect(milestone(49999)).toBe("This is a living");
+    expect(milestone(50000)).toBe("Full time musician");
   });
 });
 
