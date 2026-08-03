@@ -75,7 +75,9 @@ export const CONSENT_PREPAINT_SCRIPT = `
 window.dataLayer=window.dataLayer||[];
 function gtag(){dataLayer.push(arguments)}
 var s='${CONSENT_DEFAULT}';
-try{var v=localStorage.getItem('${CONSENT_STORAGE_KEY}');if(v==='granted'||v==='denied'){s=v}}catch(e){}
+try{var v=localStorage.getItem('${CONSENT_STORAGE_KEY}');
+if(v==='granted'||v==='denied'){s=v}
+else if(navigator.globalPrivacyControl===true){s='denied'}}catch(e){}
 window.__raaydrConsent=s;
 gtag('consent','default',{${CONSENT_SIGNALS.map((k) => `${k}:s`).join(",")},wait_for_update:500});
 try{document.documentElement.setAttribute('data-consent',s)}catch(e){}
@@ -115,9 +117,41 @@ export function readConsent(): ConsentState | null {
   }
 }
 
-/** The state to act on right now: the stored choice, or the default. */
+/**
+ * Global Privacy Control: a browser-level "do not sell or share" signal.
+ *
+ * California's CPRA requires businesses to honour it, and RAAYDR serves US
+ * traffic, so it is treated as an answer rather than a hint. A visitor sending
+ * GPC has already opted out at the browser level; showing them a banner asking
+ * the same question is the thing the signal exists to prevent.
+ *
+ * An explicit stored choice still wins. Someone who pressed Accept on our own
+ * banner made a later, more specific decision than a standing browser default,
+ * and overriding that would be its own kind of ignoring the user.
+ */
+export function gpcEnabled(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return navigator.globalPrivacyControl === true;
+}
+
+/**
+ * The state to act on right now.
+ *
+ * Stored choice first, then GPC, then the default. GPC and the default happen
+ * to agree today — both deny — but they are kept separate because they are
+ * different things: one is a request from the visitor, the other is our
+ * fallback. If CONSENT_DEFAULT ever moved, GPC must still deny.
+ */
 export function effectiveConsent(): ConsentState {
-  return readConsent() ?? CONSENT_DEFAULT;
+  const stored = readConsent();
+  if (stored) return stored;
+  return gpcEnabled() ? "denied" : CONSENT_DEFAULT;
+}
+
+/** Whether to ask at all. Not asking someone who already signalled GPC is the
+ *  point of honouring it. */
+export function shouldAskConsent(): boolean {
+  return readConsent() === null && !gpcEnabled();
 }
 
 /**
@@ -169,5 +203,10 @@ export function setConsent(state: ConsentState): void {
 declare global {
   interface Window {
     __raaydrConsent?: ConsentState;
+  }
+  interface Navigator {
+    /** Global Privacy Control. Not in lib.dom yet; set by Brave, DuckDuckGo,
+     *  Firefox's "tell websites not to sell my data" and several extensions. */
+    globalPrivacyControl?: boolean;
   }
 }

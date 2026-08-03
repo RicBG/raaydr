@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   CONSENT_CHANGE_EVENT,
   CONSENT_DEFAULT,
+  gpcEnabled,
   readConsent,
   setConsent,
   type ConsentState,
@@ -45,8 +46,12 @@ export default function ConsentBanner() {
     setConsent(state);
   }, []);
 
-  // Undecided is the only state that shows the banner.
-  if (consent !== null) return null;
+  // Undecided is the only state that shows the banner — and a visitor sending
+  // Global Privacy Control is not undecided. They opted out at the browser
+  // level, so asking them again is the exact behaviour the signal exists to
+  // stop. Read here rather than in the store snapshot because GPC cannot
+  // change during a page's life, so it needs no subscription.
+  if (consent !== null || gpcEnabled()) return null;
 
   return (
     <div

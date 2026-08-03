@@ -7,14 +7,16 @@ import {
   META_PIXEL_SCRIPT,
   consentPayload,
   effectiveConsent,
+  gpcEnabled,
   readConsent,
   setConsent,
+  shouldAskConsent,
 } from "./consent";
 
 // A minimal window/localStorage/document stand-in. The consent module is
 // deliberately dependency-free so it can run in the pre-paint script, which
 // means it is also testable without a DOM library.
-function stubBrowser() {
+function stubBrowser(gpc = false) {
   const store = new Map<string, string>();
   const attrs = new Map<string, string>();
   const gtag = vi.fn();
@@ -36,6 +38,7 @@ function stubBrowser() {
     fbq,
     dispatchEvent: (e: Event) => void events.push(e.type),
   });
+  vi.stubGlobal("navigator", { globalPrivacyControl: gpc });
 
   return { store, attrs, gtag, fbq, events };
 }
@@ -108,6 +111,38 @@ describe("the Meta Pixel snippet", () => {
   it("only fires PageView when consent is already granted", () => {
     const s = META_PIXEL_SCRIPT("123");
     expect(s).toContain("if(granted){fbq('track','PageView')}");
+  });
+});
+
+// Global Privacy Control. California's CPRA requires honouring it, and RAAYDR
+// serves US traffic, so it is treated as an answer rather than a hint.
+describe("Global Privacy Control", () => {
+  it("denies and suppresses the banner when no choice is stored", () => {
+    stubBrowser(true);
+    expect(gpcEnabled()).toBe(true);
+    expect(effectiveConsent()).toBe("denied");
+    // Not asking is the point. A GPC visitor already opted out at the browser
+    // level, so a banner asking the same question ignores the signal.
+    expect(shouldAskConsent()).toBe(false);
+  });
+
+  it("still asks when GPC is absent", () => {
+    stubBrowser(false);
+    expect(gpcEnabled()).toBe(false);
+    expect(shouldAskConsent()).toBe(true);
+  });
+
+  // An explicit press of Accept is a later and more specific decision than a
+  // standing browser default, so it wins.
+  it("lets an explicit stored choice override the signal", () => {
+    stubBrowser(true);
+    setConsent("granted");
+    expect(effectiveConsent()).toBe("granted");
+    expect(shouldAskConsent()).toBe(false);
+  });
+
+  it("is read in the pre-paint script too, so the tags start denied", () => {
+    expect(CONSENT_PREPAINT_SCRIPT).toContain("navigator.globalPrivacyControl===true");
   });
 });
 
