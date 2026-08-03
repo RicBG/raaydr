@@ -98,11 +98,23 @@ export function tastemakerMonthly(
   return fans * share * tastemakerPerFan(tier);
 }
 
-/** Qualitative milestone for a RAAYDR annual figure. No salary claims, no named benchmarks. */
+/**
+ * Qualitative milestone for a RAAYDR annual figure. No salary claims, no named
+ * benchmarks.
+ *
+ * Thresholds raised on 3 August 2026. "Rent covered" began at £3,000 a year,
+ * which is £250 a month and covers rent nowhere in the UK. The default view —
+ * 1,000 fans at a 20% share, £712 a month, £8,544 a year — was being captioned
+ * "Rent covered" on a figure that does not cover rent.
+ *
+ * Rent covered now starts at £14,400, which is £1,200 a month and roughly a
+ * one-bed outside London. Overstating the caption undercuts every honest figure
+ * next to it, which is the opposite of what this calculator is for.
+ */
 export function milestone(annual: number): string {
-  if (annual < 3000) return "Side income";
-  if (annual < 12000) return "Rent covered";
-  if (annual < 22000) return "This is a living";
+  if (annual < 14400) return "Side income";
+  if (annual < 30000) return "Rent covered";
+  if (annual < 50000) return "This is a living";
   return "Full time musician";
 }
 

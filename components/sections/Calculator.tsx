@@ -15,10 +15,11 @@ import {
 import {
   ATTENTION_DEFAULT,
   ATTENTION_PRESETS,
-  LISTENING_DEFAULT,
-  LISTENING_MAX,
-  LISTENING_MIN,
-  LISTENING_PRESETS,
+  SPOTIFY_PLAYS_DEFAULT,
+  SPOTIFY_PLAYS_MAX,
+  SPOTIFY_PLAYS_MIN,
+  SPOTIFY_PLAYS_PRESETS,
+  SPOTIFY_PLAYS_PER_MONTHLY_LISTENER,
   MODELLED_SHARE_NOTE,
   SPOTIFY,
   spotifyEquivalentStreams,
@@ -55,33 +56,35 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
 
   const [fanPos, setFanPos] = useState(0.5); // log position → 1,000 fans
   const [attention, setAttention] = useState(ATTENTION_DEFAULT); // percent
-  const [listening, setListening] = useState(LISTENING_DEFAULT); // plays/month
+  const [plays, setPlays] = useState(SPOTIFY_PLAYS_DEFAULT); // plays of YOUR music, per fan
   const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
 
   const fans = sliderToFans(fanPos);
-  // Pounds against pounds, with the listening volume supplied by the visitor
-  // rather than assumed on their behalf.
+  // Two models, two inputs, and they are deliberately not the same input.
   //
-  // The version of this that had to be torn out read £0.003 x 80 assumed plays
-  // from a constant, so the Spotify column looked like a measured rate when it
-  // was a guess, and the 15x it implied collapsed to 1.2x the moment anyone
-  // questioned the 80. The fix is not to hide the number, it is to hand it over:
-  // `listening` is on screen with its own control, and spotifyFanEarnings takes
-  // it as a required argument so it cannot be quietly defaulted again.
+  // RAAYDR takes `attention`: your share of that fan's listening. Spotify takes
+  // `plays`: how many times they press play on YOUR music. Attention never
+  // touches the Spotify figure, because the play count already is your share of
+  // that fan, counted rather than expressed as a percentage.
   //
-  // Watch what the slider does. RAAYDR does not move with it — a fan is worth
-  // the same whether they play you once or a thousand times — while Spotify
-  // rises and falls with every notch. That contrast is the argument, and it is
-  // the visitor's own assumption driving it rather than ours.
+  // Feeding attention into both is the bug this replaces. It multiplied a fan's
+  // total listening by the share — 500 x 20% — and produced 100 plays of your
+  // music per fan per month, twenty-five times what Ric's own Spotify for
+  // Artists data shows a real listener doing. Two innocent-looking assumptions
+  // multiplied into an absurd one, and the pound figure looked authoritative
+  // the whole time.
+  //
+  // The play count is anchored on that real data instead: 4 a month is the
+  // observed average listener, and the presets are multiples of it.
   const values = useMemo(() => {
     const raaydrM = raaydrMonthly(fans, attention / 100, tier);
     return {
       raaydrM,
       raaydrY: raaydrM * 12,
-      spotifyM: spotifyFanEarnings(fans, attention, listening),
+      spotifyM: spotifyFanEarnings(fans, plays),
       spotifyStreams: spotifyEquivalentStreams(raaydrM),
     };
-  }, [fans, attention, listening, tier]);
+  }, [fans, attention, plays, tier]);
 
   const cap = milestone(values.raaydrY);
 
@@ -234,50 +237,51 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
 
         <div className={styles.control}>
           <div className={styles.controlHead}>
-            <label htmlFor="calc-listening">
-              How much they listen, all in
+            <label htmlFor="calc-plays">
+              How often each one plays you
             </label>
-            <output htmlFor="calc-listening" className="mono-figure">
-              {count(listening)} plays
+            <output htmlFor="calc-plays" className="mono-figure">
+              {count(plays)} a month
             </output>
           </div>
           <div
             className={styles.tierToggle}
             role="group"
-            aria-label="Monthly listening presets"
+            aria-label="Plays per fan per month presets"
           >
-            {LISTENING_PRESETS.map((p) => (
+            {SPOTIFY_PLAYS_PRESETS.map((p) => (
               <button
                 key={p.value}
                 type="button"
-                className={`${styles.tierSegment} ${listening === p.value ? styles.tierSegmentOn : ""}`}
-                aria-pressed={listening === p.value}
-                onClick={() => setListening(p.value)}
+                className={`${styles.tierSegment} ${plays === p.value ? styles.tierSegmentOn : ""}`}
+                aria-pressed={plays === p.value}
+                onClick={() => setPlays(p.value)}
               >
                 {p.label} {count(p.value)}
               </button>
             ))}
           </div>
           <input
-            id="calc-listening"
+            id="calc-plays"
             type="range"
-            min={LISTENING_MIN}
-            max={LISTENING_MAX}
-            step={10}
-            value={listening}
-            aria-valuetext={`${count(listening)} plays a month`}
-            onChange={(e) => setListening(Number(e.target.value))}
+            min={SPOTIFY_PLAYS_MIN}
+            max={SPOTIFY_PLAYS_MAX}
+            step={1}
+            value={plays}
+            aria-valuetext={`${count(plays)} plays a month`}
+            onChange={(e) => setPlays(Number(e.target.value))}
             className={styles.slider}
           />
-          {/* This control only moves the Spotify side, and saying so is the
-              point of it: on RAAYDR a fan is worth the same whether they play
-              you once or a thousand times. */}
+          {/* Anchored on real Spotify for Artists data rather than an industry
+              estimate, and it drives the Spotify column only. */}
           <p className={styles.helper}>
-            Total plays a month per fan, across everything they listen to, not
-            just you. It changes the Spotify column and nothing else &mdash; on
-            RAAYDR a fan is worth the same however much they play. Nobody
-            publishes a reliable figure for this, so it is yours to set: move it
-            and see what it does.
+            Plays of <em>your</em> music, per fan, per month. This one sets the
+            Spotify column and nothing else, because Spotify pays per play and
+            does not care what share of a person you hold &mdash; while on
+            RAAYDR a fan is worth the same whether they play you twice or two
+            hundred times. Real Spotify for Artists data puts an average monthly
+            listener at about {SPOTIFY_PLAYS_PER_MONTHLY_LISTENER} plays a
+            month; the presets are multiples of that.
           </p>
         </div>
       </div>
@@ -339,12 +343,14 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           Your share is 55% of every subscription, after tax, publishing
           royalties and card fees, divided by how much of each fan&rsquo;s
           listening you hold. The Spotify column is that same fan&rsquo;s plays
-          at roughly £{SPOTIFY.perStream} a stream, a rate taken from a real
-          distributor dashboard. The rate is observed; how much anyone listens
-          is not, and no reliable figure for it is published anywhere, which is
-          why that one is a control rather than a number we picked. Move it and
-          the Spotify column moves; the RAAYDR column does not, because a fan is
-          worth the same to you however much they play. Figures are projections
+          of your music at roughly £{SPOTIFY.perStream} a stream, a rate taken
+          from a real distributor dashboard. Both sides of that are grounded:
+          the rate is observed, and so is the play count &mdash; Spotify for
+          Artists data puts an average monthly listener at about{" "}
+          {SPOTIFY_PLAYS_PER_MONTHLY_LISTENER} plays a month, and the presets
+          are multiples of it. Attention share deliberately does not touch the
+          Spotify figure: the play count already is your share of that fan,
+          counted rather than expressed as a percentage. Figures are projections
           based on your inputs, not a guarantee.
         </p>
       )}
