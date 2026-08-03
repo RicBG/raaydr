@@ -45,7 +45,7 @@ The honest trade-off is stated in the table: we are new. If you need an audience
 
 ## Which alternative should you actually choose?
 
-Match the platform to the problem. If your fans buy, prioritise Bandcamp. If you live off discovery and remix culture, SoundCloud. If you simply want the pooled model at a better rate, push your audience toward Apple Music or Tidal. If your problem is that a small, real fanbase earns you almost nothing, that is precisely the problem RAAYDR exists to fix: {{scenario.fans}} fans at a {{scenario.attention}} attention share is roughly {{scenario.raaydrMonthly}} a month here, against roughly {{scenario.spotifyMonthly}} on Spotify.
+Match the platform to the problem. If your fans buy, prioritise Bandcamp. If you live off discovery and remix culture, SoundCloud. If you simply want the pooled model at a better rate, push your audience toward Apple Music or Tidal. If your problem is that a small, real fanbase earns you almost nothing, that is precisely the problem RAAYDR exists to fix: {{scenario.fans}} fans at a {{scenario.attention}} attention share is roughly {{scenario.raaydrMonthly}} a month here. Earning that on Spotify would take around {{scenario.spotifyStreams}} plays a month, every month.
 
 Most working artists should be on several of these at once. The question is where you send the people who genuinely care.
 
@@ -55,7 +55,7 @@ Most working artists should be on several of these at once. The question is wher
 For most artists, no. Reach and discovery still matter, and playlists remain a marketing channel. The stronger strategy is keeping broad distribution while moving your engaged fans somewhere their money reaches you.
 
 **Which platform pays artists the most per stream?**
-Among the majors, Apple Music and Tidal are consistently estimated highest, around two to three times Spotify's rate. But per-stream rate is the wrong lens for fan value: an engaged fan is worth pennies a month on any pooled platform and up to {{rates.perFan.standard}} a month on RAAYDR.
+Among the majors, Apple Music and Tidal are consistently estimated highest, around two to three times Spotify's rate. But per-stream rate is the wrong lens for fan value. On any pooled platform a fan is worth their play count and nothing else, so their value to you resets to zero every month they are quiet. On RAAYDR one fan is worth up to {{rates.perFan.standard}} a month whether they play you constantly or barely at all.
 
 **Is Bandcamp better than streaming?**
 For income per fan, usually yes: one £7 album sale equals thousands of streams. The limitation is behaviour, since most listeners stream daily and buy rarely. Bandcamp captures the buyers; an attention-based platform captures the listeners.

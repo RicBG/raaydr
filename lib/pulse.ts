@@ -2,8 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   artistEarnings,
-  engagedFanMonthly,
-  spotifyEngagedFanEarnings,
+  equivalentStreams,
   spotifyEquivalentStreams,
   CANONICAL,
   DISTRIBUTABLE,
@@ -79,21 +78,29 @@ const CONTENT_TOKENS: Record<string, string> = {
   "canonical.claim": CANONICAL.claim,
   "canonical.denominator": CANONICAL.denominator,
   "canonical.typicalPair": CANONICAL.typicalPair,
-  "canonical.multiple": `${CANONICAL.multiple}x`,
   "canonical.artistPerFan": money(CANONICAL.artistPerFan),
-  "canonical.spotifyPerFan": money(CANONICAL.spotifyPerFan),
+  /** Plays it takes to match one fan at the default attention share. */
+  "canonical.typicalStreams": count(CANONICAL.typicalStreams),
   "spotify.subscriptionPrice": money(SPOTIFY.subscriptionPrice),
   "spotify.perStream": rate(SPOTIFY.perStream),
-  // Other platforms' per-stream estimates and what they imply for one engaged
-  // fan. Both columns of that table read from the same constant, so the rate
-  // and the figure beside it cannot drift apart again.
+  // Per-stream estimates and the plays each implies to match one RAAYDR fan.
+  // Both columns of that table read from the same constant, so the rate and the
+  // figure beside it cannot drift apart again.
+  //
+  // This column used to read "one engaged fan is worth £x", computed by
+  // multiplying each rate by 80 assumed plays a month. The 80 had no source, so
+  // the column is now the plays needed to match £3.56 — the same rates, divided
+  // rather than multiplied, and no assumption about anyone's listening.
+  "spotify.streamsPerFan": count(
+    equivalentStreams(PER_FAN.artist.standard, SPOTIFY.perStream)
+  ),
   "platform.youtubeMusic.perStream": rate(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic),
-  "platform.youtubeMusic.perFan": money(
-    engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic)
+  "platform.youtubeMusic.streamsPerFan": count(
+    equivalentStreams(PER_FAN.artist.standard, PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic)
   ),
   "platform.appleMusic.perStream": rate(PLATFORM_PER_STREAM_ESTIMATES.appleMusic),
-  "platform.appleMusic.perFan": money(
-    engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.appleMusic)
+  "platform.appleMusic.streamsPerFan": count(
+    equivalentStreams(PER_FAN.artist.standard, PLATFORM_PER_STREAM_ESTIMATES.appleMusic)
   ),
   // Distributable revenue. Published figure, not derived from PER_FAN: see the
   // note on DISTRIBUTABLE in raaydrRates.
@@ -106,14 +113,8 @@ const CONTENT_TOKENS: Record<string, string> = {
   "scenario.fans": "500",
   "scenario.attention": "40%",
   "scenario.raaydrMonthly": money(artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION)),
-  "scenario.spotifyMonthly": money(
-    spotifyEngagedFanEarnings(SCENARIO_FANS, SCENARIO_ATTENTION)
-  ),
   "scenario.raaydrAnnual": money(
     artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION) * 12
-  ),
-  "scenario.spotifyAnnual": money(
-    spotifyEngagedFanEarnings(SCENARIO_FANS, SCENARIO_ATTENTION) * 12
   ),
   /** What one fan at the scenario's attention share sends you. */
   "scenario.perFan": money(artistEarnings(1, SCENARIO_ATTENTION)),
@@ -122,11 +123,19 @@ const CONTENT_TOKENS: Record<string, string> = {
   "scenario.spotifyStreams": nearestThousand(
     spotifyEquivalentStreams(artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION))
   ),
+  "scenario.spotifyStreamsAnnual": nearestThousand(
+    spotifyEquivalentStreams(artistEarnings(SCENARIO_FANS, SCENARIO_ATTENTION) * 12)
+  ),
 };
 
 /** Thousands separator, rounded to the nearest thousand for prose. */
 function nearestThousand(value: number): string {
   return (Math.round(value / 1000) * 1000).toLocaleString("en-GB");
+}
+
+/** Exact counts, grouped. Stream figures small enough to state precisely. */
+function count(value: number): string {
+  return value.toLocaleString("en-GB");
 }
 
 /** Pounds, grouped, with the pence dropped when there are none. */
