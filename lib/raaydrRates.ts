@@ -7,6 +7,16 @@
  * Derivation lives in raaydr-economics-locked.md. All per-fan figures are net of VAT,
  * PRS/MCPS at 16%, Stripe card, Stripe Billing and Stripe Connect, and are floored to
  * whole pence per §3 of that doc — see floorToPence below.
+ *
+ * PRS/MCPS 16% is a deliberate CEILING, ruled 3 August 2026: the highest rate
+ * RAAYDR expects to pay, so every figure below is a floor. If the true licensed
+ * rate turns out lower, every creator earns more than we advertised, never
+ * less. It remains the largest single input in the stack — a one-point move
+ * changes the artist per-fan figure by roughly 4p — and is to be re-checked
+ * against a published rate card and a music lawyer before launch pricing is
+ * finalised. The rate itself lives in the platform repo's rates file, which is
+ * the executable source; this note records the ruling so the direction of the
+ * margin is not lost on the side that publishes the numbers.
  */
 
 /**
