@@ -15,6 +15,7 @@ import {
 import {
   CANONICAL,
   DISTRIBUTABLE,
+  DISTRIBUTABLE_EXACT,
   PER_FAN,
   PLATFORM_PER_STREAM_ESTIMATES,
   SPLIT,
@@ -78,7 +79,7 @@ describe("artistPerFan", () => {
 
   it("reads both Day One band rates", () => {
     expect(artistPerFan("dayOne")).toBeCloseTo(2.46, 10);
-    expect(artistPerFan("dayOneNext")).toBeCloseTo(2.82, 10);
+    expect(artistPerFan("dayOneNext")).toBeCloseTo(2.83, 10);
   });
 
   // Two bands inside the same cohort, so the ladder has to stay monotonic:
@@ -88,8 +89,13 @@ describe("artistPerFan", () => {
     expect(artistPerFan("dayOneNext")).toBeLessThan(artistPerFan("standard"));
   });
 
-  it("floors the £7.99 band to £2.82, never £2.83", () => {
-    expect(artistPerFan("dayOneNext")).toBeLessThan(2.83);
+  // Was "floors the £7.99 band to £2.82, never £2.83", asserting the opposite
+  // of this. It enshrined a figure nothing derived: the waterfall gives
+  // 514.722p, whose 55% floors to 283p. The old test could not fail, because
+  // the literal it guarded was the literal it compared against.
+  it("floors the £7.99 band to £2.83, never £2.84", () => {
+    expect(artistPerFan("dayOneNext")).toBeLessThan(2.84);
+    expect(artistPerFan("dayOneNext")).toBeGreaterThanOrEqual(2.83);
   });
 
   it("never presents £3.57, the rate the locked economics doc forbids", () => {
@@ -115,7 +121,7 @@ describe("tastemakerPerFan", () => {
     expect(tastemakerPerFan()).toBeCloseTo(0.97, 10);
     expect(tastemakerPerFan("standard")).toBeCloseTo(0.97, 10);
     expect(tastemakerPerFan("dayOne")).toBeCloseTo(0.67, 10);
-    expect(tastemakerPerFan("dayOneNext")).toBeCloseTo(0.76, 10);
+    expect(tastemakerPerFan("dayOneNext")).toBeCloseTo(0.77, 10);
   });
 });
 
@@ -140,8 +146,10 @@ describe("raaydrMonthly (standard, default 20% attention)", () => {
     expect(raaydrMonthly(fans, attention, "dayOne")).toBeCloseTo(492, 10);
   });
 
-  it("is exactly £564 on the £7.99 band at the same inputs", () => {
-    expect(raaydrMonthly(fans, attention, "dayOneNext")).toBeCloseTo(564, 10);
+  // £566, not the £564 this pinned before. The economics doc has said £566 in
+  // §4 since v1.3; only the rates file disagreed, because £2.82 was typed there.
+  it("is exactly £566 on the £7.99 band at the same inputs", () => {
+    expect(raaydrMonthly(fans, attention, "dayOneNext")).toBeCloseTo(566, 10);
   });
 
   it("multiplies fans, attention and the standard per-fan rate", () => {
@@ -169,7 +177,7 @@ describe("spotifyEquivalentStreams", () => {
 
   it("recomputes the line for both Day One bands", () => {
     expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2, "dayOne"))).toBe(164000);
-    expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(188000);
+    expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(188667);
   });
 
   // This replaces a test that pinned a fixed 15x ratio between the streams
@@ -211,6 +219,40 @@ describe("the published distributable", () => {
     const d = DISTRIBUTABLE.standard;
     expect(floorToPence(d * (SPLIT.artists / 100))).toBeCloseTo(PER_FAN.artist.standard, 10);
     expect(floorToPence(d * (SPLIT.tastemakers / 100))).toBeCloseTo(PER_FAN.tastemaker.standard, 10);
+  });
+});
+
+// Every per-fan rate, derived rather than trusted.
+//
+// This is the test that did not exist when £2.82 and £0.76 shipped. PER_FAN was
+// hand-typed literals and the only assertion on the £7.99 band compared them to
+// themselves, so nothing could catch the drift. The split must be taken of the
+// UNROUNDED distributable — flooring first and then taking 55% loses a penny on
+// the Day One band, which is how the document's penny got in originally.
+describe("every per-fan rate derives from the waterfall", () => {
+  const TIERS = ["standard", "dayOneNext", "dayOne"] as const;
+
+  it.each(TIERS)("reproduces both %s rates from the unrounded distributable", (tier) => {
+    const d = DISTRIBUTABLE_EXACT[tier];
+    expect(floorToPence(d * (SPLIT.artists / 100))).toBeCloseTo(PER_FAN.artist[tier], 10);
+    expect(floorToPence(d * (SPLIT.tastemakers / 100))).toBeCloseTo(PER_FAN.tastemaker[tier], 10);
+  });
+
+  it.each(TIERS)("floors the published %s distributable from the exact one", (tier) => {
+    expect(floorToPence(DISTRIBUTABLE_EXACT[tier])).toBeCloseTo(DISTRIBUTABLE[tier], 10);
+  });
+
+  // The correction itself, pinned. £2.82/£0.76 must not come back.
+  it("carries the settled £7.99 figures, not the retired ones", () => {
+    expect(PER_FAN.artist.dayOneNext).toBeCloseTo(2.83, 10);
+    expect(PER_FAN.tastemaker.dayOneNext).toBeCloseTo(0.77, 10);
+  });
+
+  // The 8p-Connect story explains £2.82 but never explained £0.76: 15% of that
+  // waterfall still floors to 77p. Nothing in the stated inputs reaches 76p.
+  it("cannot reach £0.76 from the artist rate's own implied range", () => {
+    const low = PER_FAN.artist.dayOneNext / (SPLIT.artists / 100);
+    expect(floorToPence(low * (SPLIT.tastemakers / 100))).toBeGreaterThan(0.76);
   });
 });
 
