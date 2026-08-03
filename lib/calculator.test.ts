@@ -19,9 +19,8 @@ import {
   PLATFORM_PER_STREAM_ESTIMATES,
   SPLIT,
   SPOTIFY,
-  engagedFanMonthly,
+  equivalentStreams,
   floorToPence,
-  spotifyEngagedFanEarnings,
   spotifyEquivalentStreams,
 } from "./raaydrRates";
 
@@ -66,11 +65,8 @@ describe("formatGbp", () => {
     expect(formatGbp(8544)).toBe("£8,544");
   });
 
-  it("formats both sides of the default view the same way", () => {
-    const raaydr = raaydrMonthly(1000, 0.2);
-    const spotify = spotifyEngagedFanEarnings(1000, 20);
-    expect(formatGbp(spotify)).toBe("£48");
-    expect(formatGbp(raaydr)).toBe("£712");
+  it("formats the default view's RAAYDR figure", () => {
+    expect(formatGbp(raaydrMonthly(1000, 0.2))).toBe("£712");
   });
 });
 
@@ -176,15 +172,27 @@ describe("spotifyEquivalentStreams", () => {
     expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(188000);
   });
 
-  // The invariance check: the streams you would need is a fixed multiple of the
-  // streams your actual fans give you, at every attention share. If this ever
-  // drifts, the two sides of the comparison have stopped matching.
-  it("stays at the canonical multiple across every attention share", () => {
+  // This replaces a test that pinned a fixed 15x ratio between the streams
+  // needed and the streams an "engaged fan" was assumed to give. That second
+  // quantity was 80 plays a month with no source behind it, so the ratio it
+  // held constant was an artefact of the assumption rather than a property of
+  // the model. What is actually true, and all that is claimed now, is that the
+  // figure is earnings divided by the observed rate — nothing else enters it.
+  it("is exactly earnings over the observed rate at every attention share", () => {
     for (const attention of [0.1, 0.2, 0.4, 1]) {
-      const needed = spotifyEquivalentStreams(raaydrMonthly(1000, attention));
-      const given = 1000 * attention * SPOTIFY.engagedFanStreamsPerMonth;
-      expect(needed / given).toBeCloseTo(CANONICAL.artistPerFan / CANONICAL.spotifyPerFan, 3);
+      const earnings = raaydrMonthly(1000, attention);
+      expect(spotifyEquivalentStreams(earnings)).toBe(
+        Math.round(earnings / SPOTIFY.perStream)
+      );
     }
+  });
+
+  // The guard the old design needed and did not have: no listening-volume
+  // input may reach this figure. If a constant like the retired 80-plays-a-
+  // month ever returns to SPOTIFY, this is where it should be caught.
+  it("takes no input but earnings", () => {
+    expect(spotifyEquivalentStreams.length).toBe(1);
+    expect(Object.keys(SPOTIFY)).toEqual(["perStream", "subscriptionPrice"]);
   });
 });
 
@@ -207,21 +215,28 @@ describe("the published distributable", () => {
 });
 
 // The per-stream comparison table computes both of its columns from these, so
-// a rate and the per-fan figure printed beside it cannot drift apart. Apple's
-// row previously read £0.62 against a stated £0.008, which gives £0.64.
-describe("other platforms' engaged-fan figures", () => {
+// a rate and the play count printed beside it cannot drift apart. Apple's row
+// previously read £0.62 against a stated £0.008, which gives £0.64.
+//
+// The column itself changed on 3 August 2026: it read "one engaged fan is
+// worth £x", each rate multiplied by 80 assumed plays a month. It is now the
+// plays needed to match £3.56 — the same rates, divided rather than
+// multiplied, with no assumption about anyone's listening.
+describe("the per-platform plays-to-match column", () => {
   it("derives each from the rate printed beside it", () => {
-    expect(engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.appleMusic)).toBeCloseTo(0.64, 10);
-    expect(engagedFanMonthly(PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic)).toBeCloseTo(0.12, 10);
-    expect(engagedFanMonthly(SPOTIFY.perStream)).toBeCloseTo(CANONICAL.spotifyPerFan, 10);
+    const perFan = PER_FAN.artist.standard;
+    expect(equivalentStreams(perFan, PLATFORM_PER_STREAM_ESTIMATES.appleMusic)).toBe(445);
+    expect(equivalentStreams(perFan, PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic)).toBe(2373);
+    expect(equivalentStreams(perFan, SPOTIFY.perStream)).toBe(CANONICAL.ceilingStreams);
   });
 });
 
 describe("the canonical claim", () => {
   it("leads with the realistic figure, not the ceiling", () => {
     expect(CANONICAL.claim).toBe(
-      "A fan who gives you a fifth of their listening is worth 71p a month, " +
-        "against 4.8p on Spotify. One who plays nothing but you is worth £3.56."
+      "A fan who gives you a fifth of their listening is worth 71p a month. " +
+        "Earning that from Spotify instead takes around 237 plays. " +
+        "A fan who plays nothing but you is worth £3.56, or around 1,187 plays."
     );
   });
 
@@ -233,14 +248,28 @@ describe("the canonical claim", () => {
 
   it("never exposes the realistic figure without its comparison", () => {
     expect(CANONICAL.typicalPair).toContain("71p");
-    expect(CANONICAL.typicalPair).toContain("4.8p");
+    expect(CANONICAL.typicalPair).toContain("237");
   });
 
-  it("derives the multiple rather than carrying a typed one", () => {
-    expect(CANONICAL.multiple).toBe(
-      Math.round(CANONICAL.artistPerFan / CANONICAL.spotifyPerFan)
+  it("states both stream figures as arithmetic on the observed rate alone", () => {
+    expect(CANONICAL.typicalStreams).toBe(
+      Math.round(floorToPence(PER_FAN.artist.standard * 0.2) / SPOTIFY.perStream)
     );
-    expect(CANONICAL.multiple).toBe(15);
+    expect(CANONICAL.ceilingStreams).toBe(
+      Math.round(PER_FAN.artist.standard / SPOTIFY.perStream)
+    );
+  });
+
+  // Retired 3 August 2026. A dimensionless multiple cannot be formed without
+  // dividing by a per-fan Spotify figure, and that figure cannot be built
+  // without assuming a monthly play count. The old 15x was
+  // Math.round(3.56 / 0.24), where 0.24 was £0.003 x 80 unsourced plays; at a
+  // more ordinary 800 to 1,000 plays a month the same sum gives roughly 1.2x.
+  // Nothing may reintroduce one without a published source for the volume.
+  it("carries no multiple and no per-fan Spotify rate", () => {
+    expect(CANONICAL).not.toHaveProperty("multiple");
+    expect(CANONICAL).not.toHaveProperty("spotifyPerFan");
+    expect(CANONICAL.claim).not.toMatch(/\d+x\b/);
   });
 });
 

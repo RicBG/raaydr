@@ -48,9 +48,9 @@ Nearly seven million streams is not a small catalogue. It is more than most inde
 
 ## How much is one listener actually worth on Spotify?
 
-An engaged fan who plays your music around 80 times a month is worth roughly 22 to 24 pence to you. A casual listener who streams you a handful of times a month is worth about a penny.
+There is no fixed answer, and that is the whole problem. On Spotify a listener is not worth anything in particular. They are worth their play count multiplied by roughly a third of a penny, so the person is irrelevant and the button presses are everything. At {{spotify.perStream}} a stream it takes around {{spotify.streamsPerFan}} plays in a single month to earn {{rates.perFan.standard}} — and {{rates.perFan.standard}} is what one RAAYDR fan on the standard tier is worth, whether they play you a thousand times that month or twice.
 
-Sit with that. Your most dedicated listener, someone who plays you daily, someone who would happily buy a ticket and a T-shirt, generates less than the price of a freddo. Not because they do not care, but because the model was never designed to translate their attention into your income.
+Sit with that. Your most dedicated listener, someone who would happily buy a ticket and a T-shirt, has to keep pressing play to be worth anything to you at all. The month they are busy, or on holiday, or simply listening to something new, their subscription still goes out. It just does not come to you. Not because they stopped caring, but because the model was never designed to translate their attention into your income — only their volume.
 
 ## Why is the per-stream rate the wrong question?
 
@@ -62,22 +62,25 @@ So the better question is not "how much per stream?" It is "how much of my fans'
 
 ## How much more could you earn? The same fan, platform by platform
 
-Here is what one engaged fan, someone playing your music around 80 times a month, is worth to you on each platform. Per-stream figures for other platforms are commonly cited industry estimates, since no platform publishes an official rate.
+Here is what each platform asks of a listener to earn you what one RAAYDR fan is worth in a month. Per-stream figures for other platforms are commonly cited industry estimates, since no platform publishes an official rate.
 
-| Platform | Typical rate per stream | One engaged fan is worth (per month) |
+| Platform | Typical rate per stream | Plays needed to earn {{rates.perFan.standard}} |
 | --- | --- | --- |
-| YouTube Music | ~{{platform.youtubeMusic.perStream}} (estimate) | ~{{platform.youtubeMusic.perFan}} |
-| Spotify | ~{{spotify.perStream}} (verified above) | ~{{canonical.spotifyPerFan}} |
-| Apple Music | ~{{platform.appleMusic.perStream}} (estimate) | ~{{platform.appleMusic.perFan}} |
-| RAAYDR | attention based, no per-stream rate | up to {{rates.perFan.standard}} (standard tier) |
+| YouTube Music | ~{{platform.youtubeMusic.perStream}} (estimate) | ~{{platform.youtubeMusic.streamsPerFan}} |
+| Spotify | ~{{spotify.perStream}} (verified above) | ~{{spotify.streamsPerFan}} |
+| Apple Music | ~{{platform.appleMusic.perStream}} (estimate) | ~{{platform.appleMusic.streamsPerFan}} |
+| RAAYDR | attention based, no per-stream rate | none. One fan, up to {{rates.perFan.standard}} (standard tier) |
 
-And here is the same comparison at fanbase scale, using a working artist scenario: {{scenario.fans}} genuine fans who give you {{scenario.attention}} of their listening time.
+Note what that last row means. Every other line in the table is a treadmill: the number is how fast your listener has to run this month, and it resets on the first. The RAAYDR row is not a smaller number on the same treadmill. It is the absence of one.
 
-| | Spotify | RAAYDR (standard) |
+Here is the same comparison at fanbase scale, using a working artist scenario: {{scenario.fans}} genuine fans who give you {{scenario.attention}} of their listening time.
+
+| | RAAYDR (standard) | The same money on Spotify |
 | --- | --- | --- |
-| {{scenario.fans}} engaged fans, {{scenario.attention}} attention share | ~{{scenario.spotifyMonthly}}/month | ~{{scenario.raaydrMonthly}}/month |
-| Over a year | ~{{scenario.spotifyAnnual}} | ~{{scenario.raaydrAnnual}} |
-| Streams needed to earn {{scenario.raaydrMonthly}}/month | ~{{scenario.spotifyStreams}} streams a month | {{scenario.fans}} fans |
+| {{scenario.fans}} engaged fans, {{scenario.attention}} attention share | ~{{scenario.raaydrMonthly}}/month | ~{{scenario.spotifyStreams}} plays a month |
+| Over a year | ~{{scenario.raaydrAnnual}} | ~{{scenario.spotifyStreamsAnnual}} plays |
+
+We state the Spotify side in plays rather than pounds deliberately. Turning it into a pound figure would mean assuming how much a given person listens in a month, and no such figure has ever been measured — not by us, and not published by anyone we would be willing to cite. The per-stream rate above is real, so the arithmetic it supports is real. Anything further would be a guess dressed as a finding.
 
 The difference is not that RAAYDR charges listeners more. It is that on RAAYDR, your fans' money follows their listening instead of disappearing into a global pool.
 
