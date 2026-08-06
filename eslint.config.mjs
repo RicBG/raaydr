@@ -12,9 +12,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // The Human Plus dashboard is a separate app with its own package.json;
-    // it only shares the repo, not the toolchain.
-    "human-plus-metrics/**",
   ]),
 ]);
 

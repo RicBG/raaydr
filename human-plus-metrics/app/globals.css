@@ -1,9 +1,0 @@
-/* The dashboard component carries its own tokens and type; this file only
-   makes sure the page chrome never shows through around it. */
-html,
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  background: #1b1d22;
-}
