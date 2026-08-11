@@ -1,0 +1,185 @@
+/* Temporary cookie verification page.
+   Read on a phone, in daylight, by someone with no dev console: everything is
+   sized for that and nothing here is decorative. Deliberately plain — no
+   reveals, no pinning, no scroll effects, so the page cannot itself become a
+   variable in what is being tested. */
+
+.page {
+  min-height: 100vh;
+  /* 76px clears the fixed nav, as every other page does. The bottom is
+     deliberately oversized: the consent banner is pinned to the bottom of the
+     viewport and is on screen for most of this test, so without the room it
+     would sit on top of the buttons and the raw cookie string. */
+  padding: calc(76px + clamp(1.5rem, 6vw, 3rem)) var(--gutter)
+    clamp(16rem, 40vh, 22rem);
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.inner {
+  width: min(44rem, 100%);
+  margin: 0 auto;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 9vw, 2.75rem);
+  line-height: 1.1;
+}
+
+.sub {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+.waiting {
+  margin-top: 2rem;
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+}
+
+.block {
+  margin-top: clamp(1.75rem, 6vw, 2.5rem);
+  padding: clamp(1rem, 4vw, 1.5rem);
+  background: var(--stone);
+  border-radius: 14px;
+}
+
+.blockTitle {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.rows {
+  margin-top: 0.875rem;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(21, 21, 26, 0.12);
+}
+
+.row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.rowName {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  /* anywhere, not break-all: long API names still break rather than overflow,
+     but only once they have to, so navigator.globalPrivacyControl does not get
+     chopped mid-word while there is room. */
+  overflow-wrap: anywhere;
+}
+
+/* The quiet second line under a name: which surface this value comes from. */
+.rowKey {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  opacity: 0.55;
+  /* Plain English on this line, so it wraps between words like prose. */
+  overflow-wrap: anywhere;
+}
+
+.value {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* PRESENT is filled and ABSENT is outlined rather than green versus red:
+   which of the two is the correct answer depends entirely on the consent
+   state being tested, so the badge must not editorialise. */
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.present {
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+.absent {
+  border: 2px solid rgba(21, 21, 26, 0.35);
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+.note {
+  margin-top: 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+/* The full string, unabbreviated. Wrapping anywhere matters more than looking
+   tidy: a truncated cookie jar would hide the exact thing being looked for. */
+.raw {
+  margin-top: 0.875rem;
+  padding: 0.875rem;
+  background: var(--canvas);
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.stamp {
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  opacity: 0.6;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: clamp(1.75rem, 6vw, 2.5rem);
+}
+
+.button {
+  width: 100%;
+  padding: 1.125rem 1.25rem;
+  background: var(--ink);
+  color: var(--canvas);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.buttonSecondary {
+  background: transparent;
+  color: var(--ink);
+}

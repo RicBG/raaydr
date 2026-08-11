@@ -47,9 +47,9 @@ export default function PrivacyPage() {
               runs without needing your permission.
             </p>
             <p>
-              <strong>If your browser sends Global Privacy Control</strong> —
-              Brave and DuckDuckGo do by default, and Firefox and several
-              extensions can be set to — we treat that as a no and don&rsquo;t
+              <strong>If your browser sends Global Privacy Control</strong>,
+              which Brave and DuckDuckGo do by default and Firefox and several
+              extensions can be set to, we treat that as a no and don&rsquo;t
               show you the banner at all. If you&rsquo;re in the US, that also
               covers your right to opt out of your information being shared for
               advertising.

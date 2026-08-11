@@ -277,9 +277,8 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           <p className={styles.helper}>
             Plays of <em>your</em> music, per fan, per month. This one sets the
             Spotify column and nothing else, because Spotify pays per play and
-            does not care what share of a person you hold &mdash; while on
-            RAAYDR a fan is worth the same whether they play you twice or two
-            hundred times. Real Spotify for Artists data puts an average monthly
+            does not care what share of a person you hold. On RAAYDR a fan is
+            worth the same whether they play you twice or two hundred times. Real Spotify for Artists data puts an average monthly
             listener at about {SPOTIFY_PLAYS_PER_MONTHLY_LISTENER} plays a
             month; the presets are multiples of that.
           </p>
@@ -345,8 +344,8 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           listening you hold. The Spotify column is that same fan&rsquo;s plays
           of your music at roughly £{SPOTIFY.perStream} a stream, a rate taken
           from a real distributor dashboard. Both sides of that are grounded:
-          the rate is observed, and so is the play count &mdash; Spotify for
-          Artists data puts an average monthly listener at about{" "}
+          the rate is observed, and so is the play count. Spotify for Artists
+          data puts an average monthly listener at about{" "}
           {SPOTIFY_PLAYS_PER_MONTHLY_LISTENER} plays a month, and the presets
           are multiples of it. Attention share deliberately does not touch the
           Spotify figure: the play count already is your share of that fan,
