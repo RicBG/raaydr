@@ -111,18 +111,19 @@
   transform: translateX(-50%);
 }
 
-.rangeEnds {
-  display: flex;
-  justify-content: space-between;
-  margin-top: -4px;
-  font-size: 12px;
-  color: color-mix(in srgb, var(--section-ink, currentColor) 66%, transparent);
-}
+/* The Spotify panel's assumption line. Sits under the figure it qualifies,
+   because that is the only place it can be read at the same moment as the
+   number. Muted, but not so muted it reads as decoration: it is the one
+   modelled input on that side and it used to be a whole control.
 
-.volumeCaption {
-  margin-top: 6px;
-  font-size: 14px;
-  font-weight: 500;
+   Replaces .volumeCaption and .rangeEnds, both of which outlived the
+   total-listening model they were written for and styled nothing. */
+.assumption {
+  margin-top: 10px;
+  max-width: 42ch;
+  font-size: 12px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--section-ink, currentColor) 66%, transparent);
 }
 
 /* ---------- Tier toggle (reused pill pattern from WaitlistForm's role

@@ -20,9 +20,10 @@ import {
   PLATFORM_PER_STREAM_ESTIMATES,
   SPLIT,
   SPOTIFY,
-  SPOTIFY_PLAYS_DEFAULT,
+  SPOTIFY_COMMITTED_FAN_MULTIPLE,
   SPOTIFY_PLAYS_MAX,
   SPOTIFY_PLAYS_MIN,
+  SPOTIFY_PLAYS_PER_FAN,
   SPOTIFY_PLAYS_PER_MONTHLY_LISTENER,
   equivalentStreams,
   floorToPence,
@@ -244,12 +245,12 @@ describe("spotifyFanEarnings", () => {
   // The default view, and the sanity check that caught the 25x error: 1,000
   // real fans do not earn hundreds a month on Spotify.
   it("prices the default view against RAAYDR", () => {
-    expect(spotifyFanEarnings(1000, SPOTIFY_PLAYS_DEFAULT)).toBeCloseTo(48, 6);
+    expect(spotifyFanEarnings(1000, SPOTIFY_PLAYS_PER_FAN)).toBeCloseTo(48, 6);
     expect(raaydrMonthly(1000, 0.2)).toBeCloseTo(712, 10);
   });
 
   it("keeps 1,000 fans on Spotify inside a believable range", () => {
-    for (const plays of [SPOTIFY_PLAYS_MIN, SPOTIFY_PLAYS_DEFAULT, SPOTIFY_PLAYS_MAX]) {
+    for (const plays of [SPOTIFY_PLAYS_MIN, SPOTIFY_PLAYS_PER_FAN, SPOTIFY_PLAYS_MAX]) {
       expect(spotifyFanEarnings(1000, plays)).toBeLessThan(310);
     }
     // The retired model's default landed exactly here, and it was the tell.
@@ -257,8 +258,47 @@ describe("spotifyFanEarnings", () => {
   });
 
   it("never reaches the canonical claim", () => {
-    expect(SPOTIFY_PLAYS_DEFAULT).toBeGreaterThanOrEqual(SPOTIFY_PLAYS_MIN);
-    expect(SPOTIFY_PLAYS_DEFAULT).toBeLessThanOrEqual(SPOTIFY_PLAYS_MAX);
+    expect(SPOTIFY_PLAYS_PER_FAN).toBeGreaterThanOrEqual(SPOTIFY_PLAYS_MIN);
+    expect(SPOTIFY_PLAYS_PER_FAN).toBeLessThanOrEqual(SPOTIFY_PLAYS_MAX);
+  });
+});
+
+// The play count stopped being adjustable when the preset row and slider were
+// removed for being bulky and confusing. A fixed input carries a risk the
+// adjustable one did not: nobody chose it, so nothing on screen or in code
+// necessarily says what it assumes. These pin the parts that keep it honest.
+describe("the fixed Spotify play count", () => {
+  // The whole point of the change: the UI simplified, the numbers did not move.
+  it("leaves the live default view exactly where it was", () => {
+    expect(spotifyFanEarnings(1000, SPOTIFY_PLAYS_PER_FAN)).toBeCloseTo(48, 6);
+    expect(formatGbp(spotifyFanEarnings(1000, SPOTIFY_PLAYS_PER_FAN))).toBe("£48");
+    expect(formatGbp(raaydrMonthly(1000, 0.2))).toBe("£712");
+  });
+
+  // Derived, not typed. The presets used to caption each value with its
+  // multiple of the observed anchor, which is where the size of the assumption
+  // was visible. With the row gone, this is what carries it: a bare 16 would
+  // say nothing about which half is measured and which half is a judgement.
+  it("is the observed listener figure times the modelled fan multiple", () => {
+    expect(SPOTIFY_PLAYS_PER_FAN).toBe(
+      SPOTIFY_PLAYS_PER_MONTHLY_LISTENER * SPOTIFY_COMMITTED_FAN_MULTIPLE
+    );
+    expect(SPOTIFY_PLAYS_PER_FAN).toBe(16);
+  });
+
+  // A fan is assumed to play more than an average listener, never less, and
+  // the gap must stay a gap a person could defend out loud.
+  it("keeps the modelled step above one and inside reason", () => {
+    expect(SPOTIFY_COMMITTED_FAN_MULTIPLE).toBeGreaterThan(1);
+    expect(SPOTIFY_COMMITTED_FAN_MULTIPLE).toBeLessThanOrEqual(10);
+  });
+
+  // Scaling the fan count is the one thing outreach does with this calculator,
+  // so both columns are pinned at the count Ric asked for on 13 August 2026.
+  // £1,424 is also the figure §4 of the locked doc publishes for this row.
+  it("reproduces the 2,000-fan figures used in outreach", () => {
+    expect(formatGbp(raaydrMonthly(2000, 0.2))).toBe("£1,424");
+    expect(formatGbp(spotifyFanEarnings(2000, SPOTIFY_PLAYS_PER_FAN))).toBe("£96");
   });
 });
 
