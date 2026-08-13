@@ -15,10 +15,8 @@ import {
 import {
   ATTENTION_DEFAULT,
   ATTENTION_PRESETS,
-  SPOTIFY_PLAYS_DEFAULT,
-  SPOTIFY_PLAYS_MAX,
-  SPOTIFY_PLAYS_MIN,
-  SPOTIFY_PLAYS_PRESETS,
+  SPOTIFY_COMMITTED_FAN_MULTIPLE,
+  SPOTIFY_PLAYS_PER_FAN,
   SPOTIFY_PLAYS_PER_MONTHLY_LISTENER,
   MODELLED_SHARE_NOTE,
   SPOTIFY,
@@ -56,14 +54,13 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
 
   const [fanPos, setFanPos] = useState(0.5); // log position → 1,000 fans
   const [attention, setAttention] = useState(ATTENTION_DEFAULT); // percent
-  const [plays, setPlays] = useState(SPOTIFY_PLAYS_DEFAULT); // plays of YOUR music, per fan
   const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
 
   const fans = sliderToFans(fanPos);
   // Two models, two inputs, and they are deliberately not the same input.
   //
   // RAAYDR takes `attention`: your share of that fan's listening. Spotify takes
-  // `plays`: how many times they press play on YOUR music. Attention never
+  // a play count: how many times they press play on YOUR music. Attention never
   // touches the Spotify figure, because the play count already is your share of
   // that fan, counted rather than expressed as a percentage.
   //
@@ -75,16 +72,19 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   // the whole time.
   //
   // The play count is anchored on that real data instead: 4 a month is the
-  // observed average listener, and the presets are multiples of it.
+  // observed average listener, and SPOTIFY_PLAYS_PER_FAN is a stated multiple
+  // of it. It used to be a preset row and a slider. That control is gone, but
+  // the assumption is not, so it is stated in the caption under the figure it
+  // drives rather than left to be inferred from a number nobody chose.
   const values = useMemo(() => {
     const raaydrM = raaydrMonthly(fans, attention / 100, tier);
     return {
       raaydrM,
       raaydrY: raaydrM * 12,
-      spotifyM: spotifyFanEarnings(fans, plays),
+      spotifyM: spotifyFanEarnings(fans, SPOTIFY_PLAYS_PER_FAN),
       spotifyStreams: spotifyEquivalentStreams(raaydrM),
     };
-  }, [fans, attention, plays, tier]);
+  }, [fans, attention, tier]);
 
   const cap = milestone(values.raaydrY);
 
@@ -234,55 +234,6 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
             happens. It is not the average. {MODELLED_SHARE_NOTE.attention}
           </p>
         </div>
-
-        <div className={styles.control}>
-          <div className={styles.controlHead}>
-            <label htmlFor="calc-plays">
-              How often each one plays you
-            </label>
-            <output htmlFor="calc-plays" className="mono-figure">
-              {count(plays)} a month
-            </output>
-          </div>
-          <div
-            className={styles.tierToggle}
-            role="group"
-            aria-label="Plays per fan per month presets"
-          >
-            {SPOTIFY_PLAYS_PRESETS.map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                className={`${styles.tierSegment} ${plays === p.value ? styles.tierSegmentOn : ""}`}
-                aria-pressed={plays === p.value}
-                onClick={() => setPlays(p.value)}
-              >
-                {p.label} {count(p.value)}
-              </button>
-            ))}
-          </div>
-          <input
-            id="calc-plays"
-            type="range"
-            min={SPOTIFY_PLAYS_MIN}
-            max={SPOTIFY_PLAYS_MAX}
-            step={1}
-            value={plays}
-            aria-valuetext={`${count(plays)} plays a month`}
-            onChange={(e) => setPlays(Number(e.target.value))}
-            className={styles.slider}
-          />
-          {/* Anchored on real Spotify for Artists data rather than an industry
-              estimate, and it drives the Spotify column only. */}
-          <p className={styles.helper}>
-            Plays of <em>your</em> music, per fan, per month. This one sets the
-            Spotify column and nothing else, because Spotify pays per play and
-            does not care what share of a person you hold. On RAAYDR a fan is
-            worth the same whether they play you twice or two hundred times. Real Spotify for Artists data puts an average monthly
-            listener at about {SPOTIFY_PLAYS_PER_MONTHLY_LISTENER} plays a
-            month; the presets are multiples of that.
-          </p>
-        </div>
       </div>
 
       <div className={styles.results}>
@@ -296,6 +247,17 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           <p className={`mono-figure ${styles.figure}`}>
             <span ref={spotifyMEl}>{gbp(values.spotifyM)}</span>
             <span className={styles.per}>/month</span>
+          </p>
+          {/* The one assumption left on this side, stated where the figure is
+              rather than in a control the reader has to go and find. It used to
+              be a preset row; the row is gone and this is what replaces it. */}
+          <p className={styles.assumption}>
+            Assumes {count(SPOTIFY_PLAYS_PER_FAN)} plays of your music per fan a
+            month, {SPOTIFY_COMMITTED_FAN_MULTIPLE} times the{" "}
+            {count(SPOTIFY_PLAYS_PER_MONTHLY_LISTENER)} plays a real Spotify
+            monthly listener averages in our own Spotify for Artists data. The{" "}
+            {count(SPOTIFY_PLAYS_PER_MONTHLY_LISTENER)} is measured. The step up
+            to a committed fan is our assumption.
           </p>
         </div>
 
@@ -344,10 +306,14 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
           listening you hold. The Spotify column is that same fan&rsquo;s plays
           of your music at roughly £{SPOTIFY.perStream} a stream, a rate taken
           from a real distributor dashboard. Both sides of that are grounded:
-          the rate is observed, and so is the play count. Spotify for Artists
-          data puts an average monthly listener at about{" "}
-          {SPOTIFY_PLAYS_PER_MONTHLY_LISTENER} plays a month, and the presets
-          are multiples of it. Attention share deliberately does not touch the
+          the rate is observed, and so is the anchor under the play count.
+          Spotify for Artists data puts an average monthly listener at about{" "}
+          {count(SPOTIFY_PLAYS_PER_MONTHLY_LISTENER)} plays a month, and the{" "}
+          {count(SPOTIFY_PLAYS_PER_FAN)} plays this column prices is{" "}
+          {SPOTIFY_COMMITTED_FAN_MULTIPLE} times that, on the assumption that a
+          fan who genuinely rates you plays you more than a passing listener
+          does. That step is the one modelled input on this side. Attention
+          share deliberately does not touch the
           Spotify figure: the play count already is your share of that fan,
           counted rather than expressed as a percentage. Figures are projections
           based on your inputs, not a guarantee.

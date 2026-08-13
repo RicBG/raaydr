@@ -193,7 +193,7 @@ export const SPOTIFY_PLAYS_PER_MONTHLY_LISTENER = 4;
 
 /**
  * How many times a fan plays YOUR music in a month. The Spotify side's only
- * input, and the visitor sets it.
+ * input, and it is now a constant rather than something the visitor sets.
  *
  * THIS REPLACES A MODEL THAT WAS WRONG BY 25x, on 3 August 2026.
  *
@@ -215,36 +215,49 @@ export const SPOTIFY_PLAYS_PER_MONTHLY_LISTENER = 4;
  * RAAYDR pays for the share and does not care about the play count. Two
  * currencies, so the calculator asks for both.
  *
- * NEVER let these reach CANONICAL, a Pulse token, or any static copy: §5 still
- * forbids a *published* per-fan Spotify figure, and these are calculator inputs.
+ * NEVER let this reach CANONICAL, a Pulse token, or any static copy: §5 still
+ * forbids a *published* per-fan Spotify figure, and this is a calculator input.
  */
-/*
- * Labelled by FREQUENCY, not by fan type. The attention presets next to these
- * are already Casual / Committed / Superfan, and reusing those words here put
- * two identical-looking button rows on the same panel — indistinguishable to
- * anyone reading, and ambiguous to a screen reader and to any test driving the
- * page by accessible name. Frequency also says more: "roughly weekly" is a
- * thing a person can picture, "Casual" is not.
- */
-export const SPOTIFY_PLAYS_PRESETS = [
-  /** A typical monthly listener. Exactly the observed anchor, about weekly. */
-  { label: "Weekly", value: SPOTIFY_PLAYS_PER_MONTHLY_LISTENER },
-  /** Four times the average listener — roughly every other day. */
-  { label: "Often", value: 16 },
-  /** Ten times the average listener, better than once a day. */
-  { label: "Daily", value: 40 },
-] as const;
 
 /**
- * Default: 16 plays a month, four times the observed average monthly listener.
+ * The step from "average monthly listener" to "committed fan". MODELLED.
  *
- * Chosen to match the Committed attention preset, since the calculator's
- * population is "people who genuinely rate you" rather than everyone who
- * happened to hear you once. The 4x step is modelled and the visitor can move
- * it; the 4 it multiplies is not.
+ * §7 of the economics doc lists this as a known unverified input, and it is the
+ * only assumption left anywhere on the Spotify side. The calculator's population
+ * is "people who genuinely rate you" rather than everyone who heard you once, so
+ * the observed listener figure is multiplied up. How far is a judgement.
+ *
+ * It is exported, and named, because the presets used to carry this job. Each
+ * button was captioned with its multiple of the observed anchor, so the size of
+ * the assumption was on screen. With the control gone that visibility has to
+ * live somewhere, and a constant the caption reads from is somewhere. A bare
+ * `= 16` would have buried the only judgement on this side inside a literal.
  */
-export const SPOTIFY_PLAYS_DEFAULT = 16;
+export const SPOTIFY_COMMITTED_FAN_MULTIPLE = 4;
 
+/**
+ * Plays of your music, per fan, per month, as the Spotify column prices it:
+ * 16 a month, four times the observed average monthly listener.
+ *
+ * FIXED, not adjustable. It was a preset row plus a 1-to-100 slider until the
+ * control was removed for being bulky and confusing. Removing it does not make
+ * the assumption go away, it only makes it invisible, so the number stays
+ * derived from its two parts and the caption beside the figure states both.
+ *
+ * Derived rather than typed, per the copy rule that no derived figure may be a
+ * literal: 4 observed plays x a 4x committed-fan step. Reading `16` here would
+ * say nothing about which half is measured and which half is a guess.
+ */
+export const SPOTIFY_PLAYS_PER_FAN =
+  SPOTIFY_PLAYS_PER_MONTHLY_LISTENER * SPOTIFY_COMMITTED_FAN_MULTIPLE;
+
+/**
+ * The band the constant above must stay inside. These were the slider's range
+ * and are kept now that it is gone, because their real job was never the UI:
+ * they are what the believability test sweeps, and 100 plays a month is where
+ * 1,000 fans price at £300 — the exact figure the retired 25x model produced,
+ * and the tell that something was wrong. Keeping the ceiling keeps the tell.
+ */
 export const SPOTIFY_PLAYS_MIN = 1;
 export const SPOTIFY_PLAYS_MAX = 100;
 
