@@ -2,6 +2,7 @@ import Hero from "@/components/sections/Hero";
 import Problem from "@/components/sections/Problem";
 import Algorithm from "@/components/sections/Algorithm";
 import HowItWorks from "@/components/sections/HowItWorks";
+import PledgeBar from "@/components/sections/PledgeBar";
 import MidWave from "@/components/sections/MidWave";
 import GradientSpan from "@/components/sections/GradientSpan";
 import FindYourPlace from "@/components/sections/FindYourPlace";
@@ -19,6 +20,7 @@ export default function Home() {
       <Hero />
       <Problem />
       <HowItWorks />
+      <PledgeBar />
       <TickerMarquee
         top="Be a day one"
         middle="Attention pays"
