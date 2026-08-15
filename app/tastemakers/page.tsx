@@ -52,6 +52,7 @@ export default function TastemakersPage() {
         },
       ]}
       pointsNote="Not follower counts. Not industry connections. Ears."
+      pledgeNote="Everything we promise artists holds for you. Your share moves monthly, from real subscriptions, on the same rails."
       points={[
         {
           title: "A ringfenced fund.",

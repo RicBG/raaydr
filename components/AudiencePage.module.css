@@ -110,6 +110,17 @@
   color: color-mix(in srgb, var(--ink) 82%, transparent);
 }
 
+/* The pledge cross reference under the points: a promise, so it is ruled off
+   from the points above it rather than reading as another note on them. */
+.pledgeNote {
+  margin-top: clamp(28px, 4vw, 48px);
+  padding-top: clamp(20px, 2.5vw, 28px);
+  border-top: 1px solid var(--stone);
+  max-width: 56ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  color: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+
 /* A closing beat immediately before the join CTA — a settled statement, not a
    full display heading. The join section's own top padding spaces them. */
 .closing {

@@ -23,6 +23,7 @@ export default function ForListenersPage() {
       waitlistSource="listeners-page"
       faqItems={faqData.listeners}
       calculator={<WhereYourMoneyGoes />}
+      pledgeNote="Your subscription follows your own listening. The artist money in it reaches the artists you actually play, and the artists keeping that money keep their rights too. Nothing here trains AI on their work."
       points={[
         {
           title: "Every listen builds something.",

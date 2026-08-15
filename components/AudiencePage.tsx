@@ -41,6 +41,17 @@ type AudiencePageProps = {
   /** A short standalone line rendered under the numbered points, before the
    *  calculator. Omitted when absent. */
   pointsNote?: string;
+  /** A one line cross reference to the pledges, rendered under the numbered
+   *  points in the same place on every audience page. Kept separate from
+   *  `pointsNote` so a page can carry both, and so the pledge copy stays
+   *  identifiable when /terms grows the matching clauses. Omitted when
+   *  absent. */
+  pledgeNote?: string;
+  /** The full pledge section (components/sections/Pledges), rendered between
+   *  the numbered points and the calculator. It carries the anchor the
+   *  homepage pledge bar deep links to, so only one page should pass it.
+   *  Omitted when absent. */
+  pledges?: React.ReactNode;
   /** A closing beat rendered immediately before the join CTA. Omitted when
    *  absent. */
   closing?: string;
@@ -106,6 +117,8 @@ export default function AudiencePage({
   calculator,
   beat,
   pointsNote,
+  pledgeNote,
+  pledges,
   closing,
   heroCallout,
   tintSections,
@@ -248,9 +261,16 @@ export default function AudiencePage({
                 {pointsNote}
               </p>
             )}
+            {pledgeNote && (
+              <p className={styles.pledgeNote} data-reveal>
+                {pledgeNote}
+              </p>
+            )}
           </div>
         </div>
       </section>
+
+      {pledges}
 
       {calculator && (
         <section className={styles.calcSection} id="calculator">

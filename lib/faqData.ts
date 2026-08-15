@@ -62,6 +62,21 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
         "55% of every subscription, after tax, publishing royalties and card fees, goes to artists, split by how much of each fan's listening they hold. Payouts run monthly once an artist passes £50, straight to their bank through Stripe. You can see what your own audience would look like on the calculator.",
     },
     {
+      question: "Does RAAYDR own my music?",
+      answer:
+        "No. You keep full ownership of your masters and rights. Uploading grants RAAYDR a limited licence to stream your music to subscribers. Take a track down and that licence ends with it.",
+    },
+    {
+      question: "Will my music be used to train AI?",
+      answer:
+        "No. We will never use your music to train AI models and we will never license or share it for that purpose. And because nothing on RAAYDR plays without a subscription, there's no public catalogue sitting out there for anyone else to harvest.",
+    },
+    {
+      question: "Does it cost anything to upload?",
+      answer:
+        "No. Uploading is free and stays free. RAAYDR+ is a separate optional product and has nothing to do with getting your music on the platform.",
+    },
+    {
       question: "Who is RAAYDR for?",
       answer:
         "Independent artists, songwriters, producers, tastemakers and the listeners who back them. Each has their own page built around how RAAYDR works specifically for them.",

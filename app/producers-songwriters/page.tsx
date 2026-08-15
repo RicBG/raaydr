@@ -24,6 +24,7 @@ export default function ProducersSongwritersPage() {
       waitlistSource="producers-page"
       faqItems={faqData.producersSongwriters}
       calculator={<SplitCalculator />}
+      pledgeNote="The same promises cover your work. Nothing here trains AI, and uploading costs the artist nothing, so no fee eats into the splits you're credited on."
       points={[
         {
           title: "Credit is infrastructure.",

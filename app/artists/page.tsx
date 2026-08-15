@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import Calculator from "@/components/sections/Calculator";
+import Pledges from "@/components/sections/Pledges";
 import { faqData } from "@/lib/faqData";
 import { pageMetadata } from "@/lib/seo";
 
@@ -23,6 +24,7 @@ export default function ArtistsPage() {
       waitlistSource="artists-page"
       faqItems={faqData.artists}
       calculator={<Calculator disclaimer />}
+      pledges={<Pledges />}
       beat={{
         heading: "You didn't sign up to be a content creator.",
         body: [
