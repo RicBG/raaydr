@@ -65,7 +65,7 @@
   pointer-events: none;
   background-image: url("/textures/grain-tile.png");
   background-repeat: repeat;
-  opacity: 0.16;
+  opacity: 0.08;
   mix-blend-mode: multiply;
 }
 
