@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
 import LazyMount from "@/components/LazyMount";
-import { useLiveShader } from "@/lib/useLiveShader";
 import dynamic from "next/dynamic";
 const DotPulse = dynamic(() => import("@/components/DotPulse"), { ssr: false });
 import styles from "./TintedSection.module.css";
@@ -48,7 +47,6 @@ export default function TintedSection({
 }: TintedSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const liveShader = useLiveShader();
   useReveal(sectionRef);
   useMaskedReveal(headingRef);
 
@@ -61,7 +59,6 @@ export default function TintedSection({
     >
       {dotPulse && (
         <div className={styles.dotBg} aria-hidden="true">
-          {liveShader ? (
           <LazyMount style={{ position: "absolute", inset: 0 }}>
             <DotPulse
               pattern="breathe"
@@ -79,11 +76,6 @@ export default function TintedSection({
               jitter={0.15}
             />
           </LazyMount>
-          ) : (
-            /* Static tiled dots on phones, for the same reason as MidWave:
-               no GL context on a device that will take it back. */
-            <div className={styles.dotStill} />
-          )}
         </div>
       )}
       <div className={`container ${styles.inner}`} ref={sectionRef}>

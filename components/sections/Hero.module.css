@@ -95,65 +95,6 @@
   opacity: 0;
 }
 
-/* On phones there is no WebGL orb to cross-fade to (see lib/useLiveShader), so
-   this is not a stand-in any more — it is the orb. The version above is tuned
-   to be as close to free as possible because on desktop it is on screen for
-   under a second before the real one takes over; left as it was it read as a
-   soft smudge rather than a sphere, which is fine for 800ms and not fine as
-   the finished hero.
-
-   So below the shader breakpoint it gets what it needs to read as an object:
-   the spectrum at full strength, a bright rim at the upper left where the
-   light is, a pale core, and an edge that actually ends. Still no blur filter
-   and no image — six gradients and a mask, which is paint the compositor does
-   once. This element sits behind the LCP text, so cheap still matters. */
-@media (max-width: 767px) {
-  .orbStandIn {
-    background:
-      /* Specular highlight, upper left. */
-      radial-gradient(
-        circle at 33% 27%,
-        rgba(255, 255, 255, 0.9) 0%,
-        rgba(255, 255, 255, 0) 34%
-      ),
-      /* Amber across the top right. */
-        radial-gradient(
-          circle at 76% 32%,
-          color-mix(in oklab, var(--amber) 72%, transparent) 0%,
-          transparent 55%
-        ),
-      /* Orchid down the left. */
-        radial-gradient(
-          circle at 22% 66%,
-          color-mix(in oklab, var(--orchid) 70%, transparent) 0%,
-          transparent 55%
-        ),
-      /* Violet settling at the base. */
-        radial-gradient(
-          circle at 64% 88%,
-          color-mix(in oklab, var(--violet) 55%, transparent) 0%,
-          transparent 52%
-        ),
-      /* The glassy rim that makes it a sphere rather than a cloud. */
-        radial-gradient(
-          circle closest-side,
-          transparent 68%,
-          rgba(255, 255, 255, 0.7) 88%,
-          rgba(255, 255, 255, 0) 100%
-        ),
-      /* Pale core so the middle stays light enough for the headline. */
-        radial-gradient(circle closest-side, #fdfbf7 0%, #efe9df 100%);
-    /* Holds almost to the edge, then falls away over the last few percent, so
-       the circle has a definite boundary without a hard aliased line. */
-    -webkit-mask-image: radial-gradient(
-      circle closest-side,
-      #000 93%,
-      transparent 100%
-    );
-    mask-image: radial-gradient(circle closest-side, #000 93%, transparent 100%);
-  }
-}
-
 /* The cross-fade sits on its own element, not on .orbWrap. The scroll recede
    animates orbWrap's opacity and needs its start value to be a stable 1, so
    GSAP owns that one and CSS owns this one; neither writes the other's. */

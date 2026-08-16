@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/lib/siteConfig";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
-import { useLiveShader } from "@/lib/useLiveShader";
 import dynamic from "next/dynamic";
 import LazyMount from "@/components/LazyMount";
 import Pulse from "@/components/Pulse";
@@ -39,12 +38,24 @@ export default function FirstWave() {
   useMaskedReveal(headingRef);
   useReveal(innerRef);
 
-  // The live metaball field is a heavier per-frame shader than the hero Orb,
-  // so it runs on desktop only; small screens and reduced motion get a static
-  // high-res render of the same field. This section had its own copy of that
-  // test, which is now lib/useLiveShader — the rule it was applying alone is
-  // the rule for every WebGL surface on the site.
-  const live = useLiveShader();
+  // The live metaball field is a heavier per-frame shader than the hero Orb, so
+  // it runs on desktop only. Small screens (and reduced motion) get a static
+  // high-res render of the same field — identical look, zero runtime cost. We
+  // render the still first (SSR-safe) and upgrade to live only on a wide
+  // enough, motion-allowing viewport, tracking both conditions reactively.
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 768px)");
+    const motionOk = window.matchMedia("(prefers-reduced-motion: no-preference)");
+    const update = () => setLive(wide.matches && motionOk.matches);
+    update();
+    wide.addEventListener("change", update);
+    motionOk.addEventListener("change", update);
+    return () => {
+      wide.removeEventListener("change", update);
+      motionOk.removeEventListener("change", update);
+    };
+  }, []);
 
   return (
     <section id="join" className={styles.section} aria-labelledby="join-heading">

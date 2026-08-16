@@ -5,7 +5,6 @@ import { useEffect, useRef, type ReactNode } from "react";
 import LazyMount from "@/components/LazyMount";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
-import { useLiveShader } from "@/lib/useLiveShader";
 import styles from "./GradientSpan.module.css";
 
 // Code-split the WebGL gradient out of the initial bundle (below the fold).
@@ -25,7 +24,6 @@ export default function GradientSpan({ children }: { children: ReactNode }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const gradientRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
-  const liveShader = useLiveShader();
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -72,14 +70,11 @@ export default function GradientSpan({ children }: { children: ReactNode }) {
             phone takes the GL context away, and under reduced motion. Any of
             those used to leave the section's background missing. */}
         <div className={styles.gradientFallback} />
-        {!reducedMotion && liveShader && (
+        {!reducedMotion && (
           /* Behind LazyMount like every other GL surface on the site, so this
              holds a context only while the section is on screen. It was the
              one that did not, which meant a second context alive for the whole
-             page on top of whichever one was actually in view.
-
-             And not at all on a phone: the wash above is the mobile
-             background. */
+             page on top of whichever one was actually in view. */
           <LazyMount style={{ position: "absolute", inset: 0 }}>
             <AnimatedGradient
               config={{
