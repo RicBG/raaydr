@@ -137,7 +137,16 @@ export default function PledgeTimeline() {
           { "--panel-count": PLEDGES.length } as React.CSSProperties
         }
       >
-        <div className={styles.frame}>
+        {/* On phones this frame is a horizontal scroll rail (see the CSS), and
+            a scrollable region has to be operable by keyboard as well as by
+            touch, so it is focusable and named. On desktop it is not
+            scrollable and this is simply a labelled region. */}
+        <div
+          className={styles.frame}
+          tabIndex={0}
+          role="group"
+          aria-label="The RAAYDR pledges"
+        >
           {PLEDGES.map((pledge, i) => (
             <article
               key={pledge.title}

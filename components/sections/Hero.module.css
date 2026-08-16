@@ -54,11 +54,59 @@
   display: grid;
   place-items: center;
   pointer-events: none;
-  /* Hidden until the orb signals its first painted frame (see Hero.tsx),
-     then faded in ring-first. A CSS default of 0 avoids any flash of a blank
-     canvas before the reveal JS runs. */
-  opacity: 0;
+  /* Visible from first paint. What used to be hidden here was the whole ring
+     layer, which meant the hero had a hole in it until the orb's first frame:
+     measured at 0.6s on a fast connection and 4.4s on a throttled phone. The
+     layer now carries a CSS stand-in that paints with the document, and the
+     real orb cross-fades over it. */
+  opacity: 1;
   will-change: opacity, transform;
+}
+
+/* The stand-in. A static gradient in the spectrum tokens, occupying the same
+   box as the real orb, so the composition is complete at first paint and the
+   WebGL canvas replaces it rather than arriving into a gap. Pure CSS: no
+   image to fetch, no JS to run, nothing for LCP to wait on. */
+.orbStandIn {
+  position: absolute;
+  left: 50%;
+  top: var(--orb-top);
+  transform: translateX(-50%);
+  width: var(--orb-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  /* Three gradients, no blur filter. A blur over a circle this size is real
+     paint work on the critical path: at five layers and a 26px radius it put
+     FCP up from 216ms to 368ms, which is the opposite of the point. The
+     gradients already fall off softly enough to read as glow. */
+  background:
+    radial-gradient(circle at 34% 30%, color-mix(in oklab, var(--amber) 42%, transparent) 0%, transparent 62%),
+    radial-gradient(circle at 70% 70%, color-mix(in oklab, var(--orchid) 42%, transparent) 0%, transparent 64%),
+    radial-gradient(circle closest-side, color-mix(in oklab, var(--violet) 26%, transparent) 0%, transparent 78%);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 78%, transparent 100%);
+  mask-image: radial-gradient(circle closest-side, #000 78%, transparent 100%);
+  transition: opacity 0.6s ease;
+}
+
+/* Cross-fade: once the orb reports its first painted frame the layer flips
+   this attribute and the two swap. Opacity only, so it is compositor work. */
+.ringLayer[data-orb-ready="true"] .orbStandIn {
+  opacity: 0;
+}
+
+/* The cross-fade sits on its own element, not on .orbWrap. The scroll recede
+   animates orbWrap's opacity and needs its start value to be a stable 1, so
+   GSAP owns that one and CSS owns this one; neither writes the other's. */
+.orbFade {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.ringLayer[data-orb-ready="true"] .orbFade {
+  opacity: 1;
 }
 
 /* A full circle sized so it's fully visible top-to-side, only the very

@@ -49,27 +49,24 @@ export default function Hero() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  // First-paint order: the ring/orb is a WebGL canvas that takes real time to
-  // compile its shader and draw its first frame. We hold the hero content
-  // hidden (CSS opacity:0 on the orb layer, GSAP-hidden text) until the orb
-  // signals its first drawn frame, then reveal ring-first, text-second — so
-  // the page never flashes bare text over a blank canvas. The timeout is a
-  // safety net: if WebGL fails or reduced motion swaps the orb for the static
-  // Ring (which never fires the callback), content still reveals.
+  // The orb is a WebGL canvas that takes real time to fetch, compile and draw:
+  // measured at 0.8s on a fast connection and 4.4s on a throttled phone. This
+  // used to hold the whole hero back until that first frame, behind a 1s
+  // safety timeout, which meant the timeout almost always won and the hero
+  // showed bare text over an empty ring layer for the rest of that wait.
+  //
+  // The layer now paints a CSS stand-in immediately and the orb cross-fades
+  // over it when ready, so nothing waits on WebGL and there is no gap to
+  // cover. No timeout is needed either: if WebGL fails outright the flag stays
+  // false and the stand-in simply remains, which is a better fallback than
+  // anything a timer could do.
   const [orbReady, setOrbReady] = useState(false);
-  useEffect(() => {
-    // Reduced motion renders the static Ring instead of the orb, so there's
-    // no first-frame callback to wait for — reveal on the next tick. Otherwise
-    // the orb's onFirstFrame drives the reveal, with this timeout as a safety
-    // net. (Deferred via setTimeout rather than a synchronous setState so it
-    // doesn't trigger a cascading render inside the effect.)
-    const t = setTimeout(() => setOrbReady(true), reducedMotion ? 0 : 1000);
-    return () => clearTimeout(t);
-  }, [reducedMotion]);
 
-  // Intro reveal — runs once the orb has painted (or the fallback fires).
+  // Intro reveal — runs on mount. It no longer waits on the orb: coupling the
+  // copy to a WebGL first frame was what delayed the text, and the text is the
+  // LCP element, so making it wait made the page measurably slower to show
+  // anything meaningful.
   useEffect(() => {
-    if (!orbReady) return;
     const orbLayer = orbLayerRef.current;
     const stack = stackRef.current;
     const heading = headingRef.current;
@@ -82,14 +79,15 @@ export default function Hero() {
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const split = new SplitText(heading, { type: "words" });
 
-      // Ring fades up first; the text stack (heading word-by-word, then
-      // subcopy, then CTA) staggers in starting slightly after, so the
-      // sequence reads ring-first, not everything at once.
+      // Transform only, no opacity. The heading is this page's LCP element,
+      // and an element still fading in does not count as painted, so fading it
+      // would push LCP out by the length of the tween for no gain the eye
+      // notices. The words still arrive with a staggered rise; they simply
+      // rise while already legible.
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.to(orbLayer, { opacity: 1, duration: 0.7, ease: "power2.out" })
-        .from(split.words, { opacity: 0, y: 28, duration: 0.8, stagger: 0.06 }, 0.28)
-        .from(subcopy, { opacity: 0, y: 20, duration: 0.7 }, "-=0.5")
-        .from(cta, { opacity: 0, y: 16, duration: 0.6 }, "-=0.4");
+      tl.from(split.words, { y: 28, duration: 0.8, stagger: 0.06 }, 0)
+        .from(subcopy, { y: 20, duration: 0.7 }, "-=0.5")
+        .from(cta, { y: 16, duration: 0.6 }, "-=0.4");
 
       return () => {
         tl.kill();
@@ -98,11 +96,11 @@ export default function Hero() {
     });
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
-      gsap.set([orbLayer, stack], { opacity: 1 });
+      gsap.set([orbLayer, stack], { opacity: 1, clearProps: "transform" });
     });
 
     return () => mm.revert();
-  }, [orbReady]);
+  }, []);
 
   // Scroll recede — the hero holds itself in place via CSS position:sticky
   // (see .heroPin/.hero in Hero.module.css) while the opaque Problem card
@@ -177,14 +175,24 @@ export default function Hero() {
     >
       <div className={styles.content}>
         <div className={`container ${styles.middle}`}>
-          <div ref={orbLayerRef} className={styles.ringLayer}>
+          <div
+            ref={orbLayerRef}
+            className={styles.ringLayer}
+            data-orb-ready={orbReady ? "true" : undefined}
+          >
+            {/* Paints with the document, so the hero is never missing its
+                centrepiece. Decorative: the orb it stands in for is too. */}
+            {!reducedMotion && (
+              <div className={styles.orbStandIn} aria-hidden="true" />
+            )}
             {reducedMotion ? (
               // Static fallback: the code-drawn ring renders without its rAF
               // loop under reduced motion; the orb has no static mode.
               <Ring mode="spectrum" />
             ) : (
               <div ref={orbWrapRef} className={styles.orbWrap}>
-                <LazyMount style={{ width: "100%", height: "100%" }}>
+                <div className={styles.orbFade}>
+                <LazyMount eager style={{ width: "100%", height: "100%" }}>
                   <RaaydrOrb
                     hue={250}
                     hoverIntensity={0.25}
@@ -194,6 +202,7 @@ export default function Hero() {
                     onFirstFrame={() => setOrbReady(true)}
                   />
                 </LazyMount>
+                </div>
               </div>
             )}
           </div>

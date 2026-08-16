@@ -188,7 +188,17 @@
 
 /* Phones get the same full bleed treatment as the desktop timeline: the cards
    run edge to edge with no inset and no radius, so the colour reaches the sides
-   of the screen instead of floating in a canvas margin. */
+   of the screen instead of floating in a canvas margin.
+
+   They also get the desktop's one-at-a-time reading, as a swipe rail rather
+   than a stack. Stacking four full bleed colour blocks meant scrolling past
+   four screens of promises; snapping them horizontally keeps the desktop's
+   "one promise, then the next" pacing on a device that already swipes, and
+   costs one screen of vertical scroll instead of four.
+
+   Scroll snap does this natively: no JS, no carousel library, no state. The
+   panels are laid out at 90% so the next one always peeks, which is the
+   affordance that says the rail moves. */
 @media (max-width: 820px) {
   .frame {
     margin-inline: 0;
@@ -198,5 +208,34 @@
   .panelInner {
     gap: clamp(24px, 8vw, 40px);
     padding: clamp(32px, 8vw, 48px) var(--gutter);
+  }
+
+  .wrap:not([data-mode="timeline"]) .frame {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .wrap:not([data-mode="timeline"]) .frame::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wrap:not([data-mode="timeline"]) .panel {
+    flex: 0 0 90%;
+    scroll-snap-align: start;
+    /* One comfortable screenful each, so a promise is read in one go rather
+       than the rail becoming as tall as the stack it replaced. */
+    min-height: min(74svh, 560px);
+  }
+
+  /* The rail is a scrollable region, so it has to be reachable and operable by
+     keyboard, not only by touch. */
+  .wrap:not([data-mode="timeline"]) .frame:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: -4px;
   }
 }
