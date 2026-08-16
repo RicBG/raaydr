@@ -7,6 +7,10 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-template-rows: repeat(2, clamp(220px, 24vw, 320px));
   gap: clamp(10px, 1.1vw, 16px);
+  /* Clearance under the ticker bands. Their own spaceBelow is about 29px at
+     desktop width, and because the bands are tilted and overlap downward the
+     gap reads smaller still, which left the top row crowded against them. */
+  margin-top: clamp(28px, 4vw, 72px);
 }
 
 .listeners {
