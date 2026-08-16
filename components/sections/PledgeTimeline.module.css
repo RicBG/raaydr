@@ -238,4 +238,27 @@
     outline: 2px solid var(--green);
     outline-offset: -4px;
   }
+
+  /* Pinned stack. Same machine as the desktop wipe, vertical move: the page's
+     own scroll drives it, so there is no sideways gesture to discover.
+     svh rather than vh because a phone's viewport changes height as the
+     address bar collapses, and vh would leave the frame taller than the
+     screen it is meant to fill. */
+  .wrap[data-mode="timeline"] {
+    height: calc(var(--panel-count, 4) * 100svh);
+  }
+
+  .wrap[data-mode="timeline"] .frame {
+    height: 100svh;
+  }
+
+  .wrap[data-mode="timeline"] .panelInner {
+    padding: clamp(72px, 12svh, 112px) var(--gutter) clamp(48px, 9svh, 84px);
+  }
+
+  /* Transform and opacity only, so each card is composited rather than
+     repainted as it moves. */
+  .wrap[data-mode="timeline"] .panel {
+    will-change: transform, opacity;
+  }
 }
