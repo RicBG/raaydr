@@ -51,6 +51,20 @@ export function trackWaitlistCtaClick(placement: string) {
   fbq("trackCustom", "WaitlistCtaClick", { source: placement });
 }
 
+/** A How It Works card was clicked. `card` is the card's role name, so the
+ *  four read as one event with four values rather than four events.
+ *  cta_placement, not source, for the reason in the warning above. */
+export function trackHowItWorksCardClick(card: string) {
+  gtag("event", "how_it_works_card_click", {
+    card,
+    cta_placement: "how-it-works",
+  });
+  fbq("trackCustom", "HowItWorksCardClick", {
+    card,
+    source: "how-it-works",
+  });
+}
+
 /** The visitor started filling the waitlist form (first field interaction).
  *  Paired with the signup event, this gives the started-vs-completed funnel. */
 export function trackWaitlistStart(placement: string) {

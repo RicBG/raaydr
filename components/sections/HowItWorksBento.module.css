@@ -1,0 +1,301 @@
+/* ---------- Grid ----------
+   Four columns: listeners takes the left half across both rows, artists the
+   top right, tastemakers and credits one column each below. */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, clamp(220px, 24vw, 320px));
+  gap: clamp(10px, 1.1vw, 16px);
+}
+
+.listeners {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+}
+
+.artists {
+  grid-column: 3 / 5;
+  grid-row: 1;
+}
+
+.tastemakers {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.credits {
+  grid-column: 4;
+  grid-row: 2;
+}
+
+/* ---------- Card ---------- */
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: clamp(16px, 1.6vw, 22px);
+  display: block;
+  isolation: isolate;
+  /* The role's own deep stop is the card's ground, so a card with no image
+     yet still reads as a finished surface rather than a hole. */
+  background: var(--role-deep);
+  color: var(--role-light);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Role palettes. The deep stop is the briefed colour; the two text tints are
+   mixed from the spectrum token for that role, so they track the palette
+   rather than being a second set of hardcoded hexes. */
+.listeners {
+  --role: var(--green);
+  --role-deep: #051a09;
+}
+
+.artists {
+  --role: var(--amber);
+  --role-deep: #2c1903;
+}
+
+.tastemakers {
+  --role: var(--orchid);
+  --role-deep: #2e0a19;
+}
+
+.credits {
+  --role: var(--violet);
+  --role-deep: #17123a;
+}
+
+.card {
+  --role-light: color-mix(in oklab, var(--role) 22%, #ffffff);
+  --role-body: color-mix(in oklab, var(--role) 46%, #ffffff);
+}
+
+.media {
+  position: absolute;
+  /* Inset negatively so the idle drift and the hover scale never expose an
+     edge of the card's ground. */
+  inset: -3%;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The artists card is composed differently: the silhouette is right aligned at
+   full height on its own bone field, so the image is anchored right and the
+   copy sits in the clear space on the left. */
+.artists .media {
+  background-position: right center;
+}
+
+/* Amber halo behind the head. Radius is a variable, and so is the centre, so
+   the position can be tuned against the real crop without touching the rule. */
+.halo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background: radial-gradient(
+    circle var(--halo-r, 220px) at var(--halo-x, 72%) var(--halo-y, 34%),
+    color-mix(in oklab, var(--role) 85%, transparent) 0%,
+    color-mix(in oklab, var(--role) 40%, transparent) 55%,
+    transparent 100%
+  );
+}
+
+/* Treatment: the role colour rising from the base for legibility and identity,
+   plus a light black wash across the whole image so type holds anywhere. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 30%,
+      color-mix(in srgb, var(--role-deep) 55%, transparent) 62%,
+      color-mix(in srgb, var(--role-deep) 90%, transparent) 100%
+    ),
+    rgba(0, 0, 0, 0.1);
+  transition: opacity 0.4s ease;
+}
+
+.content {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: clamp(8px, 0.9vw, 12px);
+  padding: clamp(20px, 2.2vw, 32px);
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  font-size: clamp(1.25rem, 1.9vw, 1.9rem);
+  max-width: 18ch;
+  text-wrap: balance;
+  color: var(--role-light);
+}
+
+/* The two small cards carry a short line each, so their headline can sit a
+   step down without the card looking empty. */
+.tastemakers .headline,
+.credits .headline {
+  font-size: clamp(1.15rem, 1.5vw, 1.5rem);
+}
+
+.body {
+  font-size: clamp(0.92rem, 1vw, 1.02rem);
+  line-height: 1.5;
+  max-width: 42ch;
+  color: var(--role-body);
+}
+
+/* Not a flex row: "For producers and songwriters" wraps on the narrow cards,
+   and flex left the arrow stranded against the far edge on its own line. As
+   inline text the arrow stays attached to the last word wherever it breaks. */
+.cta {
+  display: block;
+  margin-top: clamp(4px, 0.6vw, 8px);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.45;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--role-light);
+  text-wrap: balance;
+}
+
+.arrow {
+  display: inline-block;
+  margin-left: 0.5em;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Hover ----------
+   Emphasis only. Everything the card says is already visible. */
+
+@media (hover: hover) {
+  .card:hover,
+  .card:focus-visible {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 50px -24px rgba(0, 0, 0, 0.55);
+  }
+
+  .card:hover .media,
+  .card:focus-visible .media {
+    transform: scale(1.05);
+  }
+
+  .card:hover .scrim,
+  .card:focus-visible .scrim {
+    opacity: 1.12;
+  }
+
+  .card:hover .arrow,
+  .card:focus-visible .arrow {
+    transform: translateX(5px);
+  }
+}
+
+/* ---------- Strip ----------
+   Quiet, bordered, no image: the one place a figure appears in this section. */
+
+.strip {
+  margin-top: clamp(10px, 1.1vw, 16px);
+  padding: clamp(18px, 2vw, 26px) clamp(20px, 2.2vw, 32px);
+  border: 1px solid var(--stone);
+  border-radius: clamp(16px, 1.6vw, 22px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.stripText {
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  color: color-mix(in srgb, var(--ink) 88%, transparent);
+}
+
+.stripLink {
+  font-weight: 500;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+/* ---------- Narrow ---------- */
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+
+  /* Source order is already the briefed stack order, so every card just takes
+     the single column in turn. */
+  .listeners,
+  .artists,
+  .tastemakers,
+  .credits {
+    grid-column: 1;
+    grid-row: auto;
+    min-height: clamp(300px, 62vw, 420px);
+  }
+
+  .artists .media {
+    background-position: right center;
+  }
+
+  .headline,
+  .tastemakers .headline,
+  .credits .headline {
+    font-size: clamp(1.4rem, 5.6vw, 1.9rem);
+  }
+
+  .body {
+    font-size: 1rem;
+  }
+}
+
+/* ---------- Motion hygiene ----------
+   The entrance and the drift are already gated in the component's matchMedia.
+   These are the CSS-driven parts. */
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .media,
+  .arrow,
+  .scrim {
+    transition: none;
+  }
+
+  .card:hover,
+  .card:focus-visible {
+    transform: none;
+  }
+
+  .card:hover .media,
+  .card:focus-visible .media {
+    transform: none;
+  }
+
+  .card:hover .arrow,
+  .card:focus-visible .arrow {
+    transform: none;
+  }
+}

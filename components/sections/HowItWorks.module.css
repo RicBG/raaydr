@@ -1,0 +1,6 @@
+/* The ticker bands overlap the section above them and carry their own gap
+   below (spaceBelow), so this only needs to close the section off underneath
+   the strip. */
+.section {
+  padding-bottom: clamp(56px, 8vw, 112px);
+}
