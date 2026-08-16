@@ -1,0 +1,218 @@
+.section {
+  padding: clamp(48px, 7vw, 96px) 0 clamp(32px, 5vw, 64px);
+}
+
+/* Full bleed timeline runs straight into the ticker bands below it: any gap
+   here would put a strip of canvas between the last panel and the bands and
+   break the fall from one into the next. */
+.section:has(.wrap[data-mode="timeline"]) {
+  padding-bottom: 0;
+}
+
+.intro {
+  display: grid;
+  gap: clamp(16px, 2vw, 24px);
+  padding-bottom: clamp(24px, 4vw, 48px);
+}
+
+.heading {
+  max-width: 18ch;
+}
+
+.link {
+  justify-self: start;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* ---------- Panels ----------
+   The base state is a plain stack: every promise readable with no JS, before
+   hydration, and under reduced motion. The effect adds data-mode="timeline"
+   and only then does any of the sticky/absolute/clipped behaviour apply. */
+
+.frame {
+  border-radius: clamp(20px, 2.2vw, 28px);
+  overflow: hidden;
+  background: var(--deep);
+  margin-inline: var(--gutter);
+}
+
+/* Flat spectrum panels. globals.css reserves flat spectrum colour for actions,
+   and every softened version of this section read as mud rather than colour,
+   so this is a deliberate, signed off exception for one section: the whole
+   point of the moment is that it is loud.
+
+   Type goes dark rather than light. White on a flat accent is nowhere near
+   legible (1.9:1 on amber), while --ink lands 5.23:1 on violet, the darkest of
+   the four, and 8.93:1 on green, so one ink colour covers all four panels and
+   the colour can stay at full strength. This is also what the original layout
+   did, pairing #ff4433 with #151515 rather than white. */
+.panel {
+  position: relative;
+  background: var(--accent);
+  color: var(--ink);
+}
+
+/* Grit on the flat colour. Same tile and blend as the sitewide .grain-overlay,
+   but that one runs at 0.05 and disappears against a saturated fill, so the
+   panels carry their own heavier pass. It sits before .panelInner in the box
+   tree, so the texture lands on the colour and the type stays crisp on top. */
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("/textures/grain-tile.png");
+  background-repeat: repeat;
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+}
+
+.panelInner {
+  position: relative;
+  height: 100%;
+  padding: clamp(28px, 4vw, 56px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(32px, 6vw, 72px);
+}
+
+.panelHeader {
+  max-width: 46ch;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: clamp(10px, 1.2vw, 14px);
+}
+
+.label :global(.mono-figure) {
+  font-size: 0.7em;
+  color: color-mix(in srgb, var(--ink) 80%, transparent);
+}
+
+.body {
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.55;
+  /* 92%, not less: on violet, the darkest of the four accents, 84% put body
+     copy at 4.26:1, under the 4.5:1 it needs. 92% clears it on all four. */
+  color: color-mix(in srgb, var(--ink) 92%, transparent);
+}
+
+/* The poster word. transform-origin is the bottom left corner, so the rotation
+   the effect drives reads as the panel turning away on its own edge. */
+.word {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(3.5rem, 13vw, 13rem);
+  /* Tight leading is what makes the word read as a slab, but it leaves the box
+     shorter than the glyphs, so descenders (Yours, Monthly) spill below it and
+     the frame's overflow: hidden crops them. The padding gives the descender
+     somewhere to live without loosening the leading. */
+  line-height: 0.78;
+  padding-bottom: 0.24em;
+  letter-spacing: -0.04em;
+  transform-origin: left bottom;
+  will-change: transform;
+  align-self: flex-start;
+}
+
+/* ---------- Timeline mode ---------- */
+
+.wrap[data-mode="timeline"] {
+  /* One viewport of scroll per panel: the frame holds the first, and each
+     remaining panel gets a viewport of travel to wipe across. */
+  height: calc(var(--panel-count, 4) * 100vh);
+}
+
+/* Edge to edge and the full viewport, so the wipe happens across the whole
+   screen rather than inside a card sitting on the page. top: 0 puts it under
+   the fixed nav, which is the intended read: the nav hides on scroll down, so
+   the sequence plays uninterrupted and the bar only returns on the way back
+   up, over its own translucent canvas backdrop. */
+.wrap[data-mode="timeline"] .frame {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  margin-inline: 0;
+  border-radius: 0;
+}
+
+.wrap[data-mode="timeline"] .panel {
+  position: absolute;
+  inset: 0;
+}
+
+/* The panel is full bleed, its copy is not: the inner column keeps the site's
+   container width so headers and body align with every other section instead
+   of drifting out to the screen edge. Top padding clears the nav for the
+   moment it is on screen. */
+.wrap[data-mode="timeline"] .panelInner {
+  width: 100%;
+  max-width: calc(var(--content-width) + 2 * var(--gutter));
+  margin-inline: auto;
+  /* Bottom padding clears the ticker bands that follow: they are tilted and
+     paint over the bottom of this frame, and without the clearance they cut
+     through the descender of the poster word. */
+  padding: clamp(96px, 11vh, 148px) var(--gutter) clamp(84px, 12vh, 150px);
+}
+
+/* Header and poster word both sit on the left, and the seam travels right to
+   left, so a panel's copy is the last of it to be squeezed out and the first
+   thing the next panel lands. Putting the header on the right instead (which
+   is what the original layout did) reveals the incoming panel's header while
+   the outgoing panel's word is still on screen, and a promise read against the
+   wrong word is worse than the asymmetry is good. */
+.wrap[data-mode="timeline"] .panelHeader {
+  align-self: flex-start;
+  max-width: 40ch;
+}
+
+/* Scaled up for the full viewport. The word is capped in rem as well as vw so
+   that on a wide monitor "Monthly", the longest of the four, still lands
+   inside the content column rather than running past it. */
+.wrap[data-mode="timeline"] .word {
+  font-size: clamp(4.5rem, 16vw, 18rem);
+}
+
+.wrap[data-mode="timeline"] .label {
+  font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+}
+
+.wrap[data-mode="timeline"] .body {
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+}
+
+/* ---------- Stacked mode (no JS, reduced motion, narrow) ---------- */
+
+/* No gap: flat colour blocks meeting edge to edge is the point, and a hairline
+   between them reads as a table rather than a stack of panels. */
+.wrap:not([data-mode="timeline"]) .frame {
+  display: grid;
+  gap: 0;
+}
+
+.wrap:not([data-mode="timeline"]) .panelInner {
+  min-height: 0;
+}
+
+/* Phones get the same full bleed treatment as the desktop timeline: the cards
+   run edge to edge with no inset and no radius, so the colour reaches the sides
+   of the screen instead of floating in a canvas margin. */
+@media (max-width: 820px) {
+  .frame {
+    margin-inline: 0;
+    border-radius: 0;
+  }
+
+  .panelInner {
+    gap: clamp(24px, 8vw, 40px);
+    padding: clamp(32px, 8vw, 48px) var(--gutter);
+  }
+}
