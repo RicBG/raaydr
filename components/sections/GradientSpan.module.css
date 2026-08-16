@@ -12,16 +12,39 @@
   pointer-events: none;
 }
 
-/* Static stand-in for the reduced-motion path — no animation, but the same
-   canvas + violet mix as the live gradient so there's no visible seam
-   between the two states. */
+/* Static stand-in for every state where the live gradient is not painting:
+   reduced motion, no WebGL2, a phone taking the GL context back, and the beat
+   before LazyMount has the canvas up.
+
+   Four soft violet blobs rather than the single 0.14 corner wash this used to
+   be. That wash was so faint the section read as bare canvas, which is exactly
+   the "background not loading" it is supposed to prevent — the point of a
+   fallback is to look like the thing it replaces, and the live gradient is a
+   full field of violet, not a tint in one corner. Still pure CSS: four radials
+   and a fill, no image and nothing to fetch. */
 .gradientFallback {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-      120% 120% at 80% 25%,
-      rgba(140, 122, 230, 0.14) 0%,
-      rgba(140, 122, 230, 0) 50%
+  background:
+    radial-gradient(
+      70% 55% at 15% 12%,
+      rgba(140, 122, 230, 0.55) 0%,
+      rgba(140, 122, 230, 0) 65%
+    ),
+    radial-gradient(
+      65% 50% at 88% 30%,
+      rgba(140, 122, 230, 0.42) 0%,
+      rgba(140, 122, 230, 0) 62%
+    ),
+    radial-gradient(
+      80% 45% at 30% 72%,
+      rgba(140, 122, 230, 0.48) 0%,
+      rgba(140, 122, 230, 0) 68%
+    ),
+    radial-gradient(
+      60% 40% at 92% 92%,
+      rgba(140, 122, 230, 0.38) 0%,
+      rgba(140, 122, 230, 0) 60%
     ),
     #f5f2ec;
 }

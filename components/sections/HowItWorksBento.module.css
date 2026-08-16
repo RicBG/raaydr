@@ -338,8 +338,14 @@
     font-size: clamp(1.4rem, 5.6vw, 1.9rem);
   }
 
+  /* 18px, which is the site's own body size (globals.css), rather than the
+     16px this was. On a phone the card is a full-width block under a 1.4rem
+     headline, and body copy a notch under the sitewide size read as small
+     print next to it. Desktop keeps its own smaller scale, where the cards sit
+     four-up and the copy is a caption rather than the thing you read. */
   .body {
-    font-size: 1rem;
+    font-size: 1.125rem;
+    line-height: 1.55;
   }
 }
 
