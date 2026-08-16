@@ -3,6 +3,7 @@ import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import LenisProvider from "@/components/LenisProvider";
+import RouteTransition from "@/components/RouteTransition";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import WaitlistCtaTracker from "@/components/WaitlistCtaTracker";
@@ -75,7 +76,7 @@ export default function RootLayout({
         <div className="grain-overlay" aria-hidden="true" />
         <LenisProvider>
           <Nav />
-          {children}
+          <RouteTransition>{children}</RouteTransition>
           <Footer />
         </LenisProvider>
         <WaitlistCtaTracker />

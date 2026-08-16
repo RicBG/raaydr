@@ -264,6 +264,37 @@ h3 {
   background-size: 100% 2px;
 }
 
+/* ---------- Route transitions ----------
+   Native View Transitions, enabled through experimental.viewTransition in
+   next.config.ts. The browser snapshots the old and new document and animates
+   between them, so this costs no animation library and no runtime of ours;
+   browsers without the API navigate exactly as before, unanimated.
+
+   Out is quicker than in on purpose: the page being left should clear promptly
+   so the wait reads as arrival rather than departure. The drift matches the
+   rise the rest of the site reveals with. */
+@keyframes route-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+::view-transition-old(root) {
+  animation: route-out 200ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: route-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* ---------- Motion hygiene ---------- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -273,6 +304,13 @@ h3 {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.15s !important;
+  }
+
+  /* The blanket rule above does not reach the view transition pseudo
+     elements, which sit outside the document tree, so they are named here. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
   }
 }
 
