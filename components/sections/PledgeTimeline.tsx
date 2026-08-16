@@ -67,15 +67,26 @@ export default function PledgeTimeline() {
 
           panels.forEach((panel, i) => {
             const word = panel.querySelector<HTMLElement>(`.${styles.word}`);
+            const header = panel.querySelector<HTMLElement>(
+              `.${styles.panelHeader}`
+            );
 
             if (i === current) {
               // Wiping out: keep the left (1 - t) of the panel.
               panel.style.clipPath = `inset(0 ${t * 100}% 0 0)`;
               if (word) word.style.transform = `rotate(${-90 * t}deg)`;
+              // The word pivots up through the left column, straight across
+              // the copy that also lives there. Fading the header out over the
+              // first part of the wipe keeps the two from overlapping: you read
+              // the promise while the panel rests, and see the graphic while it
+              // turns. Reversible, so scrubbing back fades it in again.
+              if (header)
+                header.style.opacity = String(Math.max(0, 1 - t * 2.5));
             } else if (i === current + 1) {
               // Wiping in from the same seam: keep the right t of the panel.
               panel.style.clipPath = `inset(0 0 0 ${(1 - t) * 100}%)`;
               if (word) word.style.transform = "rotate(0deg)";
+              if (header) header.style.opacity = "1";
             } else {
               panel.style.clipPath = "inset(0 0 0 100%)";
               // Panels already behind stay turned away, so scrubbing backwards
@@ -83,6 +94,7 @@ export default function PledgeTimeline() {
               if (word)
                 word.style.transform =
                   i < current ? "rotate(-90deg)" : "rotate(0deg)";
+              if (header) header.style.opacity = i < current ? "0" : "1";
             }
             panel.style.zIndex = String(i);
           });
@@ -106,6 +118,10 @@ export default function PledgeTimeline() {
             panel.style.zIndex = "";
             const word = panel.querySelector<HTMLElement>(`.${styles.word}`);
             if (word) word.style.transform = "";
+            const header = panel.querySelector<HTMLElement>(
+              `.${styles.panelHeader}`
+            );
+            if (header) header.style.opacity = "";
           });
         };
       }
