@@ -1,21 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
-import { useMaskedReveal } from "@/lib/useMaskedReveal";
-import {
-  PLEDGES,
-  PLEDGE_HEADING,
-  PLEDGE_HREF,
-  PLEDGE_LINK_TEXT,
-} from "@/lib/pledges";
+import { PLEDGES, PLEDGE_HEADING } from "@/lib/pledges";
 import styles from "./PledgeTimeline.module.css";
 
 /**
  * The homepage pledge moment: a sticky frame whose panels wipe across each
- * other on scroll, one promise at a time, deep linking through to the full
- * section on /artists.
+ * other on scroll, one promise at a time.
  *
  * The wipe is a clip-path inset animated from a scroll progress value: the
  * outgoing panel is clipped from the right while the incoming one is revealed
@@ -39,8 +31,6 @@ import styles from "./PledgeTimeline.module.css";
  */
 export default function PledgeTimeline() {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  useMaskedReveal(headingRef);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -132,18 +122,13 @@ export default function PledgeTimeline() {
 
   return (
     <section className={styles.section} aria-labelledby="pledge-timeline-heading">
-      <div className={`container ${styles.intro}`}>
-        <h2
-          ref={headingRef}
-          id="pledge-timeline-heading"
-          className={`display-statement ${styles.heading}`}
-        >
-          {PLEDGE_HEADING}
-        </h2>
-        <Link href={PLEDGE_HREF} className={`link-sweep ${styles.link}`}>
-          {PLEDGE_LINK_TEXT} <span aria-hidden="true">→</span>
-        </Link>
-      </div>
+      {/* The visible heading and the /artists link were removed: the panels
+          introduce themselves. The heading stays as a screen reader one so the
+          section keeps an accessible name and the four promises are still
+          announced under something, rather than arriving unheaded. */}
+      <h2 id="pledge-timeline-heading" className="sr-only">
+        {PLEDGE_HEADING}
+      </h2>
 
       <div
         ref={wrapRef}

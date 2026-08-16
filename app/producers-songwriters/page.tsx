@@ -56,10 +56,19 @@ export default function ProducersSongwritersPage() {
       tintSections={[
         {
           heading: "RAAYDR+",
-          body: "The first 100 producers and songwriters get it free, forever. Everyone after pays £3.99 a month. Your whole catalogue in one place, across every artist you work with, with your split tracked on every song. We are building toward paying your share directly from source, so you never have to ask an artist for money again.",
+          // The claim-your-credit line moved from boldNote into the body so the
+          // qualifier can sit directly under it. TintedSection renders a bold
+          // body paragraph with the same class boldNote uses, so the line looks
+          // exactly as it did.
+          body: [
+            "The first 100 producers and songwriters get it free, forever. Everyone after pays £3.99 a month. Your whole catalogue in one place, across every artist you work with, with your split tracked on every song. We are building toward paying your share directly from source, so you never have to ask an artist for money again.",
+            {
+              text: "Coming soon: claim your credit. Helped make a track that's already up under someone else's upload? You'll be able to flag it, agree the split with the artist, and start earning from it.",
+              bold: true,
+            },
+            "This role is for producers and songwriters with credits on released tracks. That is where the money comes from: your share of every track your name is on.",
+          ],
           dotPulse: true,
-          boldNote:
-            "Coming soon: claim your credit. Helped make a track that's already up under someone else's upload? You'll be able to flag it, agree the split with the artist, and start earning from it.",
         },
       ]}
     />

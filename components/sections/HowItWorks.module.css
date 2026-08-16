@@ -1,0 +1,8 @@
+/* The ticker bands overlap the section above them, and the grid carries its
+   own clearance below them, so this only closes the section off underneath the
+   strip. Kept tight on purpose: the room this section needed was at the top,
+   between the bands and the cards, not trailing after the pill, and taking it
+   from the bottom keeps the whole thing from costing more scroll. */
+.section {
+  padding-bottom: clamp(28px, 3.5vw, 56px);
+}
