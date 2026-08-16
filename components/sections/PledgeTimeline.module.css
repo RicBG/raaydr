@@ -1,5 +1,5 @@
 .section {
-  padding: clamp(48px, 7vw, 96px) 0 clamp(32px, 5vw, 64px);
+  padding: clamp(24px, 3vw, 40px) 0 clamp(32px, 5vw, 64px);
 }
 
 /* Full bleed timeline runs straight into the ticker bands below it: any gap
@@ -7,22 +7,6 @@
    break the fall from one into the next. */
 .section:has(.wrap[data-mode="timeline"]) {
   padding-bottom: 0;
-}
-
-.intro {
-  display: grid;
-  gap: clamp(16px, 2vw, 24px);
-  padding-bottom: clamp(24px, 4vw, 48px);
-}
-
-.heading {
-  max-width: 18ch;
-}
-
-.link {
-  justify-self: start;
-  font-weight: 500;
-  font-size: 15px;
 }
 
 /* ---------- Panels ----------

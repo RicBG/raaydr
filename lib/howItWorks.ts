@@ -34,7 +34,7 @@ export const HOW_IT_WORKS_CARDS: HowItWorksCard[] = [
     cta: "For listeners",
     href: "/for-listeners",
     image: "/how-it-works/hiw-listeners.webp",
-    alt: "A listener lit in green, headphones on.",
+    alt: "A listener at night, eyes closed, earphones in, city lights behind her.",
   },
   {
     role: "artists",
@@ -43,7 +43,7 @@ export const HOW_IT_WORKS_CARDS: HowItWorksCard[] = [
     cta: "For artists",
     href: "/artists",
     image: "/how-it-works/hiw-artists.webp",
-    alt: "An artist in silhouette against a warm bone field.",
+    alt: "An artist in profile, silhouetted against a pale field.",
   },
   {
     role: "tastemakers",
@@ -52,7 +52,7 @@ export const HOW_IT_WORKS_CARDS: HowItWorksCard[] = [
     cta: "For tastemakers",
     href: "/tastemakers",
     image: "/how-it-works/hiw-tastemakers.webp",
-    alt: "A tastemaker picking through records.",
+    alt: "Digging through record crates in a lamplit shop.",
   },
   {
     role: "credits",
@@ -61,7 +61,7 @@ export const HOW_IT_WORKS_CARDS: HowItWorksCard[] = [
     cta: "For producers and songwriters",
     href: "/producers-songwriters",
     image: "/how-it-works/hiw-credits.webp",
-    alt: "Hands on a drum machine under a lamp.",
+    alt: "Hands playing a drum machine beside a lamp.",
   },
 ];
 
