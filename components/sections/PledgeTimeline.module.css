@@ -2,6 +2,13 @@
   padding: clamp(48px, 7vw, 96px) 0 clamp(32px, 5vw, 64px);
 }
 
+/* Full bleed timeline runs straight into the ticker bands below it: any gap
+   here would put a strip of canvas between two full width dark moments and
+   break the fall from one into the next. */
+.section:has(.wrap[data-mode="timeline"]) {
+  padding-bottom: 0;
+}
+
 .intro {
   display: grid;
   gap: clamp(16px, 2vw, 24px);
@@ -102,15 +109,36 @@
   height: calc(var(--panel-count, 4) * 100vh);
 }
 
+/* Edge to edge and the full viewport, so the wipe happens across the whole
+   screen rather than inside a card sitting on the page. top: 0 puts it under
+   the fixed nav, which is the intended read: the nav hides on scroll down, so
+   the sequence plays uninterrupted and the bar only returns on the way back
+   up, over its own translucent canvas backdrop. */
 .wrap[data-mode="timeline"] .frame {
   position: sticky;
-  top: 24px;
-  height: calc(100vh - 48px);
+  top: 0;
+  height: 100vh;
+  margin-inline: 0;
+  border-radius: 0;
 }
 
 .wrap[data-mode="timeline"] .panel {
   position: absolute;
   inset: 0;
+}
+
+/* The panel is full bleed, its copy is not: the inner column keeps the site's
+   container width so headers and body align with every other section instead
+   of drifting out to the screen edge. Top padding clears the nav for the
+   moment it is on screen. */
+.wrap[data-mode="timeline"] .panelInner {
+  width: 100%;
+  max-width: calc(var(--content-width) + 2 * var(--gutter));
+  margin-inline: auto;
+  /* Bottom padding clears the ticker bands that follow: they are tilted and
+     paint over the bottom of this frame, and without the clearance they cut
+     through the descender of the poster word. */
+  padding: clamp(96px, 11vh, 148px) var(--gutter) clamp(84px, 12vh, 150px);
 }
 
 /* Header and poster word both sit on the left, and the seam travels right to
@@ -122,6 +150,21 @@
 .wrap[data-mode="timeline"] .panelHeader {
   align-self: flex-start;
   max-width: 40ch;
+}
+
+/* Scaled up for the full viewport. The word is capped in rem as well as vw so
+   that on a wide monitor "Monthly", the longest of the four, still lands
+   inside the content column rather than running past it. */
+.wrap[data-mode="timeline"] .word {
+  font-size: clamp(4.5rem, 16vw, 18rem);
+}
+
+.wrap[data-mode="timeline"] .label {
+  font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+}
+
+.wrap[data-mode="timeline"] .body {
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
 }
 
 /* ---------- Stacked mode (no JS, reduced motion, narrow) ---------- */
