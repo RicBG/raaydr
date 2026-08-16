@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import WaitlistForm from "@/components/WaitlistForm";
 import LazyMount from "@/components/LazyMount";
+import { useLiveShader } from "@/lib/useLiveShader";
 import dynamic from "next/dynamic";
 const DotPulse = dynamic(() => import("@/components/DotPulse"), { ssr: false });
 import styles from "./MidWave.module.css";
@@ -21,6 +22,7 @@ import styles from "./MidWave.module.css";
 // The block rises into place on scroll, as the payoff at the end of How It Works.
 export default function MidWave() {
   const blockRef = useRef<HTMLDivElement>(null);
+  const liveShader = useLiveShader();
 
   // The block rises up as it scrolls into view. Scrubbed to the scroll, transform
   // and opacity only, so there is no layout shift. Stops under reduced motion.
@@ -62,23 +64,29 @@ export default function MidWave() {
     >
       {/* Pulsing dot field on the section behind the block. */}
       <div className={styles.dotBg} aria-hidden="true">
-        <LazyMount style={{ position: "absolute", inset: 0 }}>
-          <DotPulse
-            pattern="breathe"
-            followPointer={false}
-            backgroundColor="#05060A"
-            dotColor="#FFFFFF"
-            pulseColor="#FFFFFF"
-            spacing={8}
-            dotSize={1}
-            speed={0.2}
-            ringGap={400}
-            pulseWidth={0.2}
-            swell={3}
-            push={20}
-            jitter={0.15}
-          />
-        </LazyMount>
+        {liveShader ? (
+          <LazyMount style={{ position: "absolute", inset: 0 }}>
+            <DotPulse
+              pattern="breathe"
+              followPointer={false}
+              backgroundColor="#05060A"
+              dotColor="#FFFFFF"
+              pulseColor="#FFFFFF"
+              spacing={8}
+              dotSize={1}
+              speed={0.2}
+              ringGap={400}
+              pulseWidth={0.2}
+              swell={3}
+              push={20}
+              jitter={0.15}
+            />
+          </LazyMount>
+        ) : (
+          /* Phones get the field as a tiled dot texture instead of a shader.
+             It is the same 8px grid at the same weight, just not breathing. */
+          <div className={styles.dotStill} />
+        )}
       </div>
       <div className="container">
         <div ref={blockRef} className={styles.block}>

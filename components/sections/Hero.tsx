@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, SplitText } from "@/lib/gsap";
 import { ctaCopy } from "@/lib/siteConfig";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
+import { useLiveShader } from "@/lib/useLiveShader";
 import dynamic from "next/dynamic";
 import Ring from "@/components/Ring";
 import LazyMount from "@/components/LazyMount";
@@ -39,6 +40,7 @@ export default function Hero() {
   const subcopyRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLAnchorElement>(null);
   const reducedMotion = usePrefersReducedMotion();
+  const liveShader = useLiveShader();
 
   // The orb shader blends its edges against a flat colour, so it must be
   // told exactly what is painted behind it. Measured at runtime — walk up
@@ -206,6 +208,15 @@ export default function Hero() {
               // Static fallback: the code-drawn ring renders without its rAF
               // loop under reduced motion; the orb has no static mode.
               <Ring mode="spectrum" />
+            ) : !liveShader ? (
+              // Phones get the stand-in as the finished thing, not as a
+              // placeholder waiting to be replaced. The WebGL orb measured
+              // 4.4s to first frame on a throttled phone, and then the device
+              // would take its GL context away again under memory pressure and
+              // leave the hero empty — the disappearing orb. The gradient above
+              // paints with the document, so on a phone the hero is complete at
+              // first paint and stays that way.
+              null
             ) : (
               <div ref={orbWrapRef} className={styles.orbWrap}>
                 <div className={styles.orbFade}>

@@ -34,6 +34,23 @@
   z-index: 0;
 }
 
+/* Static stand-in for the dot field on phones (see useLiveShader). The shader
+   draws 1px white dots on an 8px grid over #05060A; this is the same grid as a
+   CSS tile, so the section keeps its texture without a GL context. No asset:
+   one repeating radial gradient. */
+.dotStill {
+  position: absolute;
+  inset: 0;
+  background-color: #05060a;
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.22) 1px,
+    transparent 1px
+  );
+  background-size: 8px 8px;
+}
+
+
 .inner {
   position: relative;
   z-index: 1;
