@@ -354,7 +354,18 @@ export default function ScrollRevealText({
               ref={(el) => {
                 spanRefs.current[idx] = el;
               }}
-              style={{ display: 'inline-block', willChange: isLinesMode ? undefined : 'transform, opacity, color, filter' }}
+              // No will-change here, deliberately. The original component put
+              // `transform, opacity, color, filter` on every character, and the
+              // manifesto paragraph is over four hundred characters long, so
+              // that hint alone promoted 412 elements to their own compositor
+              // layers. Measured on a 390x844 phone at DPR 3 that was ~117MB of
+              // GPU memory before the page had moved, on top of the hero's live
+              // WebGL context, which is what made the tab die further down.
+              //
+              // It bought nothing: the reveal writes `color` on every frame, so
+              // each character repaints regardless of what it is promoted to,
+              // and a 2D translate on an inline-block is cheap to redraw.
+              style={{ display: 'inline-block' }}
             >
               {char}
             </span>

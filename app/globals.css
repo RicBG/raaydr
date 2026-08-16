@@ -191,15 +191,27 @@ h3 {
 }
 
 /* Sitewide grain: sits above imagery, below anything interactive. */
+/* Sitewide grain. Same pixels as before, without a blend mode.
+   This used to be the grey tile at `mix-blend-mode: multiply`, and a fixed,
+   full viewport, blended element has to read the page behind it, so Chromium
+   promoted whole sections to compositor layers just to give it a backdrop to
+   blend against. Measured on a 390x844 phone at DPR 3, that single declaration
+   was pulling five section sized layers into compositing — the Algorithm
+   section alone at 390x6517 CSS pixels, a 87MB backing store — none of which
+   animate anything.
+   The tile is now black with the grain in its alpha channel, which is the same
+   arithmetic: multiplying a backdrop by a grey value v at layer opacity o
+   gives backdrop x (1 - o + o.v), and compositing black at alpha (1 - v) with
+   the same opacity gives backdrop x (1 - o.(1 - v)), which is the same
+   expression. Identical result, ordinary source-over paint, no backdrop. */
 .grain-overlay {
   position: fixed;
   inset: 0;
   z-index: 30;
   pointer-events: none;
-  background-image: url("/textures/grain-tile.png");
+  background-image: url("/textures/grain-tile-alpha.png");
   background-repeat: repeat;
   opacity: 0.05;
-  mix-blend-mode: multiply;
 }
 
 /* This project has no Tailwind (see AGENTS.md) — everything else styles via
@@ -233,10 +245,13 @@ h3 {
   background: var(--green);
   border-radius: 999px;
   padding: 1em 1.75em;
+  /* No will-change: this is a 2px hover lift on a pointer device, and the hint
+     was giving every button on the site a compositor layer from first paint,
+     including on phones where the hover never happens. The transition promotes
+     it while it runs, which is the only time it needs to be. */
   transition:
     transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 
 .btn:hover {

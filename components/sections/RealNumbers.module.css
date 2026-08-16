@@ -21,7 +21,12 @@
   opacity: 1;
   pointer-events: none;
   z-index: 0;
-  will-change: opacity;
+  /* No will-change. This element is `inset: 0` on a section that is thousands
+     of pixels tall, and will-change promotes it for the whole life of the page
+     rather than for the moment it fades: measured at 390x2566 CSS, which on a
+     phone at DPR 3 is a 34MB backing store sitting there from first paint.
+     GSAP composites it for the duration of the tween by itself, which is what
+     the hint was for. */
 }
 
 /* Content sits above the deep overlay (which is a positioned z-index:0 layer,

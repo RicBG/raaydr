@@ -19,7 +19,9 @@
   opacity: 0;
   pointer-events: none;
   z-index: 0;
-  will-change: opacity;
+  /* No will-change: same reason as RealNumbers' wash. A full-section overlay
+     promoted for the whole page costs tens of megabytes of backing store on a
+     phone, and GSAP promotes it while the tween runs anyway. */
 }
 
 .inner {
