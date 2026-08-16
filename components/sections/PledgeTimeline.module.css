@@ -39,15 +39,41 @@
 
 .panel {
   position: relative;
-  /* Panels sit on the deep base with a wash in their own accent rather than a
-     flat spectrum fill, which the design system reserves for actions. The
-     wash is the same radial formula the wheel and the tinted sections use,
-     turned up because this one has a whole viewport to fill. */
+  /* Panels take a wash in their pledge's accent rather than a flat spectrum
+     fill, which the design system reserves for actions.
+
+     Mixed in oklab, not srgb. Fading a saturated hue toward near black in srgb
+     drags it through desaturated greys, which is what made the first pass read
+     as mud rather than colour; oklab holds the chroma the whole way down, so
+     the same hue reads vivid at the core and still resolves to --deep at the
+     edge.
+
+     The core sits right of centre on purpose. The header and the poster word
+     are both in the left column, and white type cannot sit on a colour this
+     saturated (amber in particular), so the left stays dark and the vivid half
+     is the half the wipe reveals first. */
+  /* Core position is a variable because the two modes need it in different
+     places: beside the copy on a full viewport panel, below the copy on a
+     stacked card, where the copy runs the full width and would otherwise sit
+     on mid tone colour. */
+  --core: 85% 105% at 84% 70%;
   background:
     radial-gradient(
-      95% 85% at 12% 100%,
-      color-mix(in srgb, var(--accent) 62%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 22%, transparent) 45%,
+      var(--core),
+      color-mix(in oklab, var(--accent) 96%, var(--deep)) 0%,
+      color-mix(in oklab, var(--accent) 72%, var(--deep)) 32%,
+      color-mix(in oklab, var(--accent) 34%, var(--deep)) 60%,
+      color-mix(in oklab, var(--accent) 10%, transparent) 82%,
+      transparent 96%
+    ),
+    /* A low glow under the poster word, so it is not stranded on flat black
+       while the rest of the panel carries the colour. Kept deliberately weak:
+       the word is white, amber is the lightest of the four accents, and at 40%
+       this put the word at 3.09:1, barely over the 3:1 floor for large text. */
+    radial-gradient(
+      60% 55% at 2% 104%,
+      color-mix(in oklab, var(--accent) 26%, var(--deep)) 0%,
+      color-mix(in oklab, var(--accent) 8%, transparent) 55%,
       transparent 78%
     ),
     var(--deep);
@@ -173,6 +199,14 @@
   display: grid;
   gap: 1px;
   background: var(--stone);
+}
+
+/* Stacked cards are a fraction of the height and their copy runs the full
+   width, so the core drops below the text block and the card keeps a dark top
+   for the header and body to sit on. Measured rather than eyeballed: with the
+   core beside the copy this put body text at 2.6:1. */
+.wrap:not([data-mode="timeline"]) .panel {
+  --core: 95% 78% at 92% 122%;
 }
 
 .wrap:not([data-mode="timeline"]) .panelInner {
