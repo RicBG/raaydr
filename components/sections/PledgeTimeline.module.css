@@ -214,6 +214,25 @@
     padding: clamp(32px, 8vw, 48px) var(--gutter);
   }
 
+  /* Bigger promise, bigger copy. Both sizes are vw-driven clamps tuned for a
+     desktop panel, where the header shares the frame with a poster word the
+     width of the screen; at 390px the vw term collapses and both landed on
+     their floors, 22px and 17px, inside a panel that is a whole phone screen
+     with room to spare. These are the mobile sizes rather than the leftovers
+     of a desktop scale. Written twice because the timeline-mode rules further
+     down are more specific than a bare .label/.body and would otherwise win. */
+  .label,
+  .wrap[data-mode="timeline"] .label {
+    font-size: clamp(1.65rem, 7vw, 2rem);
+    margin-bottom: clamp(12px, 3vw, 18px);
+  }
+
+  .body,
+  .wrap[data-mode="timeline"] .body {
+    font-size: clamp(1.25rem, 5.2vw, 1.45rem);
+    line-height: 1.5;
+  }
+
   .wrap:not([data-mode="timeline"]) .frame {
     display: flex;
     gap: 6px;
