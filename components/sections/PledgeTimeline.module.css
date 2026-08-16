@@ -37,20 +37,24 @@
   color: var(--ink);
 }
 
-/* Grit on the flat colour. Same tile and blend as the sitewide .grain-overlay,
-   but that one runs at 0.05 and disappears against a saturated fill, so the
-   panels carry their own heavier pass. It sits before .panelInner in the box
-   tree, so the texture lands on the colour and the type stays crisp on top. */
+/* Grit on the flat colour. Same tile as the sitewide .grain-overlay, but that
+   one runs at 0.05 and disappears against a saturated fill, so the panels carry
+   their own heavier pass. It sits before .panelInner in the box tree, so the
+   texture lands on the colour and the type stays crisp on top.
+
+   The black-alpha tile rather than the grey one blended with multiply: same
+   pixels (see the note on .grain-overlay in globals.css), but four full
+   viewport blended elements on a phone are four backdrops the compositor has
+   to keep, and this section is exactly where the page was dying. */
 .panel::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url("/textures/grain-tile.png");
+  background-image: url("/textures/grain-tile-alpha.png");
   background-repeat: repeat;
   opacity: 0.08;
-  mix-blend-mode: multiply;
 }
 
 .panelInner {
@@ -256,9 +260,9 @@
     padding: clamp(72px, 12svh, 112px) var(--gutter) clamp(48px, 9svh, 84px);
   }
 
-  /* Transform and opacity only, so each card is composited rather than
-     repainted as it moves. */
-  .wrap[data-mode="timeline"] .panel {
-    will-change: transform, opacity;
-  }
+  /* No will-change: the effect writes translate3d on the panels itself, which
+     composites the two that are moving without asking the compositor to hold a
+     layer for all four. On a phone a panel is the whole viewport, so a layer it
+     keeps for one is several megabytes, and the four of them sat there for the
+     whole of the page rather than only while this section was on screen. */
 }

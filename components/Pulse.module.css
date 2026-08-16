@@ -10,5 +10,12 @@
   opacity: 0;
   filter: blur(2px);
   pointer-events: none;
-  will-change: transform, opacity;
+  /* No will-change. This ring plays once per section, for 1.2s, and only above
+     768px (see Pulse.tsx) — but the hint applied at every width, so on a phone,
+     where the animation never runs at all, six of these sat promoted for the
+     life of the page. Each one is absolutely positioned inside its section, so
+     everything painted after it had to be composited too just to stay in front
+     of it: measured, the six were pulling about 100MB of section-sized layers
+     into the compositor on a 390px viewport. GSAP promotes the ring for the
+     1.2s it actually moves. */
 }

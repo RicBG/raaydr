@@ -123,7 +123,9 @@
     align-items: center;
     justify-items: stretch;
     text-align: left;
-    will-change: transform, opacity;
+    /* No will-change: each moment fills the pinned stage, so hinting all of
+       them holds a stage-sized layer per moment for the whole page rather than
+       for the crossfade. GSAP promotes what it is tweening on its own. */
   }
 
   /* Figure anchored to the bottom of the pinned stage; the frame caps at

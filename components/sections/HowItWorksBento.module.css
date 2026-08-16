@@ -86,8 +86,9 @@
   position: absolute;
   inset: -4%;
   z-index: 0;
+  /* No will-change: this wrapper only moves on hover, which is a pointer
+     device, and the transition promotes it for the duration. */
   transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 
 .media {
@@ -100,7 +101,9 @@
      subject or their collarbone. */
   background-position: var(--focus-x, center) var(--focus-y, center);
   background-repeat: no-repeat;
-  will-change: transform;
+  /* No will-change: GSAP owns this element's transform and promotes it while
+     the parallax and the breath are running, so the hint only added a
+     permanent layer per card on top of that. */
 }
 
 /* The artists card is composed differently: the silhouette is right aligned at
