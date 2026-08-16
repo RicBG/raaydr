@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useMemo, useState, CSSProperties } from "react";
+import { useRef, useEffect, useMemo, useState, CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { createRenderGate } from "@/lib/renderGate";
 
@@ -90,6 +90,10 @@ export interface AnimatedGradientProps {
   radius?: string;
   style?: CSSProperties;
   className?: string;
+  /** What to show when WebGL2 is unavailable or the context is lost. Omit for
+   *  the built-in static wash; pass null when the caller already paints its own
+   *  background underneath and wants the canvas to leave it alone. */
+  fallback?: ReactNode;
 }
 
 function GradientFallback({ className, style }: { className?: string; style?: CSSProperties }) {
@@ -113,6 +117,7 @@ export function AnimatedGradient({
   radius = "0px",
   style,
   className,
+  fallback,
 }: AnimatedGradientProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -170,6 +175,19 @@ export function AnimatedGradient({
         setHasWebGLError(true);
         return;
       }
+
+      // A context can go away long after it was created: phones drop GL
+      // contexts under memory pressure, and without this the canvas simply
+      // stops painting and leaves a hole where the background was. Falling
+      // back on loss swaps in the static gradient instead, and a restore
+      // clears the flag so the effect re-runs and rebuilds the live one.
+      const onContextLost = (e: Event) => {
+        e.preventDefault(); // required, or the context is never restorable
+        setHasWebGLError(true);
+      };
+      const onContextRestored = () => setHasWebGLError(false);
+      canvas.addEventListener("webglcontextlost", onContextLost);
+      canvas.addEventListener("webglcontextrestored", onContextRestored);
 
       const vertexShaderSource = `#version 300 es
 in vec4 a_position;
@@ -322,10 +340,19 @@ void main() {
         releaseGate();
         stopRaf();
         resizeObserver.disconnect();
+        // Listeners first: losing the context below fires webglcontextlost on
+        // this same canvas, and there is nothing left to fall back to.
+        canvas.removeEventListener("webglcontextlost", onContextLost);
+        canvas.removeEventListener("webglcontextrestored", onContextRestored);
         gl.deleteProgram(program);
         gl.deleteShader(vertexShader);
         gl.deleteShader(fragmentShader);
         gl.deleteBuffer(positionBuffer);
+        // Deleting the resources does not hand back the context itself, which
+        // is the scarce thing on a phone. Without this the context lingers
+        // until GC and unmounting the gradient frees nothing in time to
+        // matter.
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
       };
     } catch {
       setHasWebGLError(true);
@@ -334,6 +361,7 @@ void main() {
   }, [hasWebGLError, isMounted, params]);
 
   if (hasWebGLError) {
+    if (fallback !== undefined) return <>{fallback}</>;
     return (
       <GradientFallback
         className={cn("absolute inset-0 overflow-hidden", className)}

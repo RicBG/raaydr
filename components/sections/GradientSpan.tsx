@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, type ReactNode } from "react";
+import LazyMount from "@/components/LazyMount";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./GradientSpan.module.css";
@@ -61,36 +62,53 @@ export default function GradientSpan({ children }: { children: ReactNode }) {
   return (
     <div ref={wrapperRef} className={styles.wrapper}>
       <div ref={gradientRef} className={styles.gradientLayer} aria-hidden="true">
-        {reducedMotion ? (
-          <div className={styles.gradientFallback} />
-        ) : (
-          <AnimatedGradient
-            config={{
-              // Custom rather than the "Raaydr" preset: that preset uses
-              // "Edge", a shape driven by a linear (non-periodic) position
-              // threshold. Over a long enough dwell the time-based swirl
-              // drifts it past the soft-edge zone and it saturates to a
-              // flat single colour permanently. "Checks" is periodic
-              // (sin/cos-based) so it oscillates forever and can never
-              // settle into a solid fill. Canvas + violet only — no green.
-              preset: "custom",
-              color1: "#F5F2EC", // canvas — stays the dominant base
-              color2: "#8C7AE6", // violet, soft wash
-              color3: "#F5F2EC", // canvas again, not green — keeps it two-tone
-              rotation: 20,
-              proportion: 28,
-              scale: 0.7,
-              speed: 6,
-              distortion: 10,
-              swirl: 30,
-              swirlIterations: 6,
-              softness: 100,
-              offset: 0,
-              shape: "Checks",
-              shapeSize: 32,
-            }}
-            noise={{ opacity: 0.04 }}
-          />
+        {/* The static wash is always painted, underneath the live gradient
+            rather than instead of it. The shader is opaque, so when it is
+            running this is invisible; it only shows through in the cases where
+            the canvas has nothing to show — before LazyMount has mounted it,
+            in the frame or two after it remounts on the way back up, if the
+            phone takes the GL context away, and under reduced motion. Any of
+            those used to leave the section's background missing. */}
+        <div className={styles.gradientFallback} />
+        {!reducedMotion && (
+          /* Behind LazyMount like every other GL surface on the site, so this
+             holds a context only while the section is on screen. It was the
+             one that did not, which meant a second context alive for the whole
+             page on top of whichever one was actually in view. */
+          <LazyMount style={{ position: "absolute", inset: 0 }}>
+            <AnimatedGradient
+              config={{
+                // Custom rather than the "Raaydr" preset: that preset uses
+                // "Edge", a shape driven by a linear (non-periodic) position
+                // threshold. Over a long enough dwell the time-based swirl
+                // drifts it past the soft-edge zone and it saturates to a
+                // flat single colour permanently. "Checks" is periodic
+                // (sin/cos-based) so it oscillates forever and can never
+                // settle into a solid fill. Canvas + violet only — no green.
+                preset: "custom",
+                color1: "#F5F2EC", // canvas — stays the dominant base
+                color2: "#8C7AE6", // violet, soft wash
+                color3: "#F5F2EC", // canvas again, not green — keeps it two-tone
+                rotation: 20,
+                proportion: 28,
+                scale: 0.7,
+                speed: 6,
+                distortion: 10,
+                swirl: 30,
+                swirlIterations: 6,
+                softness: 100,
+                offset: 0,
+                shape: "Checks",
+                shapeSize: 32,
+              }}
+              noise={{ opacity: 0.04 }}
+              /* The component's own fallback is a green wash, which is the
+                 wrong colour for this section. The static violet layer above
+                 is already underneath, so on failure the canvas paints
+                 nothing and that shows through. */
+              fallback={null}
+            />
+          </LazyMount>
         )}
       </div>
       {children}
