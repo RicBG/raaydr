@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, SplitText } from "@/lib/gsap";
 import { ctaCopy } from "@/lib/siteConfig";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
@@ -15,6 +15,19 @@ const RaaydrOrb = dynamic(() => import("@/components/RaaydrOrb"), {
   ssr: false,
 });
 import styles from "./Hero.module.css";
+
+/**
+ * Reports when the orb leaves the tree. LazyMount unmounts the orb once the
+ * hero scrolls away and mounts it again on the way back, and a remounted orb
+ * has to re-init and recompile before it draws anything. Without this the
+ * ready flag stayed latched true through that gap, so the stand-in stayed
+ * hidden and the hero was simply empty until the new first frame landed.
+ * Rendering nothing: this exists only for its unmount cleanup.
+ */
+function OrbPresence({ onGone }: { onGone: () => void }) {
+  useEffect(() => onGone, [onGone]);
+  return null;
+}
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -60,7 +73,11 @@ export default function Hero() {
   // cover. No timeout is needed either: if WebGL fails outright the flag stays
   // false and the stand-in simply remains, which is a better fallback than
   // anything a timer could do.
+  // Not a latch. Anything that takes the orb off screen puts it back to false
+  // so the stand-in returns and covers the gap, rather than leaving a hole
+  // where the orb used to be.
   const [orbReady, setOrbReady] = useState(false);
+  const handleOrbGone = useCallback(() => setOrbReady(false), []);
 
   // Intro reveal — runs on mount. It no longer waits on the orb: coupling the
   // copy to a WebGL first frame was what delayed the text, and the text is the
@@ -193,6 +210,7 @@ export default function Hero() {
               <div ref={orbWrapRef} className={styles.orbWrap}>
                 <div className={styles.orbFade}>
                 <LazyMount eager style={{ width: "100%", height: "100%" }}>
+                  <OrbPresence onGone={handleOrbGone} />
                   <RaaydrOrb
                     hue={250}
                     hoverIntensity={0.25}
@@ -200,6 +218,7 @@ export default function Hero() {
                     ambientRotationSpeed={6}
                     backgroundColor={orbBg}
                     onFirstFrame={() => setOrbReady(true)}
+                    onContextLost={handleOrbGone}
                   />
                 </LazyMount>
                 </div>

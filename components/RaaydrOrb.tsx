@@ -32,6 +32,10 @@ interface RaaydrOrbProps {
    *  the hero sequence reveal the ring only once it has real pixels, not a
    *  blank canvas. */
   onFirstFrame?: () => void;
+  /** The GL context was lost, so the canvas is now blank until the browser
+   *  restores it. Mobile GPUs drop contexts under memory pressure, and without
+   *  this the caller has no way to know the orb has silently gone. */
+  onContextLost?: () => void;
 }
 
 export default function RaaydrOrb({
@@ -42,13 +46,23 @@ export default function RaaydrOrb({
   rotateOnHover = false,
   forceHoverState = false,
   backgroundColor = '#F5F2EC', // RAAYDR Canvas token
-  onFirstFrame
+  onFirstFrame,
+  onContextLost
 }: RaaydrOrbProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
   // Kept in a ref so the render loop always sees the latest callback without
   // re-running the whole WebGL-setup effect when the parent re-renders.
   const onFirstFrameRef = useRef(onFirstFrame);
   onFirstFrameRef.current = onFirstFrame;
+  // Synced in an effect rather than during render. The line above does it
+  // inline and predates this, but writing a ref during render is the thing
+  // react-hooks/refs flags, and a new one should not add a new error. The
+  // listener only reads .current when the context is actually lost, long
+  // after this has run.
+  const onContextLostRef = useRef(onContextLost);
+  useEffect(() => {
+    onContextLostRef.current = onContextLost;
+  }, [onContextLost]);
 
   const vert = /* glsl */ `
     precision highp float;
@@ -237,6 +251,14 @@ export default function RaaydrOrb({
     gl.clearColor(0, 0, 0, 0);
     container.appendChild(gl.canvas);
 
+    // A lost context leaves the canvas blank with no error and no callback of
+    // its own, so it is reported upward and the hero puts its stand-in back.
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      onContextLostRef.current?.();
+    };
+    gl.canvas.addEventListener("webglcontextlost", handleContextLost);
+
     const geometry = new Triangle(gl);
     const program = new Program(gl, {
       vertex: vert,
@@ -356,6 +378,7 @@ export default function RaaydrOrb({
       window.removeEventListener('resize', resize);
       container.removeEventListener('mousemove', handleMouseMove);
       container.removeEventListener('mouseleave', handleMouseLeave);
+      gl.canvas.removeEventListener("webglcontextlost", handleContextLost);
       container.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
