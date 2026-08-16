@@ -40,39 +40,81 @@ export default function HowItWorksBento() {
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const cards = gsap.utils.toArray<HTMLElement>(`.${styles.card}`, grid);
       if (cards.length === 0) return;
+      const medias = cards
+        .map((c) => c.querySelector<HTMLElement>(`.${styles.media}`))
+        .filter((m): m is HTMLElement => Boolean(m));
 
-      // Entrance: rise and fade as the section arrives. Once only, so
-      // scrolling back up does not replay it.
-      const entrance = gsap.from(cards, {
-        y: 32,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
-        stagger: 0.12,
-        scrollTrigger: { trigger: grid, start: "top 80%", once: true },
+      // Entrance: the cards rise into place rather than appearing. The image
+      // inside each one starts lower and settles with it, so the card reveals
+      // with a little internal parallax instead of moving as a flat slab.
+      //
+      // clearProps matters: without it GSAP leaves an inline transform on the
+      // card when the tween ends, and an inline transform beats the stylesheet,
+      // so the CSS hover lift would silently stop working.
+      const entrance = gsap.timeline({
+        scrollTrigger: { trigger: grid, start: "top 82%", once: true },
       });
+      entrance
+        .from(cards, {
+          y: 48,
+          opacity: 0,
+          scale: 0.97,
+          duration: 1,
+          ease: "power3.out",
+          stagger: 0.12,
+          clearProps: "transform,opacity",
+        })
+        .from(
+          medias,
+          {
+            yPercent: 12,
+            duration: 1.2,
+            ease: "power3.out",
+            stagger: 0.12,
+          },
+          0
+        );
 
-      // Idle: the image layer alone drifts a few px. Text never moves, so the
-      // card reads as still and only the picture breathes. Each card is offset
-      // so the four are not in lockstep.
-      const drifts = cards.map((card, i) => {
-        const media = card.querySelector<HTMLElement>(`.${styles.media}`);
-        if (!media) return null;
-        return gsap.to(media, {
-          yPercent: i % 2 === 0 ? -1.4 : 1.4,
+      // Alive on scroll: the image layer drifts against the page as the
+      // section passes, the same parallax language the rest of the site uses.
+      // Scrubbed, so it tracks the scroll rather than running on its own clock.
+      const parallax = gsap.fromTo(
+        medias,
+        { yPercent: 4 },
+        {
+          yPercent: -4,
+          ease: "none",
+          scrollTrigger: {
+            trigger: grid,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.6,
+          },
+        }
+      );
+
+      // Alive at rest: a slow breath on the image only. Scale, not position, so
+      // it does not fight the scrubbed parallax above, which owns y. Offset per
+      // card so the four are never in lockstep. Text never moves.
+      const breaths = medias.map((media, i) =>
+        gsap.to(media, {
+          scale: 1.035,
           duration: 7,
           ease: "sine.inOut",
           repeat: -1,
           yoyo: true,
-          delay: i * 0.6,
-        });
-      });
+          delay: i * 0.8,
+        })
+      );
 
       return () => {
         entrance.scrollTrigger?.kill();
         entrance.kill();
-        drifts.forEach((d) => d?.kill());
+        parallax.scrollTrigger?.kill();
+        parallax.kill();
+        breaths.forEach((t) => t.kill());
         gsap.set(cards, { clearProps: "transform,opacity" });
+        gsap.set(medias, { clearProps: "transform" });
       };
     });
 
@@ -92,12 +134,18 @@ export default function HowItWorksBento() {
             className={`${styles.card} ${styles[card.role]}`}
             onClick={() => trackHowItWorksCardClick(card.role)}
           >
-            <div
-              className={styles.media}
-              style={{ backgroundImage: `url(${card.image})` }}
-              role="img"
-              aria-label={card.alt}
-            />
+            {/* Two layers on purpose. GSAP owns the inner element's transform
+                for the scrubbed parallax and the breath; the wrapper is left
+                free for the CSS hover scale, so the two never overwrite each
+                other's transform. */}
+            <div className={styles.mediaWrap}>
+              <div
+                className={styles.media}
+                style={{ backgroundImage: `url(${card.image})` }}
+                role="img"
+                aria-label={card.alt}
+              />
+            </div>
             {/* Amber halo behind the head on the artists card. The source image
                 has no halo and its background is flat, so this is a radial
                 gradient multiplied over it rather than an edit to the file.

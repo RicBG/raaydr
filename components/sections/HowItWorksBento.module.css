@@ -74,17 +74,25 @@
   --role-body: color-mix(in oklab, var(--role) 46%, #ffffff);
 }
 
+/* The wrapper carries the hover scale, the inner element carries the GSAP
+   parallax and breath. Splitting them keeps CSS and GSAP off the same
+   transform. Inset negatively so neither the drift nor the scale ever exposes
+   an edge of the card's ground. */
+.mediaWrap {
+  position: absolute;
+  inset: -4%;
+  z-index: 0;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
 .media {
   position: absolute;
-  /* Inset negatively so the idle drift and the hover scale never expose an
-     edge of the card's ground. */
-  inset: -3%;
-  z-index: 0;
+  inset: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   will-change: transform;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* The artists card is composed differently: the silhouette is right aligned at
@@ -126,7 +134,25 @@
       color-mix(in srgb, var(--role-deep) 90%, transparent) 100%
     ),
     rgba(0, 0, 0, 0.1);
-  transition: opacity 0.4s ease;
+}
+
+/* The hover deepening is a second gradient faded in over the first, rather
+   than animating the stops. Percentages inside a gradient are not animatable
+   without registering them through @property, and opacity on an overlay is
+   both smoother and composited. */
+.scrim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 22%,
+    color-mix(in srgb, var(--role-deep) 40%, transparent) 58%,
+    color-mix(in srgb, var(--role-deep) 70%, transparent) 100%
+  );
+  transition: opacity 0.45s ease;
 }
 
 .content {
@@ -192,31 +218,35 @@
 @media (hover: hover) {
   .card:hover,
   .card:focus-visible {
-    transform: translateY(-6px);
-    box-shadow: 0 24px 50px -24px rgba(0, 0, 0, 0.55);
+    transform: translateY(-8px);
+    box-shadow: 0 28px 60px -26px rgba(0, 0, 0, 0.6);
   }
 
-  .card:hover .media,
-  .card:focus-visible .media {
-    transform: scale(1.05);
+  .card:hover .mediaWrap,
+  .card:focus-visible .mediaWrap {
+    transform: scale(1.06);
   }
 
-  .card:hover .scrim,
-  .card:focus-visible .scrim {
-    opacity: 1.12;
+  /* The bleed deepens on hover, which is what stops the lift reading as the
+     card simply moving: the colour reacts too. */
+  .card:hover .scrim::after,
+  .card:focus-visible .scrim::after {
+    opacity: 1;
   }
 
   .card:hover .arrow,
   .card:focus-visible .arrow {
-    transform: translateX(5px);
+    transform: translateX(6px);
   }
 }
 
 /* ---------- Strip ----------
    Quiet, bordered, no image: the one place a figure appears in this section. */
 
+/* Its own breathing room, not the grid gap. At the grid's spacing the pill sat
+   tight against the mosaic and read as part of it rather than a note under it. */
 .strip {
-  margin-top: clamp(10px, 1.1vw, 16px);
+  margin-top: clamp(32px, 4vw, 64px);
   padding: clamp(18px, 2vw, 26px) clamp(20px, 2.2vw, 32px);
   border: 1px solid var(--stone);
   border-radius: clamp(16px, 1.6vw, 22px);
@@ -278,9 +308,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .card,
-  .media,
+  .mediaWrap,
   .arrow,
-  .scrim {
+  .scrim::after {
     transition: none;
   }
 
@@ -289,8 +319,8 @@
     transform: none;
   }
 
-  .card:hover .media,
-  .card:focus-visible .media {
+  .card:hover .mediaWrap,
+  .card:focus-visible .mediaWrap {
     transform: none;
   }
 
