@@ -47,10 +47,9 @@ type AudiencePageProps = {
    *  identifiable when /terms grows the matching clauses. Omitted when
    *  absent. */
   pledgeNote?: string;
-  /** The full pledge section (components/sections/Pledges), rendered between
-   *  the numbered points and the calculator. It carries the anchor the
-   *  homepage pledge bar deep links to, so only one page should pass it.
-   *  Omitted when absent. */
+  /** The full pledge section (components/sections/Pledges), rendered after the
+   *  calculator. It carries the anchor the homepage pledge timeline deep links
+   *  to, so only one page should pass it. Omitted when absent. */
   pledges?: React.ReactNode;
   /** A closing beat rendered immediately before the join CTA. Omitted when
    *  absent. */
@@ -270,8 +269,6 @@ export default function AudiencePage({
         </div>
       </section>
 
-      {pledges}
-
       {calculator && (
         <section className={styles.calcSection} id="calculator">
           <div className="container">
@@ -282,6 +279,8 @@ export default function AudiencePage({
           </div>
         </section>
       )}
+
+      {pledges}
 
       {/* Above the callout the bands keep their natural bottom overlap, so
           whatever follows tucks up under the last band rather than clearing
