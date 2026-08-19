@@ -1,12 +1,42 @@
 "use client";
 
 import {
+  Component,
   useEffect,
   useRef,
   useState,
   type CSSProperties,
   type ReactNode,
 } from "react";
+
+/**
+ * If the mounted surface throws, drop it — not the page. This app has no
+ * other error boundary, so before this existed a render or effect error in
+ * any lazy-mounted canvas unmounted the entire React tree, and the recovery
+ * re-render reset the scroll position to the top of the page: exactly the
+ * "section loads, unloads, and I'm back at the top" report from iOS, where
+ * WebGL setup is flakiest. Every LazyMount user paints a static layer
+ * underneath its surface, so rendering nothing here degrades to the designed
+ * fallback rather than a hole.
+ */
+class MountGuard extends Component<
+  { children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("LazyMount surface failed, dropping it:", error);
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 type LazyMountProps = {
   children: ReactNode;
@@ -56,7 +86,7 @@ export default function LazyMount({
 
   return (
     <div ref={ref} className={className} style={style}>
-      {inView && children}
+      {inView && <MountGuard>{children}</MountGuard>}
     </div>
   );
 }

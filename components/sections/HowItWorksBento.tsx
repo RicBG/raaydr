@@ -37,44 +37,17 @@ export default function HowItWorksBento() {
 
     const mm = gsap.matchMedia();
 
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
+    const collect = () => {
       const cards = gsap.utils.toArray<HTMLElement>(`.${styles.card}`, grid);
-      if (cards.length === 0) return;
       const medias = cards
         .map((c) => c.querySelector<HTMLElement>(`.${styles.media}`))
         .filter((m): m is HTMLElement => Boolean(m));
+      return { cards, medias };
+    };
 
-      // Entrance: the cards rise into place rather than appearing. The image
-      // inside each one starts lower and settles with it, so the card reveals
-      // with a little internal parallax instead of moving as a flat slab.
-      //
-      // clearProps matters: without it GSAP leaves an inline transform on the
-      // card when the tween ends, and an inline transform beats the stylesheet,
-      // so the CSS hover lift would silently stop working.
-      const entrance = gsap.timeline({
-        scrollTrigger: { trigger: grid, start: "top 82%", once: true },
-      });
-      entrance
-        .from(cards, {
-          y: 48,
-          opacity: 0,
-          scale: 0.97,
-          duration: 1,
-          ease: "power3.out",
-          stagger: 0.12,
-          clearProps: "transform,opacity",
-        })
-        .from(
-          medias,
-          {
-            yPercent: 12,
-            duration: 1.2,
-            ease: "power3.out",
-            stagger: 0.12,
-          },
-          0
-        );
-
+    // The two "alive" layers, shared by both breakpoints: they run for as
+    // long as the section is on screen regardless of how it entered.
+    const ambient = (medias: HTMLElement[]) => {
       // Alive on scroll: the image layer drifts against the page as the
       // section passes, the same parallax language the rest of the site uses.
       // Scrubbed, so it tracks the scroll rather than running on its own clock.
@@ -123,15 +96,111 @@ export default function HowItWorksBento() {
 
       return () => {
         gate.kill();
-        entrance.scrollTrigger?.kill();
-        entrance.kill();
         parallax.scrollTrigger?.kill();
         parallax.kill();
         breaths.forEach((t) => t.kill());
-        gsap.set(cards, { clearProps: "transform,opacity" });
-        gsap.set(medias, { clearProps: "transform" });
       };
-    });
+    };
+
+    // Wide screens: the grid enters as one composed moment — a single trigger
+    // and a stagger, which reads as choreography because all four cards are
+    // on screen together when it plays.
+    mm.add(
+      "(prefers-reduced-motion: no-preference) and (min-width: 901px)",
+      () => {
+        const { cards, medias } = collect();
+        if (cards.length === 0) return;
+
+        // Entrance: the cards rise into place rather than appearing. The image
+        // inside each one starts lower and settles with it, so the card reveals
+        // with a little internal parallax instead of moving as a flat slab.
+        //
+        // clearProps matters: without it GSAP leaves an inline transform on the
+        // card when the tween ends, and an inline transform beats the
+        // stylesheet, so the CSS hover lift would silently stop working.
+        const entrance = gsap.timeline({
+          scrollTrigger: { trigger: grid, start: "top 82%", once: true },
+        });
+        entrance
+          .from(cards, {
+            y: 48,
+            opacity: 0,
+            scale: 0.97,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.12,
+            clearProps: "transform,opacity",
+          })
+          .from(
+            medias,
+            {
+              yPercent: 12,
+              duration: 1.2,
+              ease: "power3.out",
+              stagger: 0.12,
+            },
+            0
+          );
+
+        const stopAmbient = ambient(medias);
+
+        return () => {
+          entrance.scrollTrigger?.kill();
+          entrance.kill();
+          stopAmbient();
+          gsap.set(cards, { clearProps: "transform,opacity" });
+          gsap.set(medias, { clearProps: "transform" });
+        };
+      }
+    );
+
+    // Phones: one column, so the single grid trigger fired when the FIRST card
+    // arrived and the stagger finished while the other three were still below
+    // the fold — they scrolled in already settled, which read as popping
+    // rather than the slow rise this section is meant to have. Each card
+    // triggers its own entrance as it enters, so the fourth rises exactly the
+    // way the first does. 901px is the grid's own single-column breakpoint.
+    mm.add(
+      "(prefers-reduced-motion: no-preference) and (max-width: 900px)",
+      () => {
+        const { cards, medias } = collect();
+        if (cards.length === 0) return;
+
+        const entrances = cards.map((card, i) => {
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: card, start: "top 88%", once: true },
+          });
+          tl.from(card, {
+            y: 40,
+            opacity: 0,
+            scale: 0.98,
+            duration: 0.9,
+            ease: "power3.out",
+            clearProps: "transform,opacity",
+          });
+          if (medias[i]) {
+            tl.from(
+              medias[i],
+              { yPercent: 10, duration: 1.1, ease: "power3.out" },
+              0
+            );
+          }
+          return tl;
+        });
+
+        const stopAmbient = ambient(medias);
+
+        return () => {
+          entrances.forEach((tl) => {
+            tl.scrollTrigger?.kill();
+            tl.kill();
+          });
+          stopAmbient();
+          gsap.set(cards, { clearProps: "transform,opacity" });
+          gsap.set(medias, { clearProps: "transform" });
+        };
+      }
+    );
 
     return () => {
       mm.revert();

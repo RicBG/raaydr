@@ -75,12 +75,26 @@
 
 /* ---------- Pinned overlay layout: desktop with motion ---------- */
 
+/* The frame is a pass-through box in the stacked layout; it only earns a
+   shape in the two pinned modes — flex sizing here, sticky on phones. */
+.frame {
+  display: contents;
+}
+
 @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
   .section {
-    height: 100svh;
-    padding-top: clamp(72px, 8vh, 120px);
+    padding-top: 0;
+  }
+
+  /* The 100svh viewport, the header at the top and the stage filling the
+     rest. This used to live on .section; it moved to the frame so the mobile
+     sticky mode could reuse the same box, and ScrollTrigger's pin on the
+     section behaves identically since the section is exactly this tall. */
+  .frame {
     display: flex;
     flex-direction: column;
+    height: 100svh;
+    padding-top: clamp(72px, 8vh, 120px);
     overflow: hidden;
   }
 
@@ -143,5 +157,111 @@
   .copy {
     justify-items: start;
     max-width: 40ch;
+  }
+}
+
+/* ---------- Pinned overlay layout: phones with motion ----------
+
+   The same sequence as desktop, held still by position:sticky instead of
+   ScrollTrigger's pin — the pledge stack's machine. The section grows to one
+   viewport per audience, the frame sticks at the top, and the page's own
+   vertical scroll drives the dissolve. Everything here hangs off
+   [data-pinned], which the effect sets only on a motion-allowing phone, so
+   with no JS or under reduced motion this block never applies and the
+   readable stacked list stands. */
+
+@media (max-width: 767px) {
+  .section[data-pinned] {
+    height: calc(var(--moment-count, 4) * 100svh);
+    padding-top: 0;
+  }
+
+  .section[data-pinned] .frame {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    /* Clears the nav for the moment it is on screen; svh-driven so it
+       breathes with the viewport rather than the font. */
+    padding-top: clamp(72px, 11svh, 104px);
+    overflow: hidden;
+  }
+
+  .section[data-pinned] .headerWrap {
+    margin-bottom: clamp(16px, 3svh, 28px);
+    flex: none;
+  }
+
+  /* Centred like everything below it. The stage's copy is centre-set on a
+     phone, and a left-set header over a centred stage read as two systems in
+     one section. Desktop keeps the left header — there the copy is left-set
+     too, so it is already one system. */
+  .section[data-pinned] .header {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .section[data-pinned] .stage {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .section[data-pinned] .stageInner {
+    position: relative;
+    height: 100%;
+    padding-bottom: 0;
+    display: block;
+  }
+
+  /* One moment fills the stage: copy above, figure anchored to the bottom
+     edge like the desktop composition. The copy row comes first visually
+     (order) while the DOM keeps figure-first, matching the other layouts. */
+  .section[data-pinned] .moment {
+    position: absolute;
+    inset: 0 var(--gutter);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: clamp(16px, 3svh, 28px);
+    justify-items: center;
+    text-align: center;
+  }
+
+  .section[data-pinned] .copy {
+    order: -1;
+    justify-items: center;
+  }
+
+  .section[data-pinned] .figure {
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  /* Capped so the figure never crowds the copy on a short phone; the 1fr
+     track shrinks it further when space runs out. */
+  .section[data-pinned] .figure .portrait {
+    height: min(50svh, 100%);
+  }
+
+  /* The desktop halo arrangement, not the stacked one. The shared layers are
+     what carry the colour morph through the beat where the outgoing figure
+     has dissolved and the incoming one has not arrived — without them that
+     beat is an empty stage on a phone. Bottom-anchored and centred to sit
+     behind the figure. Memory stays honest: the timeline parks all but the
+     active one at visibility:hidden. */
+  .section[data-pinned] .momentHalo {
+    display: none;
+  }
+
+  .section[data-pinned] .sharedHalo {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 62%;
   }
 }
