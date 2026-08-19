@@ -334,7 +334,16 @@ void main() {
           cancelAnimationFrame(frameIdRef.current);
         }
       };
-      const releaseGate = createRenderGate(container, startRaf, stopRaf);
+      // One viewport of headstart: iOS defers the real shader compilation to
+      // the first draw call, so a zero-margin gate put that stall at the
+      // exact moment the section scrolled in. A viewport early, the first
+      // frame (and the compile behind it) happens off-screen.
+      const releaseGate = createRenderGate(
+        container,
+        startRaf,
+        stopRaf,
+        "100% 0%"
+      );
 
       return () => {
         releaseGate();

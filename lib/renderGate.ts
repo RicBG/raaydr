@@ -18,7 +18,14 @@
 export function createRenderGate(
   el: Element,
   onActive: () => void,
-  onInactive: () => void
+  onInactive: () => void,
+  /** Grow the observed box so the loop starts a little before the element
+   *  scrolls in. For surfaces whose first frame IS their appearance (the dot
+   *  field has no static stand-in painted at full strength underneath), a
+   *  zero-margin gate means the first frame lands while the viewer watches;
+   *  a small margin has it already alive as it enters. Omitted, behaviour is
+   *  exactly as before. */
+  rootMargin?: string
 ): () => void {
   let onScreen = false;
   let tabVisible =
@@ -38,7 +45,7 @@ export function createRenderGate(
       onScreen = entries.some((e) => e.isIntersecting);
       evaluate();
     },
-    { threshold: 0 }
+    { threshold: 0, rootMargin }
   );
   io.observe(el);
 
