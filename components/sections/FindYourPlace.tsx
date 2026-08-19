@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
+import { gsap, type ScrollTrigger } from "@/lib/gsap";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useParallax } from "@/lib/useParallax";
 import Ring from "@/components/Ring";
@@ -69,72 +69,105 @@ export default function FindYourPlace() {
     );
     const mm = gsap.matchMedia();
 
+    // One timeline, two ways of holding the stage still. The transitions are
+    // identical on every screen; only the pinning differs, so the sequence is
+    // built once from whatever ScrollTrigger config the breakpoint hands it.
+    const build = (scrollTrigger: ScrollTrigger.Vars) => {
+      gsap.set(moments.slice(1), { autoAlpha: 0 });
+      // Only the first audience's halo is lit; the rest fade in on cue.
+      gsap.set(halos[0], { autoAlpha: 1 });
+      gsap.set(halos.slice(1), { autoAlpha: 0 });
+
+      const tl = gsap.timeline({ scrollTrigger });
+
+      // Slow drift on the resting figure — the 1.05x depth layer.
+      tl.fromTo(
+        figures[0],
+        { y: 16 },
+        { y: -14, duration: 0.55, ease: "none" },
+        0
+      );
+
+      // The signature transition: the outgoing figure dissolves, the halo
+      // carries the colour morph alone for a beat, then the next figure
+      // arrives under the new colour.
+      audiences.slice(0, -1).forEach((_, i) => {
+        const at = 0.55 + i;
+        tl.to(
+          moments[i],
+          { autoAlpha: 0, y: -44, duration: 0.18, ease: "none" },
+          at
+        )
+          // Cross-fade the outgoing halo colour to the incoming one — opacity
+          // only, so the blurred glow is never re-rasterized mid-scroll.
+          .to(
+            halos[i],
+            { autoAlpha: 0, duration: 0.45, ease: "none" },
+            at
+          )
+          .to(
+            halos[i + 1],
+            { autoAlpha: 1, duration: 0.45, ease: "none" },
+            at
+          )
+          .fromTo(
+            moments[i + 1],
+            { autoAlpha: 0, y: 44 },
+            { autoAlpha: 1, y: 0, duration: 0.18, ease: "none" },
+            at + 0.27
+          )
+          .fromTo(
+            figures[i + 1],
+            { y: 16 },
+            { y: -14, duration: 0.73, ease: "none" },
+            at + 0.27
+          );
+      });
+      tl.to({}, { duration: 0.55 }); // rest on the final moment
+    };
+
     mm.add(
       "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
       () => {
-        gsap.set(moments.slice(1), { autoAlpha: 0 });
-        // Only the first audience's halo is lit; the rest fade in on cue.
-        gsap.set(halos[0], { autoAlpha: 1 });
-        gsap.set(halos.slice(1), { autoAlpha: 0 });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: "+=300%",
-            pin: true,
-            scrub: 0.6,
-          },
+        build({
+          trigger: section,
+          start: "top top",
+          end: "+=300%",
+          pin: true,
+          scrub: 0.6,
         });
-
-        // Slow drift on the resting figure — the 1.05x depth layer.
-        tl.fromTo(
-          figures[0],
-          { y: 16 },
-          { y: -14, duration: 0.55, ease: "none" },
-          0
-        );
-
-        // The signature transition: the outgoing figure dissolves, the halo
-        // carries the colour morph alone for a beat, then the next figure
-        // arrives under the new colour.
-        audiences.slice(0, -1).forEach((_, i) => {
-          const at = 0.55 + i;
-          tl.to(
-            moments[i],
-            { autoAlpha: 0, y: -44, duration: 0.18, ease: "none" },
-            at
-          )
-            // Cross-fade the outgoing halo colour to the incoming one — opacity
-            // only, so the blurred glow is never re-rasterized mid-scroll.
-            .to(
-              halos[i],
-              { autoAlpha: 0, duration: 0.45, ease: "none" },
-              at
-            )
-            .to(
-              halos[i + 1],
-              { autoAlpha: 1, duration: 0.45, ease: "none" },
-              at
-            )
-            .fromTo(
-              moments[i + 1],
-              { autoAlpha: 0, y: 44 },
-              { autoAlpha: 1, y: 0, duration: 0.18, ease: "none" },
-              at + 0.27
-            )
-            .fromTo(
-              figures[i + 1],
-              { y: 16 },
-              { y: -14, duration: 0.73, ease: "none" },
-              at + 0.27
-            );
-        });
-        tl.to({}, { duration: 0.55 }); // rest on the final moment
       }
     );
 
-    mm.add("(max-width: 767px), (prefers-reduced-motion: reduce)", () => {
+    // Phones get the same sequence, pinned by CSS position:sticky rather than
+    // ScrollTrigger's pin — the same machine as the pledge stack, and for the
+    // same reason: sticky needs no pin spacers and survives the address bar
+    // collapsing, and ScrollTrigger is left doing nothing but reporting
+    // progress. The data attribute is what switches the CSS from the stacked
+    // list to the tall wrapper + sticky frame, so with no JS, before
+    // hydration, and under reduced motion the section stays a readable stack.
+    //
+    // Memory matters here more than anywhere: this section sits at the far
+    // end of the crash zone. The transitions already do the right thing —
+    // autoAlpha parks outgoing moments at visibility:hidden, so at most two
+    // of the four are ever painted.
+    mm.add(
+      "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+      () => {
+        section.dataset.pinned = "true";
+        build({
+          trigger: section,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.6,
+        });
+        return () => {
+          delete section.dataset.pinned;
+        };
+      }
+    );
+
+    mm.add("(prefers-reduced-motion: reduce)", () => {
       moments.forEach((moment) => {
         gsap.fromTo(
           moment,
@@ -156,9 +189,15 @@ export default function FindYourPlace() {
       ref={sectionRef}
       id="find-your-place"
       className={styles.section}
+      style={{ "--moment-count": audiences.length } as React.CSSProperties}
       aria-labelledby="place-heading"
     >
       <Pulse color="var(--orchid)" />
+      {/* Header and stage share a frame so the mobile sticky mode has one
+          element to hold at the top of the screen while the section's extra
+          height scrolls past underneath. On desktop ScrollTrigger pins the
+          whole section, so the frame is just a pass-through box there. */}
+      <div className={styles.frame}>
       <div className={`container ${styles.headerWrap}`}>
         <div className={styles.header}>
           <p ref={eyebrowRef} className="eyebrow">
@@ -222,6 +261,7 @@ export default function FindYourPlace() {
             </article>
           ))}
         </div>
+      </div>
       </div>
     </section>
   );
