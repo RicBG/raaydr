@@ -71,11 +71,18 @@ export default function GradientSpan({ children }: { children: ReactNode }) {
             those used to leave the section's background missing. */}
         <div className={styles.gradientFallback} />
         {!reducedMotion && (
-          /* Behind LazyMount like every other GL surface on the site, so this
-             holds a context only while the section is on screen. It was the
-             one that did not, which meant a second context alive for the whole
-             page on top of whichever one was actually in view. */
-          <LazyMount style={{ position: "absolute", inset: 0 }}>
+          /* eager + persistent: created once at page load, never torn down —
+             the lifecycle this gradient had for its whole life before the
+             optimisation pass, which is the era when phones scrolled this
+             page without dying. Putting it behind an unmounting LazyMount
+             moved the WebGL2 context creation and shader compile into the
+             scroll path, and on an iPhone that is a main-thread stall of
+             seconds landing at the exact moment the section arrives — "the
+             background loaded in and it stopped." The mount guard, the
+             context-loss fallback and the wash underneath all stay; the
+             render gate parks the loop off-screen, so what persists is a
+             dormant context, not work. */
+          <LazyMount eager persistent style={{ position: "absolute", inset: 0 }}>
             <AnimatedGradient
               config={{
                 // Custom rather than the "Raaydr" preset: that preset uses

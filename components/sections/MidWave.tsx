@@ -69,8 +69,17 @@ export default function MidWave() {
             before any of that had happened and the field visibly popped in
             late. A viewport and a half of margin buys the whole pipeline;
             the render gate still keeps the loop itself parked until the
-            section is nearly on screen. */}
-        <LazyMount rootMargin="150%" style={{ position: "absolute", inset: 0 }}>
+            section is nearly on screen.
+
+            persistent, because tearing the context down on scroll-away means
+            rebuilding it mid-scroll on the way back — the stall that was
+            breaking this zone on phones. Setup happens once; after that the
+            gate leaves a dormant context, not work. */}
+        <LazyMount
+          rootMargin="150%"
+          persistent
+          style={{ position: "absolute", inset: 0 }}
+        >
           <DotPulse
             pattern="breathe"
             followPointer={false}

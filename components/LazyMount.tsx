@@ -50,6 +50,18 @@ type LazyMountProps = {
    *  box that was always visible. Unmount-on-scroll-away still applies, so the
    *  GL context is still freed. */
   eager?: boolean;
+  /** Once mounted, stay mounted. Unmount-on-scroll-away frees a GL context,
+   *  but it also means the context is REBUILT mid-scroll every time the box
+   *  comes back — and on an iPhone, creating a WebGL context and compiling
+   *  its shaders is a main-thread stall measured in seconds, landing at the
+   *  exact moment the section arrives. That churn is what kept killing the
+   *  page at "People are the algorithm": the gradient there had been created
+   *  once at page load for its whole life (the era everything worked), and
+   *  moving it behind an unmounting LazyMount relocated its most expensive
+   *  moment into the scroll path. Persistent surfaces pay their setup once;
+   *  their render loops are still parked off-screen by createRenderGate, so
+   *  staying mounted costs a dormant context, not frames. */
+  persistent?: boolean;
   className?: string;
   style?: CSSProperties;
 };
@@ -67,6 +79,7 @@ export default function LazyMount({
   children,
   rootMargin = "200px",
   eager = false,
+  persistent = false,
   className,
   style,
 }: LazyMountProps) {
@@ -76,13 +89,26 @@ export default function LazyMount({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // A persistent box that is already mounted has nothing left to observe.
+    if (persistent && eager) return;
     const io = new IntersectionObserver(
-      (entries) => setInView(entries.some((e) => e.isIntersecting)),
+      (entries) => {
+        const seen = entries.some((e) => e.isIntersecting);
+        if (persistent) {
+          // Latch: raise once, never lower, and stop watching.
+          if (seen) {
+            setInView(true);
+            io.disconnect();
+          }
+        } else {
+          setInView(seen);
+        }
+      },
       { rootMargin }
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [rootMargin]);
+  }, [rootMargin, persistent, eager]);
 
   return (
     <div ref={ref} className={className} style={style}>
