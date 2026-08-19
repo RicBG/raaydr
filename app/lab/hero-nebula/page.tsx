@@ -44,6 +44,17 @@ export default function HeroNebulaLab() {
           <p className={styles.sub}>Attention over streams.</p>
         </div>
       </section>
+
+      <section className={`${styles.stage} ${styles.light}`}>
+        <Nebula variant="clouds" />
+        <div className={styles.copy}>
+          <p className={styles.tag}>C / the softer cloud take — light</p>
+          <h1 className={styles.heading}>
+            Music streaming is broken. We fixed it. Now everyone wins.
+          </h1>
+          <p className={styles.sub}>Attention over streams.</p>
+        </div>
+      </section>
     </main>
   );
 }
