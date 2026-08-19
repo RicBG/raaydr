@@ -193,6 +193,15 @@
     flex: none;
   }
 
+  /* Centred like everything below it. The stage's copy is centre-set on a
+     phone, and a left-set header over a centred stage read as two systems in
+     one section. Desktop keeps the left header — there the copy is left-set
+     too, so it is already one system. */
+  .section[data-pinned] .header {
+    justify-items: center;
+    text-align: center;
+  }
+
   .section[data-pinned] .stage {
     flex: 1;
     min-height: 0;
