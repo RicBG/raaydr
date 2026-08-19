@@ -62,7 +62,15 @@ export default function MidWave() {
     >
       {/* Pulsing dot field on the section behind the block. */}
       <div className={styles.dotBg} aria-hidden="true">
-        <LazyMount style={{ position: "absolute", inset: 0 }}>
+        {/* Mounted well ahead of arrival, because this surface has real lead
+            time before it can paint: the DotPulse chunk downloads, a GL
+            context is created, shaders compile, the grid builds. At the
+            default 200px a thumb-flick out of the pledge sequence landed here
+            before any of that had happened and the field visibly popped in
+            late. A viewport and a half of margin buys the whole pipeline;
+            the render gate still keeps the loop itself parked until the
+            section is nearly on screen. */}
+        <LazyMount rootMargin="150%" style={{ position: "absolute", inset: 0 }}>
           <DotPulse
             pattern="breathe"
             followPointer={false}

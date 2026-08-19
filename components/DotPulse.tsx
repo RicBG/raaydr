@@ -247,6 +247,14 @@ export default function DotPulse({
     canvas.style.width = "100%";
     canvas.style.height = "100%";
     canvas.style.display = "block";
+    // Hidden until the first frame has actually drawn, then faded in. The
+    // field arrives late by nature — chunk download, context creation, shader
+    // compile, grid build — and it used to appear at full strength the instant
+    // all of that finished, which on a phone read as the background popping in
+    // while you watched. The same transition also softens the context-lost
+    // fade-out below.
+    canvas.style.opacity = "0";
+    canvas.style.transition = "opacity 0.6s ease";
     container.appendChild(canvas);
 
     const gl = canvas.getContext("webgl", {
@@ -383,12 +391,17 @@ export default function DotPulse({
 
     let raf = 0;
     let running = false;
+    let hasDrawn = false;
     const start = performance.now();
 
     const loop = () => {
       origin.x += (target.x - origin.x) * 0.06;
       origin.y += (target.y - origin.y) * 0.06;
       draw((performance.now() - start) / 1000);
+      if (!hasDrawn) {
+        hasDrawn = true;
+        canvas.style.opacity = "1";
+      }
       raf = window.requestAnimationFrame(loop);
     };
     const startRaf = () => {
@@ -404,7 +417,11 @@ export default function DotPulse({
     // Gate the loop to on-screen AND tab-visible, fully stopping the rAF when
     // off-screen. (The previous bespoke IntersectionObserver only skipped the
     // draw and kept the loop spinning at 60fps, including on background tabs.)
-    const releaseGate = createRenderGate(container, startRaf, stopRaf);
+    // The margin gives the loop a small headstart: this surface's first frame
+    // IS its appearance — there is no full-strength stand-in under it — so
+    // with a zero-margin gate the field materialised while the viewer watched.
+    // One viewport early, the first frame is already painted as it scrolls in.
+    const releaseGate = createRenderGate(container, startRaf, stopRaf, "100% 0%");
 
     const resizeObserver = new ResizeObserver(() => rebuild());
     resizeObserver.observe(container);
