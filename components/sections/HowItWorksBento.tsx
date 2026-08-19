@@ -107,7 +107,22 @@ export default function HowItWorksBento() {
         })
       );
 
+      // The breath is infinite, so without this it kept ticking for the whole
+      // life of the page: four transform writes per frame against a section
+      // that scrolled away thousands of pixels ago, which also stops the
+      // compositor ever reclaiming those layers. Paused offscreen, resumed on
+      // return; the tween keeps its phase so nothing visibly restarts.
+      const gate = ScrollTrigger.create({
+        trigger: grid,
+        start: "top bottom",
+        end: "bottom top",
+        onToggle: (self) =>
+          breaths.forEach((t) => (self.isActive ? t.play() : t.pause())),
+      });
+      if (!gate.isActive) breaths.forEach((t) => t.pause());
+
       return () => {
+        gate.kill();
         entrance.scrollTrigger?.kill();
         entrance.kill();
         parallax.scrollTrigger?.kill();

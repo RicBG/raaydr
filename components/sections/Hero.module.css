@@ -58,9 +58,13 @@
      layer, which meant the hero had a hole in it until the orb's first frame:
      measured at 0.6s on a fast connection and 4.4s on a throttled phone. The
      layer now carries a CSS stand-in that paints with the document, and the
-     real orb cross-fades over it. */
+     real orb cross-fades over it.
+
+     No will-change: the recede scrub only runs while the hero is pinned, the
+     first two viewports of a very long page, and GSAP composites the layer
+     while it is actually writing to it. The permanent hint kept a full screen
+     of backing store alive at native DPR for the other 90% of the scroll. */
   opacity: 1;
-  will-change: opacity, transform;
 }
 
 /* The stand-in. A static gradient in the spectrum tokens, occupying the same
@@ -151,9 +155,9 @@
   gap: clamp(14px, 2vh, 22px);
   padding: 0 16%;
   text-align: center;
-  /* This is the element the scroll-recede actually animates (scale + opacity +
-     blur), so it — not .content — is the one that should be promoted. */
-  will-change: transform, opacity, filter;
+  /* No will-change for the recede: same reasoning as .ringLayer above — the
+     scrub owns this element only while the hero is pinned, and GSAP promotes
+     it for exactly that window. */
 }
 
 /* Deliberately not .display-hero: that scale is sized for a full-bleed

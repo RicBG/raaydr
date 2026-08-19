@@ -77,6 +77,16 @@ export default function PledgeTimeline() {
             // dims as it is covered. No clip and no word rotation: the seam and
             // the pivot are both devices for the sideways wipe, and neither
             // reads as anything but noise when the move is vertical.
+            //
+            // Only the two panels in play are painted. A parked panel is
+            // invisible by construction (covered, or parked a screen below),
+            // but its translate3d still promoted it, and on a phone each panel
+            // is a whole screen of backing store at native DPR. Four of those,
+            // held for the length of the page, in the exact scroll region
+            // where phones were crashing. visibility rather than display so
+            // the panel keeps its box and un-hiding never relayouts.
+            const inPlay = i === current || i === current + 1;
+            panel.style.visibility = inPlay ? "visible" : "hidden";
             if (i === current) {
               panel.style.transform = `translate3d(0, ${-6 * t}%, 0) scale(${1 - 0.05 * t})`;
               panel.style.opacity = String(1 - 0.4 * t);
@@ -142,6 +152,7 @@ export default function PledgeTimeline() {
           panel.style.zIndex = "";
           panel.style.transform = "";
           panel.style.opacity = "";
+          panel.style.visibility = "";
           const word = panel.querySelector<HTMLElement>(`.${styles.word}`);
           if (word) word.style.transform = "";
           const header = panel.querySelector<HTMLElement>(

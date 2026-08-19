@@ -214,6 +214,13 @@
     padding: clamp(32px, 8vw, 48px) var(--gutter);
   }
 
+  /* The word never rotates on phones — the stacked move drops the pivot along
+     with the clip — so the desktop hint was promoting four poster words to
+     their own layers for an animation that does not exist at this width. */
+  .word {
+    will-change: auto;
+  }
+
   /* Bigger promise, bigger copy. Both sizes are vw-driven clamps tuned for a
      desktop panel, where the header shares the frame with a poster word the
      width of the screen; at 390px the vw term collapses and both landed on
