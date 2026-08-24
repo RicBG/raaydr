@@ -132,3 +132,75 @@
      nudges the submit button. */
   min-height: 2.5em;
 }
+
+/* The artist-only name and genre fields, between the role pills and the offer
+   line. Two columns where there is room, stacked on a phone. */
+.artistFields {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Matches .email so the row reads as one set of controls. appearance: none
+   drops the platform chrome that would otherwise ignore the pill radius, so
+   the chevron is drawn here instead. */
+.select {
+  width: 100%;
+  height: 52px;
+  padding: 0 42px 0 18px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--stone) 55%, transparent);
+  background-image: linear-gradient(
+      45deg,
+      transparent 50%,
+      currentColor 50%,
+      currentColor 55%,
+      transparent 55%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 50%,
+      currentColor 50%,
+      currentColor 55%,
+      transparent 55%
+    );
+  background-position:
+    right 22px center,
+    right 17px center;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  color: inherit;
+  font: inherit;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.25s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+/* The placeholder option, while it is the one selected. */
+.select:has(option[value=""]:checked) {
+  color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.dark .select {
+  background-color: color-mix(in srgb, var(--canvas) 10%, transparent);
+}
+
+/* The options themselves are drawn by the OS, which does not inherit a
+   transparent page background — set both explicitly or a dark-surface form
+   renders light text on light. */
+.select option {
+  background: var(--canvas);
+  color: var(--ink);
+}

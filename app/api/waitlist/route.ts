@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { isWaitlistRoleSlug } from "@/lib/waitlistRoles";
+import {
+  ARTIST_NAME_MAX_LENGTH,
+  isWaitlistGenreCode,
+} from "@/lib/waitlistGenres";
 import { sendMetaLead } from "@/lib/metaCapi";
 
 // Uses env + the service-role Supabase client, so it must run on the Node
@@ -12,11 +16,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 /**
  * Waitlist signup endpoint.
  *
- * Accepts POST { email, role, source } and upserts into `waitlist_signups`
- * (case-insensitive on email) via the `upsert_waitlist_signup` Postgres
- * function, which runs INSERT ... ON CONFLICT (lower(email)) against the
- * table's unique lower(email) index — inserting a new row or updating the
- * role / source / updated_at of an existing one.
+ * Accepts POST { email, role, source }, the attribution fields, and — from the
+ * artist form only — { artist_name, genre }, and upserts into
+ * `waitlist_signups` (case-insensitive on email) via the
+ * `upsert_waitlist_signup` Postgres function, which runs INSERT ... ON CONFLICT
+ * (lower(email)) against the table's unique lower(email) index — inserting a
+ * new row or updating the role / source / updated_at of an existing one.
  *
  * All Supabase access uses the SERVICE ROLE key server-side (see
  * lib/supabaseAdmin), since the table has RLS enabled with no public policies.
@@ -29,6 +34,8 @@ export async function POST(request: Request) {
     email?: unknown;
     role?: unknown;
     source?: unknown;
+    artist_name?: unknown;
+    genre?: unknown;
     eventId?: unknown;
     fbp?: unknown;
     fbc?: unknown;
@@ -87,6 +94,17 @@ export async function POST(request: Request) {
     p_landing_path: attr("landing_path"),
   };
 
+  // What an artist calls themselves, and what they make. Only the artist form
+  // sends either, and both are optional here: a missing name is worth far less
+  // than a lost signup, so the server never rejects for one. Same untrusted
+  // treatment as the attribution fields above — trimmed, capped to the column,
+  // empty becomes null rather than an empty string.
+  const artistName =
+    typeof body.artist_name === "string" && body.artist_name.trim()
+      ? body.artist_name.trim().slice(0, ARTIST_NAME_MAX_LENGTH)
+      : null;
+  const genre = typeof body.genre === "string" ? body.genre.trim() : "";
+
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json(
       { error: "That doesn't look like an email address." },
@@ -96,6 +114,17 @@ export async function POST(request: Request) {
   if (!isWaitlistRoleSlug(role)) {
     return NextResponse.json(
       { error: "Pick the role that fits you." },
+      { status: 400 }
+    );
+  }
+  // A genre we do not recognise is refused rather than stored. The codes come
+  // from a point-in-time copy of the platform's taxonomy (lib/waitlistGenres),
+  // and the whole reason to store codes rather than typed text is that they
+  // line up with the platform later; letting an arbitrary string through would
+  // give that up for nothing. Blank stays legal — genre is optional.
+  if (genre && !isWaitlistGenreCode(genre)) {
+    return NextResponse.json(
+      { error: "Pick a genre from the list." },
       { status: 400 }
     );
   }
@@ -126,17 +155,32 @@ export async function POST(request: Request) {
     p_source: source || "unknown",
   };
 
+  const profile = {
+    p_artist_name: artistName,
+    p_genre: genre || null,
+  };
+
   let { error } = await supabase.rpc("upsert_waitlist_signup", {
     ...core,
     ...attribution,
+    ...profile,
   });
 
-  // If the attribution migration has not been applied yet, PostgREST cannot
-  // find a ten-argument function and returns PGRST202. Retry with the original
-  // three so the signup still lands. Attribution is worth having and is never
-  // worth losing a conversion over, and this removes the deploy ordering trap
-  // where shipping the code before running the migration would reject every
-  // signup.
+  // PGRST202 is PostgREST saying no function of that name takes these named
+  // arguments — i.e. a migration this code assumes has not been applied yet.
+  // Step back one migration at a time rather than failing, so the signup still
+  // lands. Extra fields are worth having and are never worth losing a
+  // conversion over, and this removes the deploy ordering trap where shipping
+  // the code before running the migration would reject every signup.
+  if (error?.code === "PGRST202") {
+    console.error(
+      "[waitlist] artist/genre migration not applied; saved without them"
+    );
+    ({ error } = await supabase.rpc("upsert_waitlist_signup", {
+      ...core,
+      ...attribution,
+    }));
+  }
   if (error?.code === "PGRST202") {
     console.error(
       "[waitlist] attribution migration not applied; saved without attribution"

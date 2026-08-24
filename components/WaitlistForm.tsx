@@ -3,6 +3,10 @@
 import { useId, useRef, useState, type FormEvent } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
 import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
+import {
+  ARTIST_NAME_MAX_LENGTH,
+  WAITLIST_GENRES,
+} from "@/lib/waitlistGenres";
 import { ANALYTICS_FLUSH_MS, joinedDestination } from "@/lib/joined";
 import { offerFor } from "@/lib/waitlistOffers";
 import { readAttribution } from "@/lib/attribution";
@@ -48,12 +52,17 @@ export default function WaitlistForm({
 }: WaitlistFormProps) {
   const id = useId();
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
+  const [artistName, setArtistName] = useState("");
+  const [genre, setGenre] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const started = useRef(false);
 
   const label = variant === "hero" ? ctaCopy().primary : ctaCopy().closing;
   const analyticsSource = source ?? "unknown";
+  // The name and genre questions are for artists and nobody else. Asking a
+  // listener what they release would be a question with no right answer.
+  const isArtist = role !== null && ROLE_LABEL_TO_SLUG[role] === "artist";
 
   // Fire waitlist_start once, on the visitor's first interaction with the form,
   // so we can measure started-but-not-completed drop-off.
@@ -79,6 +88,13 @@ export default function WaitlistForm({
     }
 
     const slug = ROLE_LABEL_TO_SLUG[role];
+    // Artists have to say what they are called. Genre stays optional.
+    const name = artistName.trim();
+    if (slug === "artist" && !name) {
+      setStatus("error");
+      setMessage("Tell us what you release under.");
+      return;
+    }
     // Shared id + Meta cookies let the server-side Conversions API "Lead" event
     // dedupe against, and match better than, the browser Pixel event.
     const eventId = newEventId();
@@ -102,6 +118,10 @@ export default function WaitlistForm({
         body: JSON.stringify({
           email,
           role: slug,
+          // Only ever sent for artists, so the columns stay null for everyone
+          // else rather than carrying a stale answer from a switched role.
+          ...(slug === "artist" && name ? { artist_name: name } : {}),
+          ...(slug === "artist" && genre ? { genre } : {}),
           ...(source ? { source } : {}),
           eventId,
           consent,
@@ -203,6 +223,46 @@ export default function WaitlistForm({
           ))}
         </div>
       </fieldset>
+
+      {isArtist && (
+        <div className={styles.artistFields}>
+          <div className={styles.field}>
+            <label htmlFor={`${id}-artist-name`} className={styles.fieldLabel}>
+              Artist name / band name
+            </label>
+            <input
+              id={`${id}-artist-name`}
+              name={`${id}-artist-name`}
+              type="text"
+              required
+              maxLength={ARTIST_NAME_MAX_LENGTH}
+              autoComplete="off"
+              value={artistName}
+              onChange={(e) => setArtistName(e.target.value)}
+              className={styles.email}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor={`${id}-genre`} className={styles.fieldLabel}>
+              Genre
+            </label>
+            <select
+              id={`${id}-genre`}
+              name={`${id}-genre`}
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              className={styles.select}
+            >
+              <option value="">Pick your genre</option>
+              {WAITLIST_GENRES.map((g) => (
+                <option key={g.code} value={g.code}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
 
       {showOffer && (
         <p className={styles.offer} aria-live="polite">
