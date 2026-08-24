@@ -274,7 +274,30 @@ export default function PageSpectraNoise({
       // buffer size keeps uv correct at any scale.
       gl!.uniform2f(uniforms.uResolution, canvas.width, canvas.height);
     };
-    const handleResize = () => resize();
+    // A phone fires `resize` continuously while you scroll, because its address
+    // bar collapses and expands and the viewport height moves with it. Every one
+    // of those reached resize() above, which reassigns canvas.width/height —
+    // reallocating the drawing buffer for a surface that covers the whole
+    // viewport. Instrumenting a scroll down /artists at 390x844 caught twelve
+    // such events rebuilding the buffer twenty-four times, ~10MB of allocation
+    // churn, all of it mid-scroll and none of it a real layout change.
+    //
+    // ScrollTrigger already refuses these (ignoreMobileResize, lib/gsap.ts) and
+    // this surface has to as well. A height-only change on a coarse pointer is
+    // browser chrome rather than a new layout, and this is a soft out-of-focus
+    // wash: it reads identically stretched over the few pixels the bar occupies.
+    // Width changes — orientation, or a desktop window drag — still rebuild, on
+    // a trailing edge so a drag reallocates once at the end instead of per frame.
+    let resizeTimer = 0;
+    let lastWidth = parent.clientWidth;
+    const chromeResizeOnly = window.matchMedia('(pointer: coarse)').matches;
+    const handleResize = () => {
+      const w = parent.clientWidth;
+      if (chromeResizeOnly && w === lastWidth) return;
+      lastWidth = w;
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(resize, 150);
+    };
     window.addEventListener('resize', handleResize);
     resize();
 
@@ -318,6 +341,7 @@ export default function PageSpectraNoise({
     return () => {
       releaseGate();
       stopRaf();
+      window.clearTimeout(resizeTimer);
       window.removeEventListener('resize', handleResize);
       // Free the WebGL context on unmount. Without this, navigating between
       // audience pages leaks contexts toward the browser's ~16-context cap,
