@@ -27,9 +27,11 @@ export default function PrivacyPage() {
               While RAAYDR is in waitlist mode, signing up stores your email
               address, the role you choose, and how you reached us: the campaign
               tags on the link you followed, the site that referred you, and the
-              page you landed on. We use your email to tell you when Day One
-              spots open, and the rest to understand which of our own channels
-              actually work. We never sell your data.
+              page you landed on. If you join as an artist, it also stores the
+              artist or band name you give us and, if you pick one, your genre.
+              We use your email to tell you when Day One spots open, and the
+              rest to understand which of our own channels actually work. We
+              never sell your data.
             </p>
             <p>
               <strong>Cookies and tracking.</strong> We use Google Analytics to
