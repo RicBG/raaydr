@@ -134,11 +134,25 @@
 }
 
 /* The artist-only name and genre fields, between the role pills and the offer
-   line. Two columns where there is room, stacked on a phone. */
+   line. Stacked by default, side by side once there is room.
+
+   The two columns are deliberately uneven. "Artist name / band name" is a long
+   title set in letterspaced uppercase mono, and in even columns it filled its
+   own column edge to edge and stopped a few pixels short of "Genre" — close
+   enough that the two read as one run-on line instead of each sitting over the
+   box it names. The wider first column pushes "Genre" along and leaves the
+   title clear air to its right. It also matches the fields themselves: a band
+   name needs more room to type than a genre needs to display. */
 .artistFields {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 18px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) {
+  .artistFields {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  }
 }
 
 .field {
