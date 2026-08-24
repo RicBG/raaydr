@@ -14,10 +14,10 @@ import styles from "./MidWave.module.css";
 // so the three captures can be told apart), presented as a single dark block
 // with a little grain, echoing the "Follow the build" block on the About page.
 // Behind the block sits the same pulsing dot field the RAAYDR+ blocks use, so
-// the section reads dark. LazyMount holds the GL context only while the section
-// is on screen, which keeps it from stacking with the homepage's other WebGL
-// layers — the constraint that had the Spectra wave this replaced falling back
-// to a still render.
+// the section reads dark. Its GL context is created once at page load and kept
+// (see the LazyMount below) rather than built on approach: building it on
+// approach put a multi-second iPhone stall inside the pledge sequence that
+// precedes this section.
 // The block rises into place on scroll, as the payoff at the end of How It Works.
 export default function MidWave() {
   const blockRef = useRef<HTMLDivElement>(null);
@@ -62,24 +62,29 @@ export default function MidWave() {
     >
       {/* Pulsing dot field on the section behind the block. */}
       <div className={styles.dotBg} aria-hidden="true">
-        {/* Mounted well ahead of arrival, because this surface has real lead
-            time before it can paint: the DotPulse chunk downloads, a GL
-            context is created, shaders compile, the grid builds. At the
-            default 200px a thumb-flick out of the pledge sequence landed here
-            before any of that had happened and the field visibly popped in
-            late. A viewport and a half of margin buys the whole pipeline;
-            the render gate still keeps the loop itself parked until the
-            section is nearly on screen.
+        {/* eager + persistent: set up once at page load, never torn down —
+            the same lifecycle as the gradient behind "People are the
+            algorithm", and for the same reason.
 
-            persistent, because tearing the context down on scroll-away means
-            rebuilding it mid-scroll on the way back — the stall that was
-            breaking this zone on phones. Setup happens once; after that the
-            gate leaves a dormant context, not work. */}
-        <LazyMount
-          rootMargin="150%"
-          persistent
-          style={{ position: "absolute", inset: 0 }}
-        >
+            A viewport and a half of lead time used to be the answer here, and
+            it is not enough, because the problem was never how EARLY the setup
+            ran — it was that it ran mid-scroll at all. The chunk download, the
+            GL context, the shader compile and the grid build are, on an
+            iPhone, a main-thread stall measured in seconds, and 150% of a
+            viewport before this section puts it squarely inside the pledge
+            sequence: you feel the green promise panel snag, and by the time
+            the thread comes back the field has either arrived late or, under
+            the memory pressure of doing all that while four panels are
+            composited, not at all. The section's own #05060a shows through
+            when it does not, so the failure reads as "the background didn't
+            load".
+
+            At page load that same stall lands behind the first-load curtain
+            (see lib/boot.ts), where nothing is scrolling and nothing is
+            visible to snag. The render gate still parks the render loop until
+            the section is nearly on screen, so what persists between here and
+            there is a dormant context, not frames. */}
+        <LazyMount eager persistent style={{ position: "absolute", inset: 0 }}>
           <DotPulse
             pattern="breathe"
             followPointer={false}

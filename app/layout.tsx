@@ -11,7 +11,9 @@ import JsonLd from "@/components/JsonLd";
 import JoinedModal from "@/components/JoinedModal";
 import AttributionCapture from "@/components/AttributionCapture";
 import ConsentBanner from "@/components/ConsentBanner";
+import BootScreen from "@/components/BootScreen";
 import { JOINED_PREPAINT_SCRIPT } from "@/lib/joined";
+import { BOOT_PREPAINT_SCRIPT } from "@/lib/boot";
 import { CONSENT_PREPAINT_SCRIPT, META_PIXEL_SCRIPT } from "@/lib/consent";
 import { organizationSchema, pageMetadata, websiteSchema } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
@@ -67,8 +69,20 @@ export default function RootLayout({
             initialises. Set it any later and the tag has already written its
             cookies, which is precisely what the banner exists to prevent. */}
         <script dangerouslySetInnerHTML={{ __html: CONSENT_PREPAINT_SCRIPT }} />
+        {/* The first-load curtain. Must run in <head> and must run after the
+            joined flag above, which it defers to: a role page opened from a
+            completed signup already paints its own cover. Raw inline script
+            for the same reason as the two above — anything that waits for
+            hydration has missed the window it exists to cover, and here that
+            is doubly true, since hydration being slow is part of what it is
+            covering. See lib/boot.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: BOOT_PREPAINT_SCRIPT }} />
       </head>
       <body>
+        {/* First thing in the body so it is painted with the document, not
+            after it. Inert (display:none) until the script above stamps
+            <html data-booting>. */}
+        <BootScreen />
         {/* Site-wide entity markup. Per-page FAQPage blocks are emitted by the
             FAQ accordion and are untouched by these. */}
         <JsonLd data={organizationSchema} />

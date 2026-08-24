@@ -267,45 +267,74 @@ export default function DotPulse({
       return;
     }
 
-    // If the GPU context is lost (device reset, or too many live WebGL contexts
-    // on the page), hide the canvas so its parent's dark background shows
-    // cleanly rather than a broken buffer.
+    // A phone taking the context away is the normal case for this surface, not
+    // an exotic one: it is the last of the page's WebGL layers to be created
+    // and the first thing a memory-pressured GPU drops. Losing it used to be
+    // terminal — the canvas faded out and never came back, and since the
+    // section paints its own flat #05060A underneath, the field was simply
+    // missing for the rest of the visit. So: fade out and park the loop on
+    // loss, rebuild everything the GPU owned and fade back in on restore.
+    //
+    // preventDefault() on the lost event is what makes the browser willing to
+    // fire `webglcontextrestored` at all; without it there is nothing to
+    // recover into. Both hooks are assigned once the loop exists below, so
+    // they are indirected through these.
+    let pauseForContextLoss = () => {};
+    let restoreAfterContextLoss = () => {};
+    let hasDrawn = false;
+
     const onContextLost = (e: Event) => {
       e.preventDefault();
       canvas.style.opacity = "0";
+      hasDrawn = false;
+      pauseForContextLoss();
     };
+    const onContextRestored = () => restoreAfterContextLoss();
     canvas.addEventListener("webglcontextlost", onContextLost, false);
+    canvas.addEventListener("webglcontextrestored", onContextRestored, false);
 
-    const program = compileProgram(gl);
-    if (!program) return;
-    gl.useProgram(program);
+    // Everything the GPU owns, in one place, so a restored context can be
+    // furnished again from scratch. Nothing here survives a context loss:
+    // programs, buffers and locations are all per-context handles.
+    let posBuffer: WebGLBuffer | null = null;
+    let randBuffer: WebGLBuffer | null = null;
+    let aPos = -1;
+    let aRand = -1;
+    let uniforms: Record<string, WebGLUniformLocation | null> = {};
 
-    const posBuffer = gl.createBuffer();
-    const randBuffer = gl.createBuffer();
-    const aPos = gl.getAttribLocation(program, "aPos");
-    const aRand = gl.getAttribLocation(program, "aRand");
-    const uniforms = {
-      uRes: gl.getUniformLocation(program, "uRes"),
-      uTime: gl.getUniformLocation(program, "uTime"),
-      uOrigin: gl.getUniformLocation(program, "uOrigin"),
-      uPattern: gl.getUniformLocation(program, "uPattern"),
-      uWavelength: gl.getUniformLocation(program, "uWavelength"),
-      uSpeed: gl.getUniformLocation(program, "uSpeed"),
-      uPulseWidth: gl.getUniformLocation(program, "uPulseWidth"),
-      uSwell: gl.getUniformLocation(program, "uSwell"),
-      uPush: gl.getUniformLocation(program, "uPush"),
-      uDotSize: gl.getUniformLocation(program, "uDotSize"),
-      uAngle: gl.getUniformLocation(program, "uAngle"),
-      uTwist: gl.getUniformLocation(program, "uTwist"),
-      uJitter: gl.getUniformLocation(program, "uJitter"),
-      uDpr: gl.getUniformLocation(program, "uDpr"),
-      uDotColor: gl.getUniformLocation(program, "uDotColor"),
-      uPulseColor: gl.getUniformLocation(program, "uPulseColor"),
+    const initGL = () => {
+      const program = compileProgram(gl);
+      if (!program) return false;
+      gl.useProgram(program);
+
+      posBuffer = gl.createBuffer();
+      randBuffer = gl.createBuffer();
+      aPos = gl.getAttribLocation(program, "aPos");
+      aRand = gl.getAttribLocation(program, "aRand");
+      uniforms = {
+        uRes: gl.getUniformLocation(program, "uRes"),
+        uTime: gl.getUniformLocation(program, "uTime"),
+        uOrigin: gl.getUniformLocation(program, "uOrigin"),
+        uPattern: gl.getUniformLocation(program, "uPattern"),
+        uWavelength: gl.getUniformLocation(program, "uWavelength"),
+        uSpeed: gl.getUniformLocation(program, "uSpeed"),
+        uPulseWidth: gl.getUniformLocation(program, "uPulseWidth"),
+        uSwell: gl.getUniformLocation(program, "uSwell"),
+        uPush: gl.getUniformLocation(program, "uPush"),
+        uDotSize: gl.getUniformLocation(program, "uDotSize"),
+        uAngle: gl.getUniformLocation(program, "uAngle"),
+        uTwist: gl.getUniformLocation(program, "uTwist"),
+        uJitter: gl.getUniformLocation(program, "uJitter"),
+        uDpr: gl.getUniformLocation(program, "uDpr"),
+        uDotColor: gl.getUniformLocation(program, "uDotColor"),
+        uPulseColor: gl.getUniformLocation(program, "uPulseColor"),
+      };
+
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.clearColor(0, 0, 0, 0);
+      return true;
     };
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.clearColor(0, 0, 0, 0);
 
     let dotCount = 0;
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -350,6 +379,21 @@ export default function DotPulse({
       target.y = cy;
     };
 
+    const teardownGL = () => {
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      canvas.removeEventListener("webglcontextrestored", onContextRestored);
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      canvas.remove();
+    };
+
+    // A failed compile or link used to return here and leave the canvas in the
+    // DOM at opacity 0 — invisible, but holding a dead context for the rest of
+    // the visit, and silent about it. Take it back out and say so.
+    if (!initGL()) {
+      console.error("DotPulse: shader program failed to build");
+      teardownGL();
+      return;
+    }
     rebuild();
 
     const dotRGBA = parseColor(dotColor);
@@ -379,19 +423,25 @@ export default function DotPulse({
     const reducedMotion =
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
+    const stillFrame = () => {
+      draw(0.6 / Math.max(speed, 0.01));
+      canvas.style.opacity = "1";
+      hasDrawn = true;
+    };
+
     if (reducedMotion) {
       // Single, pleasant still frame — no animation loop
-      draw(0.6 / Math.max(speed, 0.01));
-      return () => {
-        canvas.removeEventListener("webglcontextlost", onContextLost);
-        gl.getExtension("WEBGL_lose_context")?.loseContext();
-        canvas.remove();
+      stillFrame();
+      restoreAfterContextLoss = () => {
+        if (!initGL()) return;
+        rebuild();
+        stillFrame();
       };
+      return teardownGL;
     }
 
     let raf = 0;
     let running = false;
-    let hasDrawn = false;
     const start = performance.now();
 
     const loop = () => {
@@ -423,6 +473,22 @@ export default function DotPulse({
     // One viewport early, the first frame is already painted as it scrolls in.
     const releaseGate = createRenderGate(container, startRaf, stopRaf, "100% 0%");
 
+    // A lost context leaves the loop drawing into nothing; a restored one has
+    // to be furnished again before it can draw into anything. Whether the loop
+    // then resumes is the render gate's call, not ours — a context handed back
+    // while the section is far off screen should wake a dormant context, not a
+    // render loop — so remember what the gate had decided and put that back.
+    let wasRunning = false;
+    pauseForContextLoss = () => {
+      wasRunning = running;
+      stopRaf();
+    };
+    restoreAfterContextLoss = () => {
+      if (!initGL()) return;
+      rebuild();
+      if (wasRunning) startRaf();
+    };
+
     const resizeObserver = new ResizeObserver(() => rebuild());
     resizeObserver.observe(container);
 
@@ -448,9 +514,7 @@ export default function DotPulse({
       resizeObserver.disconnect();
       container.removeEventListener("pointermove", onPointerMove);
       container.removeEventListener("pointerleave", onPointerLeave);
-      canvas.removeEventListener("webglcontextlost", onContextLost);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
-      canvas.remove();
+      teardownGL();
     };
   }, [
     pattern,
