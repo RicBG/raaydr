@@ -384,7 +384,13 @@ html[data-booting] .boot {
   place-items: center;
   background: var(--canvas);
   opacity: 1;
-  transition: opacity 500ms ease; /* FADE_MS in lib/boot.ts */
+  /* The blur leads and the fade follows. Both curves are front-loaded, and run
+     together the mark was already invisible by the time it was properly out of
+     focus — measured: opacity 0.51 at 6.9px of blur, so the reveal read as a
+     plain fade with the defocus wasted underneath it. Holding the panel for
+     170ms lets the mark visibly go soft at full strength first, and only then
+     does the page come through. 170 + 480 = FADE_MS in lib/boot.ts. */
+  transition: opacity 480ms ease 170ms;
   /* Belt and braces with the overflow lock below: iOS will happily scroll a
      page whose root is overflow:hidden if the touch lands on something that
      can take it. */
@@ -392,11 +398,37 @@ html[data-booting] .boot {
   overscroll-behavior: contain;
 }
 
-/* Phase two — on the way out. Scroll is already released and pointers pass
-   through, so the page is live for the whole fade rather than after it. */
+/* Phase two — the reveal. The mark pulls out of focus and swells while the
+   canvas it sits on fades off, so the homepage arrives through the blur rather
+   than being uncovered by a shutter. Scroll is already released and pointers
+   pass through, so the page is live for the whole reveal rather than after it.
+
+   The blur is on the mark and the glow, not on .boot itself. Two reasons, and
+   both matter. A blur samples past the element's own edges, so blurring a
+   full-bleed panel leaves a soft vignette all the way round the screen. And a
+   filter on a viewport-sized element costs the compositor a viewport-sized
+   layer at native DPR, which is precisely the kind of work the rest of this
+   change exists to take off the phone. The mark and its glow are a small
+   layer, and they are the part you are actually watching. */
 html[data-booting="0"] .boot {
   opacity: 0;
   pointer-events: none;
+}
+
+html[data-booting="0"] .bootMark {
+  filter: blur(14px);
+  transform: scale(1.08);
+}
+
+/* The glow defocuses too, but only by blur: .bootGlow's transform belongs to
+   the breathe animation below, and an animation fills its value over anything
+   a transition writes, so a transform here would simply not apply. Blur is a
+   property nothing else is animating, which is why it is the one used. */
+html[data-booting="0"] .bootGlow {
+  filter: blur(28px);
+  /* Stop breathing on the way out: a pulse continuing underneath the blur
+     reads as two moves fighting rather than as one reveal. */
+  animation-play-state: paused;
 }
 
 /* Hold the reader at the top while the page is still settling. Released the
@@ -430,12 +462,18 @@ html[data-booting="1"] {
   /* Breathes, so a long wait on a slow connection reads as the page working
      rather than as the page stuck. */
   animation: boot-breathe 2.6s ease-in-out infinite;
+  transition: filter 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .bootMark {
   position: relative;
   width: min(54vw, 260px);
   height: auto;
+  /* Front-loaded, and finished before the panel has: the defocus is the part
+     you watch, so it has to happen while there is still something to watch. */
+  transition:
+    filter 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes boot-mark-in {

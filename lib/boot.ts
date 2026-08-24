@@ -21,7 +21,8 @@
  * approach.
  *
  * So: hold the reader at the top, on a screen that is one inline SVG and three
- * CSS gradients, until the page has stopped moving. Then lift.
+ * CSS gradients, until the page has stopped moving. Then pull the mark out of
+ * focus and let the homepage arrive through it.
  *
  * This runs in <head>, before first paint, for the same reason
  * JOINED_PREPAINT_SCRIPT does — a curtain that arrives after hydration has
@@ -84,8 +85,8 @@ export const MOTION_ATTR = "data-motion";
 export const MIN_MS = 600;
 /** Longest it can stay up, whatever else is or is not finished. */
 export const MAX_MS = 3800;
-/** How long the fade-out runs; must match the transition in globals.css. */
-export const FADE_MS = 500;
+/** How long the reveal runs; must match the transitions in globals.css. */
+export const FADE_MS = 650;
 /** Ceiling on the wait for an idle frame once the page has loaded. */
 export const IDLE_MS = 1200;
 
