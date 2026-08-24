@@ -119,6 +119,23 @@
   height: calc(var(--panel-count, 4) * 100vh);
 }
 
+/* The same height, reserved before the effect exists.
+   Without this the section is served at its fallback height and jumps to the
+   timeline height the moment the effect runs — on a phone, measured, 547px to
+   2680px. Everything below it moves down by the difference, and `body` sets
+   `overflow-anchor: none` (the pinned ScrollTriggers need it), so the browser
+   does not compensate: a reader who has already started scrolling is thrown
+   2133px back toward the top of the page. That is the "it loads and drags you
+   back up" report, and it is this section, not the hero it appears to happen
+   to.
+   `html[data-motion="on"]` is stamped before first paint and means both halves
+   of "the timeline will run here": script is on, and reduced motion is not
+   asked for. Anything else keeps the fallback and its natural height. See
+   lib/boot.ts. */
+:global(html[data-motion="on"]) .wrap {
+  min-height: calc(var(--panel-count, 4) * 100vh);
+}
+
 /* Edge to edge and the full viewport, so the wipe happens across the whole
    screen rather than inside a card sitting on the page. top: 0 puts it under
    the fixed nav, which is the intended read: the nav hides on scroll down, so
@@ -276,6 +293,13 @@
      screen it is meant to fill. */
   .wrap[data-mode="timeline"] {
     height: calc(var(--panel-count, 4) * 100svh);
+  }
+
+  /* svh here too, matching the rule above it: the reservation has to be the
+     height that is actually taken, or it has only moved the shift rather than
+     removed it. */
+  :global(html[data-motion="on"]) .wrap {
+    min-height: calc(var(--panel-count, 4) * 100svh);
   }
 
   .wrap[data-mode="timeline"] .frame {
