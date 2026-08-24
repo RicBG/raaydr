@@ -31,7 +31,6 @@ export default function HaloVideo({
 
   const videoSrc = src ?? `/media/halo-${name}.mp4`;
   const poster = posterOverride ?? (name ? `/media/halo-${name}-poster.jpg` : undefined);
-  const mime = videoSrc.endsWith(".webm") ? "video/webm" : "video/mp4";
 
   useEffect(() => {
     if (reduced) return;
@@ -47,6 +46,32 @@ export default function HaloVideo({
     return () => video.removeEventListener("canplay", onCanPlay);
   }, [reduced]);
 
+  // Release the decoder and the buffered file when this hero leaves the page.
+  //
+  // Detaching a <video> does not free what it is holding. The element keeps its
+  // source, its network buffer and its decoded frames, and the browser is under
+  // no obligation to reclaim them promptly — Safari in particular does not. The
+  // halo clips are 6-7MB each and there is one per audience page, so a phone
+  // walking artists -> producers -> tastemakers -> listeners through the nav
+  // accumulates them: instrumenting that route four pages at a time showed
+  // twelve video elements created, one still attached, and none ever torn down.
+  // That is the whole cost of the media on the page, held for the life of the
+  // tab, on the device least able to afford it.
+  //
+  // Clearing `src` and calling load() is what actually abandons the buffer and
+  // resets the decoder. It runs on unmount only, so a reduced-motion change
+  // cannot tear down a video that is still on screen, and the element is read
+  // from the ref at mount because by cleanup time it may already be detached.
+  useEffect(() => {
+    const video = videoRef.current;
+    return () => {
+      if (!video) return;
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+    };
+  }, []);
+
   // With a poster asset, reduced motion shows the still image. Without one
   // (no poster generated for this clip), fall back to the video element
   // itself paused on its first frame — still static, no extra asset needed.
@@ -61,9 +86,13 @@ export default function HaloVideo({
 
   return (
     <div className={`${styles.frame} ${className ?? ""}`}>
+      {/* The source is an attribute rather than a <source> child so the cleanup
+          above can actually drop it: load() re-resolves from a child element,
+          so a video with one can never be released. */}
       <video
         ref={videoRef}
         className={`${styles.media} ${ready || reduced ? styles.ready : ""}`}
+        src={videoSrc}
         poster={poster}
         preload={reduced ? "auto" : "metadata"}
         muted
@@ -71,9 +100,7 @@ export default function HaloVideo({
         playsInline
         autoPlay={!reduced}
         aria-hidden="true"
-      >
-        <source src={videoSrc} type={mime} />
-      </video>
+      />
     </div>
   );
 }
