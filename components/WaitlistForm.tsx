@@ -228,7 +228,7 @@ export default function WaitlistForm({
         <div className={styles.artistFields}>
           <div className={styles.field}>
             <label htmlFor={`${id}-artist-name`} className={styles.fieldLabel}>
-              Artist name / band name
+              Artist name
             </label>
             <input
               id={`${id}-artist-name`}

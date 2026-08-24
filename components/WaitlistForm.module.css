@@ -134,11 +134,27 @@
 }
 
 /* The artist-only name and genre fields, between the role pills and the offer
-   line. Two columns where there is room, stacked on a phone. */
+   line. Stacked by default, two equal columns once there is room.
+
+   Equal columns work because the two titles are short and parallel. They did
+   not when the first read "Artist name / band name": at 226px of letterspaced
+   uppercase mono against 49px for "Genre", it filled its own column edge to
+   edge and stopped a few pixels short of the second title, so the two read as
+   one run-on line instead of each sitting over the box it names.
+
+   An explicit breakpoint rather than auto-fit. Auto-fit handed out columns
+   narrower than the longer title at in-between widths, which wrapped it to a
+   second line and pushed the name input a row below the genre select. */
 .artistFields {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 18px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) {
+  .artistFields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .field {
