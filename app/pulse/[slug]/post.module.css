@@ -23,8 +23,9 @@
   transition: color 0.2s ease;
 }
 
+/* Cream ground here, so the deeper violet: 6.68:1 rather than 3.16:1. */
 .eyebrowLink:hover {
-  color: var(--green);
+  color: var(--brand-deep);
 }
 
 .title {

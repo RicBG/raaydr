@@ -41,7 +41,7 @@
 
 .email:focus {
   outline: none;
-  border-color: var(--green);
+  border-color: var(--brand);
 }
 
 .roles {
@@ -77,7 +77,7 @@
 }
 
 .segment:has(input:focus-visible) {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--brand);
   outline-offset: 3px;
 }
 
@@ -89,7 +89,7 @@
 
 .error {
   font-size: 14px;
-  color: color-mix(in srgb, var(--coral) 80%, var(--ink));
+  color: color-mix(in srgb, var(--danger) 80%, var(--ink));
 }
 
 .success {
@@ -118,7 +118,7 @@
 }
 
 .dark .error {
-  color: var(--coral);
+  color: var(--danger);
 }
 
 /* Role-dependent offer line, sitting directly under the role selector.
@@ -201,7 +201,7 @@
 
 .select:focus {
   outline: none;
-  border-color: var(--green);
+  border-color: var(--brand);
 }
 
 /* The placeholder option, while it is the one selected. */

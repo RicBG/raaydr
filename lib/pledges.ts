@@ -23,9 +23,15 @@ export type Pledge = {
   title: string;
   /** What the promise actually means: /artists, and the timeline panel body. */
   body: string;
-  /** Panel wash on the homepage timeline. One of the spectrum tokens, kept as
-   *  a literal hex because it is read into color-mix() and radial-gradient()
-   *  through an inline custom property, not resolved from the token. */
+  /** Panel wash on the homepage timeline. One of the five spectrum role
+   *  colours, kept as a literal hex because it is read into color-mix() and
+   *  radial-gradient() through an inline custom property, not resolved from
+   *  the token.
+   *
+   *  These are decoration, not actions, so none of them is the brand violet:
+   *  the rule for this set is one distinct role colour per panel. Keep them
+   *  distinct. The panels wipe from one to the next, so two neighbours in the
+   *  same part of the wheel read as one panel that failed to change. */
   accent: string;
 };
 
@@ -59,13 +65,23 @@ export const PLEDGES: Pledge[] = [
     short: "Uploading is free.",
     title: "Uploading is free.",
     body: "It costs nothing to put your music on RAAYDR, and it never will.",
-    accent: "#3BCE7B", // --green
+    // Stays green through the violet rebrand. This is a decorative wash, not
+    // an action, so it does not follow the accent to violet; and green is
+    // still a role colour, just the listeners' one now rather than the
+    // listeners' and the button's at once.
+    // Since v1.4 the spectrum is exactly four colours and this set uses all
+    // four, one per panel, so there is no longer a spare to swap in even if
+    // one were wanted. Closest pair is green to cyan at 54 apart, wider than
+    // the set managed before the producers moved.
+    accent: "#3BCE7B", // --green, the listeners' colour
   },
   {
     big: "Monthly",
     short: "The artist money moves monthly.",
     title: "The artist money always moves.",
     body: "Every fan's subscription follows their own listening, and the artist money in it reaches the artists they play. Monthly. We don't sit on it and we don't absorb what goes unplayed.",
-    accent: "#8C7AE6", // --violet, the money colour
+    // Was #8C7AE6, which is no longer a role colour: it sat too close to the
+    // brand violet, so producers took cyan and this panel follows the token.
+    accent: "#3FC8D6", // --cyan
   },
 ];

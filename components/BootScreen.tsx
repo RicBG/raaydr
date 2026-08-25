@@ -63,8 +63,12 @@ export default function BootScreen() {
               fill="#15151A"
             />
           </g>
-          {/* The green blip is part of the mark; never crop it. */}
-          <circle cx="4616" cy="690" r="60" fill="#3BCE7B" />
+          {/* The blip is part of the mark; never crop it. Violet since 25 Aug
+              2026, and the one hardcoded brand hex the site cannot avoid: this
+              SVG is inlined into the pre-paint curtain, which is on screen
+              before any stylesheet has resolved a custom property. Same value
+              as --brand, and as the blip in the two wordmark files. */}
+          <circle cx="4616" cy="690" r="60" fill="#9B6BFF" />
         </svg>
       </div>
     </div>

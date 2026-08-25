@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 
 /**
- * Footer wordmark: the light SVG mark (green blip included, never cropped),
+ * Footer wordmark: the light SVG mark (violet blip included, never cropped),
  * rising out of an overflow mask when the footer enters. Reduced motion
  * collapses to a 0.3s fade.
  */

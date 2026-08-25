@@ -58,7 +58,7 @@ export default function Algorithm() {
       className={styles.section}
       aria-labelledby="algorithm-heading"
     >
-      <Pulse color="var(--violet)" />
+      <Pulse color="var(--cyan)" />
       <div className={`container ${styles.inner}`}>
         <h2
           ref={headingRef}

@@ -39,7 +39,12 @@ export default function Problem() {
       className={styles.section}
       aria-labelledby="problem-heading"
     >
-      <Pulse color="var(--coral)" />
+      {/* The brand, not a role colour. This section is "the industry isn't
+          broken, it was built this way", addressed to all four audiences in
+          collective first person, so it is RAAYDR speaking rather than any one
+          audience being spoken to. Coral never fitted here: it was borrowing an
+          audience's voice for a line that belongs to everyone. */}
+      <Pulse color="var(--brand)" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/textures/sweep-lines-corner.svg"

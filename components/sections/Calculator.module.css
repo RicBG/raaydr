@@ -1,3 +1,8 @@
+/* The calculator mounts on two grounds: the homepage's deep money section and
+   the cream canvas of the audience pages. Everything violet in here is light
+   or a line, so --brand carries it on both (3.16:1 on cream, 5.29:1 on deep).
+   The one exception is the hook figure, which is read as text, so it takes
+   --calc-accent, set by whichever ground it lands on. */
 .calculator {
   display: grid;
   grid-template-columns: 5fr 7fr;
@@ -81,7 +86,7 @@
   height: 18px;
   margin-top: -7px;
   border-radius: 50%;
-  background: var(--green);
+  background: var(--brand);
   border: 2px solid var(--deep);
   transition: transform 0.15s ease;
 }
@@ -90,7 +95,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--green);
+  background: var(--brand);
   border: 2px solid var(--deep);
 }
 
@@ -155,7 +160,7 @@
 }
 
 .tierSegment:has(input:focus-visible) {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--brand);
   outline-offset: 3px;
 }
 
@@ -217,8 +222,8 @@
 
 .raaydr {
   background-color: color-mix(in srgb, currentColor 4%, transparent);
-  border: 1px solid color-mix(in srgb, var(--green) 40%, transparent);
-  box-shadow: 0 0 90px -24px color-mix(in srgb, var(--green) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand) 40%, transparent);
+  box-shadow: 0 0 90px -24px color-mix(in srgb, var(--brand) 55%, transparent);
 }
 
 .panelName {
@@ -305,15 +310,22 @@
   margin-top: clamp(16px, 2vw, 24px);
   padding: clamp(18px, 2.4vw, 26px) clamp(20px, 2.6vw, 30px);
   border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--green) 40%, transparent);
-  background: color-mix(in srgb, var(--green) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand) 40%, transparent);
+  background: color-mix(in srgb, var(--brand) 7%, transparent);
   font-size: clamp(1.05rem, 1.9vw, 1.35rem);
   font-weight: 500;
   line-height: 1.35;
 }
 
+/* Read as text, not decoration, so it takes the ground-aware value. It was
+   green at 1.82:1 on the cream of /artists, which is the two figures this
+   whole section exists to show. --brand-deep there is 6.68:1.
+   The dark-ground default is the fallback here rather than a declaration on
+   .calculator, because a custom property set on the element itself beats one
+   inherited from an ancestor: declaring it up there would have silently shut
+   .calcSection out of ever overriding it. */
 .hookFigure {
-  color: var(--green);
+  color: var(--calc-accent, var(--brand));
   font-weight: 700;
 }
 

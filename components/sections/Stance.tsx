@@ -49,7 +49,7 @@ export default function Stance() {
       aria-labelledby="stance-heading"
     >
       <div ref={darkRef} className={styles.darkLayer} aria-hidden="true" />
-      <Pulse color="var(--violet)" />
+      <Pulse color="var(--cyan)" />
       <div ref={innerRef} className={`container ${styles.inner}`}>
         <h2
           ref={statementRef}

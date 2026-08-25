@@ -129,13 +129,16 @@ void main(){
 }
 `;
 
-export type RaaydrAudience = 'artists' | 'songwriters' | 'producers' | 'tastemakers' | 'listeners';
+// Four audiences, matching the four role colours. 'songwriters' was removed in
+// v1.4: producers and songwriters are one audience on one colour, and nothing
+// ever passed 'songwriters' anyway, so the union was promising a role no call
+// site could render. Its halo asset went with it.
+export type RaaydrAudience = 'artists' | 'producers' | 'tastemakers' | 'listeners';
 
 /** RAAYDR's locked spectrum colours, in [r,g,b] 0-1 form for the shader. */
 const AUDIENCE_COLORS: Record<RaaydrAudience, { primary: [number, number, number]; secondary: [number, number, number]; accent: [number, number, number] }> = {
   artists: { primary: [245 / 255, 166 / 255, 35 / 255], secondary: [245 / 255, 166 / 255, 35 / 255], accent: [1, 0.85, 0.5] }, // amber
-  songwriters: { primary: [255 / 255, 122 / 255, 107 / 255], secondary: [255 / 255, 122 / 255, 107 / 255], accent: [1, 0.75, 0.7] }, // coral
-  producers: { primary: [139 / 255, 124 / 255, 246 / 255], secondary: [139 / 255, 124 / 255, 246 / 255], accent: [0.8, 0.75, 1] }, // violet
+  producers: { primary: [63 / 255, 200 / 255, 214 / 255], secondary: [63 / 255, 200 / 255, 214 / 255], accent: [0.72, 0.95, 1] }, // cyan
   // Was RGB(199,125,255) — a purple/lavender, not the site's actual --orchid
   // token (#E585AC = RGB(229,133,172)). Its accent was also blue-leaning
   // ([0.9,0.7,1], blue channel highest), so high-luminance areas read as

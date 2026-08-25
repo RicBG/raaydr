@@ -12,7 +12,9 @@ import styles from "./WhereYourMoneyGoes.module.css";
 
 // Where a listener's subscription goes. Percentages only, no pound figures.
 // Each segment carries the palette colour of whoever it pays: artists amber,
-// RAAYDR its own green, tastemakers orchid, and the deductions coral.
+// RAAYDR its own green, tastemakers orchid. The deductions are not an audience
+// and no longer borrow one: they take --deduction, a neutral, because money
+// leaving the system should read as absence rather than as somebody's colour.
 // The tier list, its order and its labels are shared with the calculators.
 
 export default function WhereYourMoneyGoes() {
@@ -52,7 +54,7 @@ export default function WhereYourMoneyGoes() {
         name: "Tax, publishing royalties, card fees",
         label: `${Math.round(costsPct)}%`,
         width: costsPct,
-        shade: "var(--coral)",
+        shade: "var(--deduction)",
       },
     ];
   }, [tier]);

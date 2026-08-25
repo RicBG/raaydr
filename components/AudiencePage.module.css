@@ -134,7 +134,11 @@
   text-wrap: balance;
 }
 
+/* The audience pages put the calculators on cream, where violet-as-text needs
+   the deeper value. The homepage mount keeps the default (see Calculator). */
 .calcSection {
+  --calc-accent: var(--brand-deep);
+
   padding: clamp(40px, 6vw, 80px) 0;
   border-top: 1px solid var(--stone);
 }
