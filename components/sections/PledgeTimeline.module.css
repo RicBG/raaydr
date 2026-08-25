@@ -26,11 +26,17 @@
    so this is a deliberate, signed off exception for one section: the whole
    point of the moment is that it is loud.
 
-   Type goes dark rather than light. White on a flat accent is nowhere near
-   legible (1.9:1 on amber), while --ink lands 5.23:1 on violet, the darkest of
-   the four, and 8.93:1 on green, so one ink colour covers all four panels and
-   the colour can stay at full strength. This is also what the original layout
-   did, pairing #ff4433 with #151515 rather than white. */
+   Type goes dark rather than light, and this is the one place on the site
+   that still pairs near-black with a flat colour: the panels carry role
+   colours, not the brand violet, so the white-on-violet rule does not reach
+   them. White on a flat accent is nowhere near legible (1.9:1 on amber),
+   while --ink lands 7.18:1 on orchid, now the darkest of the four, and
+   9.05:1 on cyan, so one ink colour covers all four panels and the colour can
+   stay at full strength. This is also what the original layout did, pairing
+   #ff4433 with #151515 rather than white.
+   Re-measured when producers moved off violet: the old violet panel was the
+   tight one at 5.23:1, and cyan replacing it lifted the floor to orchid's
+   7.18:1. */
 .panel {
   position: relative;
   background: var(--accent);
@@ -88,8 +94,10 @@
 .body {
   font-size: clamp(1rem, 1.5vw, 1.2rem);
   line-height: 1.55;
-  /* 92%, not less: on violet, the darkest of the four accents, 84% put body
-     copy at 4.26:1, under the 4.5:1 it needs. 92% clears it on all four. */
+  /* 92% dates from the violet panel, where 84% put body copy at 4.26:1,
+     under the 4.5:1 it needs. Cyan replaced violet and the floor is now
+     orchid at 6.39:1, so 92% clears all four with room to spare. Left at 92%
+     because the panels should match, not because it is still the limit. */
   color: color-mix(in srgb, var(--ink) 92%, transparent);
 }
 

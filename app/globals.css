@@ -52,12 +52,32 @@
   --deep: #121216; /* the dark money section */
   --deep-ink: #f2f4f7; /* type on dark */
 
-  /* the spectrum: only ever used blurred, in ring, halo, pulse */
+  /* The brand, and the only flat accent on the site. Not a role colour: it
+     belongs to no audience, which is the point of it. Ruled 25 Aug 2026,
+     replacing Signal Green, which was doing this job and the listeners' job
+     at the same time.
+     Two values because one violet cannot do both jobs at the contrast the
+     site needs. --brand is violet as LIGHT and as a LINE: the blip, the glow
+     under a button, the focus ring, the link underline. It clears 3:1 against
+     canvas (3.16) and against every dark ground here (5.15 to 5.73), so it is
+     the only value that is safe on both. --brand-deep is violet as a FILL
+     that carries white type: white on it is 7.47:1, where white on --brand is
+     3.53:1 and fails AA. It is --act-lo in the platform tokens file, kept at
+     the same value so the two sources stay portable.
+     White type on violet, never near-black. The opposite of the old green
+     rule. */
+  --brand: #9b6bff;
+  --brand-deep: #5a2fd6;
+  --on-brand: #ffffff;
+
+  /* the spectrum: role colours, only ever used blurred, in ring, halo, pulse.
+     None of these is the action colour. See --brand above. */
   --coral: #ef6351;
   --amber: #eba83a;
-  --green: #3bce7b; /* also the single action colour */
+  --green: #3bce7b; /* the listeners' role colour, and nothing else */
   --orchid: #e585ac;
-  --violet: #8c7ae6;
+  --cyan: #3fc8d6; /* the producers' role colour. Was violet #8c7ae6, which
+                      now sits too close to --brand to stay a role colour. */
 
   --font-display: "Clash Display", "General Sans", sans-serif;
   --font-body: "General Sans", -apple-system, sans-serif;
@@ -132,12 +152,16 @@ select {
 }
 
 ::selection {
-  background: var(--green);
-  color: var(--ink);
+  background: var(--brand-deep);
+  color: var(--on-brand);
 }
 
+/* --brand, not --brand-deep: the ring has to be visible on the cream canvas
+   AND on the dark sections, and --brand is the only one of the two that clears
+   3:1 on both. It is also a straight improvement on the green it replaces,
+   which was 1.82:1 against canvas. */
 :focus-visible {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--brand);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -230,7 +254,7 @@ h3 {
 }
 
 
-/* ---------- Actions: the only flat use of a spectrum colour ---------- */
+/* ---------- Actions: the only flat colour on the site, and it is --brand ---------- */
 
 .btn {
   display: inline-flex;
@@ -241,8 +265,8 @@ h3 {
   font-weight: 500;
   font-size: 16px;
   line-height: 1;
-  color: var(--ink);
-  background: var(--green);
+  color: var(--on-brand);
+  background: var(--brand-deep);
   border-radius: 999px;
   padding: 1em 1.75em;
   /* No will-change: this is a 2px hover lift on a pointer device, and the hint
@@ -256,7 +280,7 @@ h3 {
 
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px -8px color-mix(in srgb, var(--green) 55%, transparent);
+  box-shadow: 0 10px 30px -8px color-mix(in srgb, var(--brand) 55%, transparent);
 }
 
 .btn:active {
@@ -266,7 +290,7 @@ h3 {
 /* Underline sweep for inline links */
 .link-sweep {
   position: relative;
-  background-image: linear-gradient(var(--green), var(--green));
+  background-image: linear-gradient(var(--brand), var(--brand));
   background-repeat: no-repeat;
   background-position: left 100%;
   background-size: 0% 2px;
@@ -456,7 +480,7 @@ html[data-booting="1"] {
   background:
     radial-gradient(circle at 34% 30%, color-mix(in oklab, var(--amber) 34%, transparent) 0%, transparent 62%),
     radial-gradient(circle at 70% 70%, color-mix(in oklab, var(--orchid) 34%, transparent) 0%, transparent 64%),
-    radial-gradient(circle closest-side, color-mix(in oklab, var(--violet) 22%, transparent) 0%, transparent 78%);
+    radial-gradient(circle closest-side, color-mix(in oklab, var(--cyan) 22%, transparent) 0%, transparent 78%);
   -webkit-mask-image: radial-gradient(circle closest-side, #000 78%, transparent 100%);
   mask-image: radial-gradient(circle closest-side, #000 78%, transparent 100%);
   /* Breathes, so a long wait on a slow connection reads as the page working

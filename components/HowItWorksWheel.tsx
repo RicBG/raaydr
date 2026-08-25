@@ -112,7 +112,7 @@ const RAAYDR_STEPS: HowItWorksStep[] = [
     titleLine1: 'Everyone',
     titleLine2: 'earns.',
     description: 'Artists, producers, songwriters and tastemakers all get paid. Automatically. Traceably. Every month.',
-    accentColor: '#8B7CF6' // violet — producers/songwriters, standing in for "everyone"
+    accentColor: '#3FC8D6' // cyan — producers/songwriters, standing in for "everyone"
   }
 ];
 

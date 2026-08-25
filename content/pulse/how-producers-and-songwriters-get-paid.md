@@ -5,7 +5,7 @@ description: "Producers and songwriters are paid through upfront fees, royalty s
 datePublished: "2026-03-21"
 dateUpdated: "2026-03-21"
 author: "Ric, Founder of RAAYDR"
-accent: "violet"
+accent: "cyan"
 readingTime: "6 min read"
 heroImage: "/pulse/images/how-producers-and-songwriters-get-paid.jpg"
 heroAlt: "A producer's hands on a mixing console fader in near darkness, edged in violet light"

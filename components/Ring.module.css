@@ -19,7 +19,7 @@
     var(--amber),
     var(--green),
     var(--orchid),
-    var(--violet),
+    var(--cyan),
     var(--coral)
   );
   /* 30px at half size = 60px effective after the 2x upscale — the floor of

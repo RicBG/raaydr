@@ -69,8 +69,12 @@
 }
 
 .credits {
-  --role: var(--violet);
-  --role-deep: #17123a;
+  --role: var(--cyan);
+  /* Derived to match the other three, which are the record-hue deep fields
+     from the tokens file. That file has no cyan field yet, so this is the
+     same hue at the same weight: it sits between the green and amber grounds
+     on luminance, so the four cards stay even. */
+  --role-deep: #051d24;
 }
 
 .card {

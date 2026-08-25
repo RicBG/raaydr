@@ -87,7 +87,7 @@
   background:
     radial-gradient(circle at 34% 30%, color-mix(in oklab, var(--amber) 42%, transparent) 0%, transparent 62%),
     radial-gradient(circle at 70% 70%, color-mix(in oklab, var(--orchid) 42%, transparent) 0%, transparent 64%),
-    radial-gradient(circle closest-side, color-mix(in oklab, var(--violet) 26%, transparent) 0%, transparent 78%);
+    radial-gradient(circle closest-side, color-mix(in oklab, var(--cyan) 26%, transparent) 0%, transparent 78%);
   -webkit-mask-image: radial-gradient(circle closest-side, #000 78%, transparent 100%);
   mask-image: radial-gradient(circle closest-side, #000 78%, transparent 100%);
   transition: opacity 0.6s ease;

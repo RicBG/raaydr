@@ -5,7 +5,7 @@ description: "Attention-based payment divides each listener's subscription among
 datePublished: "2026-04-21"
 dateUpdated: "2026-07-30"
 author: "Ric, Founder of RAAYDR"
-accent: "violet"
+accent: "amber"
 readingTime: "5 min read"
 heroImage: "/pulse/images/what-is-attention-based-streaming-payment.jpg"
 heroAlt: "A listener with headphones, eyes closed, face lit by a faint violet glow"

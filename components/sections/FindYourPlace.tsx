@@ -21,7 +21,7 @@ const audiences = [
   },
   {
     name: "The Producer & Songwriter",
-    color: "#8C7AE6",
+    color: "#3FC8D6",
     message:
       "Credited, found, and paid the moment your work plays. The split is built in, not begged for.",
     href: "/producers-songwriters",
