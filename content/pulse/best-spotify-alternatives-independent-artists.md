@@ -5,7 +5,7 @@ description: "Bandcamp for direct sales, SoundCloud for fan-powered royalties, A
 datePublished: "2026-05-21"
 dateUpdated: "2026-05-21"
 author: "Ric, Founder of RAAYDR"
-accent: "coral"
+accent: "amber"
 readingTime: "5 min read"
 heroImage: "/pulse/images/best-spotify-alternatives-independent-artists.jpg"
 heroAlt: "A musician with a guitar case walks out of darkness toward a coral glow"

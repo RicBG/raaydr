@@ -18,11 +18,13 @@ import {
 // content is fully known and trusted, so a tiny hand-rolled parser keeps the
 // section dependency-free and statically generated.
 
-// The five spectrum role colours, by token name: a post's accent resolves
-// straight to var(--<accent>) in PostCard. "violet" was removed when producers
-// moved off #8C7AE6 onto cyan; there is no --violet token to point at any more,
-// so a post carrying it would have rendered an unset custom property.
-export type Accent = "green" | "amber" | "coral" | "cyan" | "orchid";
+// The four spectrum role colours, by token name: a post's accent resolves
+// straight to var(--<accent>) in PostCard, so every member here must be a live
+// token. "violet" went when producers moved off #8C7AE6 onto cyan, and "coral"
+// went when producers and songwriters merged onto that one colour. A post
+// carrying either would render an unset custom property rather than fail, which
+// is why the union is the guard.
+export type Accent = "green" | "amber" | "cyan" | "orchid";
 
 export interface PostMeta {
   title: string;

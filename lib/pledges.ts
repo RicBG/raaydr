@@ -68,11 +68,11 @@ export const PLEDGES: Pledge[] = [
     // Stays green through the violet rebrand. This is a decorative wash, not
     // an action, so it does not follow the accent to violet; and green is
     // still a role colour, just the listeners' one now rather than the
-    // listeners' and the button's at once. Checked against the alternative of
-    // moving it to coral, the one role colour this set does not use: green
-    // holds the four panels 54 apart at their closest (green to cyan), where
-    // coral would pull them to 44 (coral to orchid). Wider than the set
-    // managed before the producers moved, so it stays.
+    // listeners' and the button's at once.
+    // Since v1.4 the spectrum is exactly four colours and this set uses all
+    // four, one per panel, so there is no longer a spare to swap in even if
+    // one were wanted. Closest pair is green to cyan at 54 apart, wider than
+    // the set managed before the producers moved.
     accent: "#3BCE7B", // --green, the listeners' colour
   },
   {

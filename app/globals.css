@@ -70,14 +70,31 @@
   --brand-deep: #5a2fd6;
   --on-brand: #ffffff;
 
-  /* the spectrum: role colours, only ever used blurred, in ring, halo, pulse.
-     None of these is the action colour. See --brand above. */
-  --coral: #ef6351;
-  --amber: #eba83a;
-  --green: #3bce7b; /* the listeners' role colour, and nothing else */
-  --orchid: #e585ac;
-  --cyan: #3fc8d6; /* the producers' role colour. Was violet #8c7ae6, which
-                      now sits too close to --brand to stay a role colour. */
+  /* The spectrum: four role colours, one per audience, only ever used blurred,
+     in ring, halo, pulse. None of these is the action colour. See --brand.
+     Was five until v1.4: producers and songwriters were the same audience
+     everywhere except the guidelines table, so they merged onto cyan and coral
+     was retired. What coral was actually doing is below, under UI state. */
+  --amber: #eba83a; /* artists */
+  --cyan: #3fc8d6; /* producers and songwriters. Was violet #8c7ae6, which now
+                      sits too close to --brand to stay a role colour. */
+  --orchid: #e585ac; /* tastemakers */
+  --green: #3bce7b; /* listeners, and nothing else */
+
+  /* UI state, and deliberately NOT part of the spectrum above. Both of these
+     were --coral, which meant an audience colour was quietly doing two jobs it
+     had no business doing. Retiring coral as a role colour is what surfaced
+     them; neither is a role, so neither follows one.
+
+     --danger keeps coral's exact hex. It suits an error state and it was
+     already being used as one, so this is a rename with no visual change.
+
+     --deduction is money leaving the system: tax, publishing royalties and
+     card fees, in the listeners' breakdown bar. It should read as absence
+     rather than as a colour with an opinion, so it is ink at low alpha, not a
+     hue. Ink and not bone because that bar sits on --canvas, not on --deep. */
+  --danger: #ef6351;
+  --deduction: color-mix(in srgb, var(--ink) 18%, transparent);
 
   --font-display: "Clash Display", "General Sans", sans-serif;
   --font-body: "General Sans", -apple-system, sans-serif;

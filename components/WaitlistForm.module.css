@@ -89,7 +89,7 @@
 
 .error {
   font-size: 14px;
-  color: color-mix(in srgb, var(--coral) 80%, var(--ink));
+  color: color-mix(in srgb, var(--danger) 80%, var(--ink));
 }
 
 .success {
@@ -118,7 +118,7 @@
 }
 
 .dark .error {
-  color: var(--coral);
+  color: var(--danger);
 }
 
 /* Role-dependent offer line, sitting directly under the role selector.

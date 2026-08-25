@@ -13,14 +13,17 @@
   width: min(36vw, 400px);
   aspect-ratio: 1;
   border-radius: 50%;
+  /* Four role colours in ascending hue (amber 38, green 146, cyan 186, orchid
+     336), so every transition is a short trip round the wheel and none of them
+     muddies. The first stop is repeated explicitly at 360deg rather than left
+     to the implicit loop close, so the seam is a declared value. */
   background: conic-gradient(
     from 0deg,
-    var(--coral),
-    var(--amber),
-    var(--green),
-    var(--orchid),
-    var(--cyan),
-    var(--coral)
+    var(--amber) 0deg,
+    var(--green) 90deg,
+    var(--cyan) 180deg,
+    var(--orchid) 270deg,
+    var(--amber) 360deg
   );
   /* 30px at half size = 60px effective after the 2x upscale — the floor of
      the spec's 60–100px range, chosen for the Lighthouse budget. */
