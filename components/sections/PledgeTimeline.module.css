@@ -290,7 +290,7 @@
   /* The rail is a scrollable region, so it has to be reachable and operable by
      keyboard, not only by touch. */
   .wrap:not([data-mode="timeline"]) .frame:focus-visible {
-    outline: 2px solid var(--green);
+    outline: 2px solid var(--brand);
     outline-offset: -4px;
   }
 

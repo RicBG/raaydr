@@ -54,18 +54,20 @@
 
 .trigger:hover .question,
 .trigger:focus-visible .question {
-  color: var(--green);
+  color: var(--brand);
 }
 
 .trigger:focus-visible {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--brand);
   outline-offset: 4px;
   border-radius: 4px;
 }
 
-/* Active (expanded) question lights up Signal Green. */
+/* Active (expanded) question lights up in the brand violet. This section is
+   always on the ink ground, where --brand is 5.15:1, so it clears AA for the
+   question text as well as for the icon and the ring. */
 .trigger[data-open="true"] .question {
-  color: var(--green);
+  color: var(--brand);
 }
 
 .question {
@@ -77,7 +79,7 @@
   transition: color 0.2s ease;
 }
 
-/* Plus icon that rotates 45deg into a cross when open. Green accent only. */
+/* Plus icon that rotates 45deg into a cross when open. Brand accent only. */
 .icon {
   position: relative;
   flex: none;
@@ -91,7 +93,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  background: var(--green);
+  background: var(--brand);
   border-radius: 2px;
 }
 .icon::before {

@@ -94,7 +94,7 @@ export default function Glyph({ name, size = 48, className }: GlyphProps) {
     return (
       <svg ref={svgRef} {...common} className={className} aria-hidden="true">
         <circle
-          cx="48" cy="48" r="38" stroke="var(--green)" strokeWidth="9"
+          cx="48" cy="48" r="38" stroke="var(--brand)" strokeWidth="9"
           pathLength={100} strokeDasharray="55 45" strokeDashoffset="0"
           strokeLinecap="round" transform="rotate(-90 48 48)"
           data-draw="grow" data-offset="0" data-visible="55"
@@ -118,7 +118,7 @@ export default function Glyph({ name, size = 48, className }: GlyphProps) {
   if (name === "blip") {
     return (
       <svg ref={svgRef} {...common} className={className} aria-hidden="true">
-        <circle cx="48" cy="48" r="7" fill="var(--green)" data-fade="true" />
+        <circle cx="48" cy="48" r="7" fill="var(--brand)" data-fade="true" />
         <circle
           cx="48" cy="48" r="20" stroke="currentColor" strokeWidth="4"
           pathLength={100} strokeDasharray="30 70" strokeDashoffset="-8"
@@ -160,7 +160,7 @@ export default function Glyph({ name, size = 48, className }: GlyphProps) {
         cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="2.5" opacity="0.3"
         pathLength={100} strokeDasharray="100 100" strokeDashoffset="100" data-draw="line"
       />
-      <path d="M48,48 L48,8 A40,40 0 0 1 71.5,80.4 Z" fill="var(--green)" data-fade="true" />
+      <path d="M48,48 L48,8 A40,40 0 0 1 71.5,80.4 Z" fill="var(--brand)" data-fade="true" />
     </svg>
   );
 }

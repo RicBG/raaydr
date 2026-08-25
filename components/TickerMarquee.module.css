@@ -67,15 +67,18 @@
 }
 
 /* The middle band is black, so its text is white. The white bands keep the
-   dark text above. The green "//" stays green on all. */
+   dark text above. The violet "//" is the same on all three. */
 .tickerRow:nth-child(2) .tickerItem {
   color: var(--canvas);
 }
 
-/* Green "//" prefix on each phrase, echoing the site's eyebrow motif. */
+/* Brand "//" prefix on each phrase, echoing the site's eyebrow motif.
+   --brand rather than --brand-deep because these bands run across cream AND
+   across the black middle band, and --brand is the one that clears 3:1 on
+   both. --brand-deep would drop to 2.4:1 on the black. */
 .sep {
   margin-right: 0.4em;
-  color: var(--green);
+  color: var(--brand);
   font-family: var(--font-mono);
   font-weight: 700;
 }
