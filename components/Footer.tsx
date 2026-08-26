@@ -96,10 +96,15 @@ export default function Footer() {
           The three facts a UK company's website has to carry: registered name, company
           number and registered office.
 
-          Read off the Companies House register on 26 August 2026 by `claude-chat` rather
-          than written from memory. `claude-code`, which wrote this file, could not reach
-          that register to check it a second time, so this is one verified source and not
-          two. Anyone changing these figures should read them at the register again.
+          Read off the Companies House register for company 17418893 on 26 August 2026 by
+          `claude-chat`, not written from memory, and the rendered page on a preview
+          deployment was then checked against those figures and matched.
+
+          Be precise about what that is: ONE reading of the register, plus a check that the
+          page reproduces it faithfully. It is not two independent readings. `claude-code`,
+          which wrote this file, can reach neither the register nor a preview URL from its
+          environment. Anyone changing these figures should read them at the register
+          again rather than trusting this file.
 
           The registered office is a service address, which is what a service address is
           for. It is published deliberately.
