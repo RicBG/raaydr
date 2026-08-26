@@ -92,6 +92,22 @@ export default function Footer() {
 
       <div className={`container ${styles.bottom}`}>
         <p className="mono-figure">© 2026 RAAYDR · Released in waves · raaydr.com</p>
+        {/*
+          The three facts a UK company's website has to carry: registered name, company
+          number and registered office.
+
+          Read off the Companies House register on 26 August 2026 by `claude-chat` rather
+          than written from memory. `claude-code`, which wrote this file, could not reach
+          that register to check it a second time, so this is one verified source and not
+          two. Anyone changing these figures should read them at the register again.
+
+          The registered office is a service address, which is what a service address is
+          for. It is published deliberately.
+        */}
+        <p className={styles.registration}>
+          RAAYDR LIMITED is a company registered in England and Wales, company number
+          17418893. Registered office: 66 Paul Street, London, England, EC2A 4NA.
+        </p>
       </div>
     </footer>
   );
