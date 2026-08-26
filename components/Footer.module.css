@@ -65,6 +65,16 @@
   color: color-mix(in srgb, var(--deep-ink) 55%, transparent);
 }
 
+/* Quieter than the copyright line above it and set in the body face rather than the mono
+   one: this is a legal disclosure that has to be present and readable, not a figure. */
+.registration {
+  margin-top: 10px;
+  max-width: 62ch;
+  font-size: 11px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--deep-ink) 42%, transparent);
+}
+
 @media (max-width: 860px) {
   .inner {
     grid-template-columns: 1fr;
