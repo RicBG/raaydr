@@ -57,15 +57,28 @@
      replacing Signal Green, which was doing this job and the listeners' job
      at the same time.
      Two values because one violet cannot do both jobs at the contrast the
-     site needs. --brand is violet as LIGHT and as a LINE: the blip, the glow
-     under a button, the focus ring, the link underline. It clears 3:1 against
+     site needs. --brand is violet as LIGHT and as a LINE: the glow under a
+     button, the focus ring, the link underline. It clears 3:1 against
      canvas (3.16) and against every dark ground here (5.15 to 5.73), so it is
      the only value that is safe on both. --brand-deep is violet as a FILL
      that carries white type: white on it is 7.47:1, where white on --brand is
      3.53:1 and fails AA. It is --act-lo in the platform tokens file, kept at
      the same value so the two sources stay portable.
      White type on violet, never near-black. The opposite of the old green
-     rule. */
+     rule.
+
+     THE WORDMARK BLIP USED TO BE THIS VALUE AND IS NO LONGER, 28 Aug 2026.
+     It was moved to the platform's action violet so that the blip on this
+     site and the mark inside the product are one colour rather than two. That
+     leaves this site with two violets in play: the blip, and --brand on every
+     line and ring. Whether --brand follows the blip is a sitewide accent
+     change and is Ric's to decide, so it is raised rather than taken here.
+     The measurements, if it is taken: the platform violet reads 4.31:1 on
+     canvas, 3.70:1 on stone, 3.88:1 on deep and 3.78:1 on ink, so it clears
+     the same 3:1 bar on every ground this site has, with more headroom on the
+     light ones and less on the dark. White on it is 4.81:1, which passes AA
+     for body type where --brand at 3.53:1 does not, so --brand-deep would
+     have less to do. Nothing here has been changed on the strength of that. */
   --brand: #9b6bff;
   --brand-deep: #5a2fd6;
   --on-brand: #ffffff;
