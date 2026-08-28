@@ -63,12 +63,27 @@ export default function BootScreen() {
               fill="#15151A"
             />
           </g>
-          {/* The blip is part of the mark; never crop it. Violet since 25 Aug
-              2026, and the one hardcoded brand hex the site cannot avoid: this
-              SVG is inlined into the pre-paint curtain, which is on screen
-              before any stylesheet has resolved a custom property. Same value
-              as --brand, and as the blip in the two wordmark files. */}
-          <circle cx="4616" cy="690" r="60" fill="#9B6BFF" />
+          {/* The blip is part of the mark; never crop it. It is the one
+              hardcoded brand hex the site cannot avoid: this SVG is inlined
+              into the pre-paint curtain, which is on screen before any
+              stylesheet has resolved a custom property.
+
+              THIS IS A THIRD COPY OF THE SAME ARTEFACT. The other two are
+              public/logo/raaydr-wordmark-blip-ink.svg and -light.svg, and all
+              three must carry the same value. It is inlined here rather than
+              fetched because a curtain whose one piece of content arrives over
+              the network has a hole in it for the first hop; the cost of that
+              is this duplication, so it is called out rather than left to be
+              discovered.
+
+              IT NO LONGER EQUALS --brand, AND THAT IS DELIBERATE. The value
+              here is the platform's action violet, so the blip a visitor sees
+              in the nav is the same violet as the mark they meet the moment
+              they sign in. --brand is still the lighter violet and still
+              carries the focus ring, the link underline and the ticker.
+              Reconciling the two is a sitewide accent change with measured
+              contrast consequences and is Ric's call, not this change's. */}
+          <circle cx="4616" cy="690" r="60" fill="#7C4DFF" />
         </svg>
       </div>
     </div>

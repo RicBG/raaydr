@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="RAAYDR">
+  <title>RAAYDR</title>
+  <defs>
+    <linearGradient id="raaydrK" gradientUnits="userSpaceOnUse"
+                    x1="12" y1="20" x2="12" y2="4" spreadMethod="reflect">
+      <stop offset="0%"   stop-color="#7C4DFF"/>
+      <stop offset="100%" stop-color="#3FC8D6"/>
+      <animateTransform attributeName="gradientTransform" type="translate"
+        from="0 0" to="0 32" dur="3.2s" repeatCount="indefinite"
+        begin="indefinite" id="raaydrWash"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bar { fill: url(#raaydrK); }
+    .flat .bar { fill: #7C4DFF; }
+  </style>
+  <g>
+    <rect class="bar" x="3"  y="8" width="2" height="8"  rx="1"/>
+    <rect class="bar" x="8"  y="4" width="2" height="16" rx="1"/>
+    <rect class="bar" x="13" y="6" width="2" height="12" rx="1"/>
+    <rect class="bar" x="18" y="9" width="2" height="6"  rx="1"/>
+  </g>
+</svg>
