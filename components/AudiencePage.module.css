@@ -136,6 +136,12 @@
 
 /* The audience pages put the calculators on cream, where violet-as-text needs
    the deeper value. The homepage mount keeps the default (see Calculator). */
+.calcCapture {
+  /* Board row 1075. Sits directly above the calculator, so it takes the
+     calculator's own top spacing and leaves the gap below to .calcSection. */
+  padding: clamp(40px, 6vw, 72px) 0 0;
+}
+
 .calcSection {
   --calc-accent: var(--brand-deep);
 
