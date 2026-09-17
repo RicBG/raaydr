@@ -12,6 +12,19 @@ import type { WaitlistRoleSlug } from "./waitlistRoles";
 export const JOINED_PARAM = "joined";
 export const JOINED_VALUE = "1";
 
+/**
+ * Second flag, set only where an APPLICATION was sent rather than a waitlist
+ * signup. Board row 1030: an artist who applied must not be told "you're in",
+ * because Ric reads every application and some are refused.
+ *
+ * It rides in the query string for the same reason the first flag does — the
+ * confirmation is a modal mounted in the root layout, which has no other way
+ * to know what the person just did. The pre-paint script matches on the first
+ * flag alone, so adding this one cannot affect it.
+ */
+export const APPLIED_PARAM = "applied";
+export const APPLIED_VALUE = "1";
+
 /** Where each role lands after signing up. */
 export const ROLE_SLUG_TO_PAGE: Record<WaitlistRoleSlug, string> = {
   listener: "/for-listeners",
@@ -20,9 +33,12 @@ export const ROLE_SLUG_TO_PAGE: Record<WaitlistRoleSlug, string> = {
   tastemaker: "/tastemakers",
 };
 
-/** The full post-signup destination for a role, flag attached. */
-export function joinedDestination(role: WaitlistRoleSlug): string {
-  return `${ROLE_SLUG_TO_PAGE[role]}?${JOINED_PARAM}=${JOINED_VALUE}`;
+/** The full post-signup destination for a role, flags attached. */
+export function joinedDestination(role: WaitlistRoleSlug, applied = false): string {
+  const flags = applied
+    ? `${JOINED_PARAM}=${JOINED_VALUE}&${APPLIED_PARAM}=${APPLIED_VALUE}`
+    : `${JOINED_PARAM}=${JOINED_VALUE}`;
+  return `${ROLE_SLUG_TO_PAGE[role]}?${flags}`;
 }
 
 /**

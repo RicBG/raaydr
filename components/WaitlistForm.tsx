@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
 import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
 import {
@@ -10,6 +10,12 @@ import {
 import { ANALYTICS_FLUSH_MS, joinedDestination } from "@/lib/joined";
 import { offerFor } from "@/lib/waitlistOffers";
 import { readAttribution } from "@/lib/attribution";
+import {
+  applicationsConfigured,
+  submitArtistApplication,
+} from "@/lib/artistApplication";
+import { looksAutomated } from "@/lib/botCheck";
+import { looksLikeEmail } from "@/lib/email";
 import { effectiveConsent } from "@/lib/consent";
 import {
   getMetaBrowserIds,
@@ -54,15 +60,63 @@ export default function WaitlistForm({
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
   const [artistName, setArtistName] = useState("");
   const [genre, setGenre] = useState("");
+  // Asked only of artists, and only where this deployment can actually send
+  // an application. See `applying` below.
+  const [realName, setRealName] = useState("");
+  const [musicLink, setMusicLink] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const started = useRef(false);
+  /*
+   * When this form became interactive, for the minimum-fill-time check in
+   * lib/botCheck. A ref rather than state, because nothing on the page should
+   * re-render because a clock was read, and stamped in a mount effect rather
+   * than during render, because reading the clock while rendering is impure
+   * and eslint's react-hooks/purity rule rejects it.
+   *
+   * Zero until that effect runs, which reads as an implausibly LARGE elapsed
+   * time rather than a small one. The failure direction matters: a submission
+   * that somehow beats the effect is let through, never silently dropped.
+   */
+  const readyAt = useRef(0);
+  useEffect(() => {
+    readyAt.current = Date.now();
+  }, []);
 
   const label = variant === "hero" ? ctaCopy().primary : ctaCopy().closing;
   const analyticsSource = source ?? "unknown";
   // The name and genre questions are for artists and nobody else. Asking a
   // listener what they release would be a question with no right answer.
   const isArtist = role !== null && ROLE_LABEL_TO_SLUG[role] === "artist";
+
+  /*
+   * APPLYING, NOT JOINING A WAITLIST.
+   *
+   * Ruled by Ric on 14 September 2026 and briefed on board rows 976 and 1002:
+   * from 1 October the artist route is apply and approve. He reads each
+   * application and presses Approve once, which mints a code bound to that
+   * address and emails it.
+   *
+   * So the artist path asks two more questions than a waitlist does: who they
+   * are, and where he can hear them. He cannot decide who gets in from an
+   * email address and a genre.
+   *
+   * GATED ON THE DEPLOYMENT BEING ABLE TO SEND ONE. Without the platform
+   * variables this is a preview build that can collect a waitlist signup and
+   * nothing else, so it asks the old questions rather than asking five and
+   * dropping the answers on the floor.
+   */
+  const applying = isArtist && applicationsConfigured();
+
+  /*
+   * The line under the confirmation title, in the beat before the page is
+   * replaced. Board row 1030: an applicant is told what actually happens next,
+   * which is that somebody reads it and may say no. Everybody else is being
+   * taken to their page, which is all that is happening to them.
+   */
+  const handOffLine = applying
+    ? "We listen to every one, and if it\u2019s a fit you\u2019ll get an invite by email."
+    : "Taking you to your page\u2026";
 
   // Fire waitlist_start once, on the visitor's first interaction with the form,
   // so we can measure started-but-not-completed drop-off.
@@ -88,11 +142,107 @@ export default function WaitlistForm({
     }
 
     const slug = ROLE_LABEL_TO_SLUG[role];
-    // Artists have to say what they are called. Genre stays optional.
+    // Artists have to say what they are called, on both paths.
     const name = artistName.trim();
     if (slug === "artist" && !name) {
       setStatus("error");
       setMessage("Tell us what you release under.");
+      return;
+    }
+
+    /*
+     * ALL FIVE ANSWERS ARE REQUIRED ON AN APPLICATION.
+     *
+     * Ruled by Ric on 17 September 2026, board row 1014, in his own words:
+     * "Those things have to be mandatory so I can actually do some proper
+     * checks." Name, artist or band name, email, genre and a link to the
+     * music. It supersedes every earlier "genre is optional" for this path.
+     *
+     * The database already requires all five. What it does NOT do is say so:
+     * apply_to_raaydr returns silently on any missing one, deliberately, so
+     * that the RPC cannot be used to find out who has already applied. So
+     * every one of the five has to be refused HERE, with its own message, or
+     * the person is dropped believing they applied.
+     *
+     * THE THREE ANSWERS AN APPLICATION REQUIRES THAT A WAITLIST DOES NOT.
+     *
+     * Ric is deciding whether to let this person in, and he cannot do that
+     * without a name to reply to and something to listen to.
+     *
+     * GENRE IS THE THIRD ONE, AND IT IS REQUIRED HERE BECAUSE THE DATABASE
+     * REQUIRES IT. Found by `claude-chat` on board row 1013, correcting its
+     * own row 1010: `apply_to_raaydr` returns silently on a null genre, and
+     * PostgREST answers 204 either way, so an artist who skipped the question
+     * saw the thank-you and was never stored. A real person dropped without
+     * being told is the one class of defect that stops a merge, and the fix
+     * belongs in the form rather than the database: "Other" is already in
+     * WAITLIST_GENRES, so requiring an answer blocks nobody.
+     *
+     * On the WAITLIST path genre stays optional, as it always was. Nothing
+     * there is dropped for want of it.
+     */
+    const person = realName.trim();
+    const link = musicLink.trim();
+    if (applying && !person) {
+      setStatus("error");
+      setMessage("Tell us your name, so we know who we are replying to.");
+      return;
+    }
+    if (applying && !link) {
+      setStatus("error");
+      setMessage("Add a link to your music. It is the part we listen to.");
+      return;
+    }
+    if (applying && !genre) {
+      setStatus("error");
+      setMessage("Pick the genre that fits you closest. Other is fine.");
+      return;
+    }
+    /*
+     * EMAIL, WHICH NOTHING WAS CHECKING ON THIS PATH.
+     *
+     * The input carries `required` and the form carries `noValidate`, so the
+     * browser enforces nothing, and an application with a blank or malformed
+     * address went to the RPC, was dropped silently there, and showed the
+     * thank-you. Exactly the genre defect of row 1013, one field along.
+     *
+     * The WAITLIST path is not affected and is left alone: its own route
+     * rejects a bad address and the visitor already sees a retryable error,
+     * so there is nothing silent to fix there.
+     *
+     * The check is lib/email, which /api/waitlist now imports too, so the
+     * form and the route cannot drift apart about what an address is.
+     */
+    if (applying && !looksLikeEmail(email)) {
+      setStatus("error");
+      setMessage(
+        email
+          ? "Check that email address. It is where the invite would go."
+          : "Add your email address. It is where the invite would go.",
+      );
+      return;
+    }
+
+    /*
+     * THE BOT CHECKS, AND THEY RUN AFTER EVERY OTHER CHECK ON PURPOSE.
+     *
+     * Board row 1013. A caught submission gets the ordinary thank-you and the
+     * ordinary hand-off, and simply stores nothing — so it has to reach this
+     * point having already passed the same validation a person passes, or the
+     * difference in behaviour is itself the tell that tunes the next bot.
+     *
+     * No analytics either. A bot is not a Lead, and a conversion count that
+     * includes them is a published number that has quietly moved.
+     */
+    const honeypot = (
+      form.elements.namedItem(`${id}-company`) as HTMLInputElement
+    ).value;
+    if (looksAutomated({ honeypot, elapsedMs: Date.now() - readyAt.current })) {
+      setStatus("success");
+      setMessage(handOffLine);
+      window.setTimeout(() => {
+        window.location.replace(joinedDestination(slug, applying));
+      }, ANALYTICS_FLUSH_MS);
       return;
     }
     // Shared id + Meta cookies let the server-side Conversions API "Lead" event
@@ -111,6 +261,35 @@ export default function WaitlistForm({
     const attribution = readAttribution();
 
     setStatus("submitting");
+
+    /*
+     * THE APPLICATION GOES FIRST, AND IT IS THE ONE THAT CAN STOP THIS.
+     *
+     * Ruled on board row 1002. The two writes are not equal: the application
+     * is the record Ric reads to decide who gets in, and losing one means a
+     * person is waiting for an answer that will never come. The waitlist write
+     * below carries advertising attribution, which matters and does not matter
+     * as much as that.
+     *
+     * So a failure here is surfaced and the visitor presses the button again.
+     * It is the only error in this form worth showing somebody.
+     */
+    if (applying) {
+      try {
+        await submitArtistApplication({
+          name: person,
+          artistName: name,
+          email,
+          musicLink: link,
+          genre,
+        });
+      } catch {
+        setStatus("error");
+        setMessage("We could not send your application. Please try again.");
+        return;
+      }
+    }
+
     try {
       const res = await fetch("/api/waitlist", {
         method: "POST",
@@ -133,8 +312,34 @@ export default function WaitlistForm({
       if (!res.ok) {
         throw new Error("request-failed");
       }
+    } catch (waitlistError) {
+      /*
+       * A FAILED WAITLIST WRITE IS NOT A FAILED APPLICATION.
+       *
+       * For an applicant this runs AFTER `submitArtistApplication` has already
+       * succeeded, so the thing that decides whether they get in is stored.
+       * Showing an error here would make somebody press the button again over
+       * a lost advertising event, and the second press would send a second
+       * application. It would also be a lie: they have applied.
+       *
+       * So it is swallowed and logged. What is lost is this signup's UTM
+       * attribution and its Meta Lead event, which is a real cost and is why
+       * it is a console warning rather than nothing at all.
+       *
+       * For everyone else the waitlist write is the ONLY write, so a failure
+       * there is still the plain retryable error it has always been.
+       */
+      if (!applying) {
+        setStatus("error");
+        setMessage("Something went wrong. Please try again.");
+        return;
+      }
+      console.warn("waitlist write failed after a stored application", waitlistError);
+    }
+
+    try {
       setStatus("success");
-      setMessage("Taking you to your page\u2026");
+      setMessage(handOffLine);
       // Conversion — fires to GA4 (sign_up) and Meta Pixel (Lead) together.
       // This must happen BEFORE the document is replaced below.
       trackSignup({
@@ -149,19 +354,34 @@ export default function WaitlistForm({
       // history, or Back lands a signed-up visitor back on it to resubmit.
       // The short hold lets the GA4 and Pixel beacons leave first.
       window.setTimeout(() => {
-        window.location.replace(joinedDestination(slug));
+        window.location.replace(joinedDestination(slug, applying));
       }, ANALYTICS_FLUSH_MS);
     } catch {
-      // No technical detail shown — just a plain, retryable error.
-      setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      // Analytics or the hand-off, never the writes: both are already done by
+      // here. Nothing to retry, so the visitor is told they are in rather than
+      // sent round again, and the redirect is taken directly.
+      setStatus("success");
+      setMessage(handOffLine);
+      window.location.replace(joinedDestination(slug, applying));
     }
   }
 
   if (status === "success") {
     return (
       <div className={styles.success} role="status">
-        <p className={styles.successTitle}>You&rsquo;re in.</p>
+        {/*
+         * An artist who APPLIED is not "in", and saying so would be the one
+         * lie this flow cannot tell: Ric reads every application and some are
+         * refused. Board row 1030, ruled by Ric on 17 September.
+         *
+         * It follows `applying` rather than the role, like every other piece of
+         * application language in this file. See the note on `applying` above:
+         * where no application can be sent, this is an ordinary waitlist signup
+         * and says so.
+         */}
+        <p className={styles.successTitle}>
+          {applying ? "Application in." : "You\u2019re in."}
+        </p>
         <p>{message}</p>
       </div>
     );
@@ -174,26 +394,12 @@ export default function WaitlistForm({
       onFocusCapture={markStart}
       noValidate
     >
-      <div className={styles.row}>
-        <div className={styles.emailField}>
-          <label htmlFor={`${id}-email`} className={styles.fieldLabel}>
-            Email
-          </label>
-          <input
-            id={`${id}-email`}
-            name={`${id}-email`}
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="you@example.com"
-            className={styles.email}
-          />
-        </div>
-        <button type="submit" className="btn" disabled={status === "submitting"}>
-          {status === "submitting" ? "Joining…" : label}
-        </button>
-      </div>
-
+      {/*
+       * THE ROLE IS THE FIRST QUESTION, above the email. Ruled by Ric on board
+       * row 1030. It is the answer that decides what the rest of the form even
+       * asks, so asking it after the email had the visitor answer a question
+       * whose context had not arrived yet.
+       */}
       <fieldset className={styles.roles}>
         <legend className={styles.fieldLabel} style={{ fontWeight: 700 }}>
           I&rsquo;m joining as
@@ -224,11 +430,82 @@ export default function WaitlistForm({
         </div>
       </fieldset>
 
-      {isArtist && (
-        <div className={styles.artistFields}>
+      {/*
+        * HONEYPOT. Invisible to people and to screen readers, never focusable
+        * by keyboard, and anything in it means the submission is dropped. See
+        * lib/botCheck for the ruling and for what it does and does not stop.
+        *
+        * Positioned off-screen rather than display:none, which the bots worth
+        * catching already skip, and given a name a naive filler recognises.
+        * autoComplete="off" plus a name browsers do not treat as an address
+        * field keeps a password manager from filling it for a real person.
+        */}
+      <input
+        id={`${id}-company`}
+        name={`${id}-company`}
+        type="text"
+        className={styles.honeypot}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        defaultValue=""
+      />
+
+      {applying && (
+        <p className={styles.note}>
+          We listen to every application before sending an invite.
+        </p>
+      )}
+
+      {/*
+       * ONE CONTAINER FOR EVERY QUESTION, AND THE EMAIL NEVER LEAVES IT.
+       *
+       * The order is Ric's, board row 1030: an artist answers their name, what
+       * they release under, their email, their genre and where we can hear
+       * them. Everybody else answers their email and nothing more.
+       *
+       * The email input is UNCONTROLLED — the submit handler reads it off the
+       * form — so moving it between containers when the role changes would
+       * throw away whatever had been typed into it. Keeping it in a fixed slot
+       * of one container means React reuses the same DOM node whatever else
+       * appears around it. Verified in a browser by typing an address, changing
+       * role, and reading it back.
+       *
+       * Two columns from 640px up, and only for an artist: a lone email field
+       * in a two column grid would be a half width box with nothing beside it.
+       * The music link spans both, because it holds the longest value on the
+       * form by some way.
+       */}
+      <div className={`${styles.fields} ${isArtist ? styles.fieldsTwoUp : ""}`}>
+        {applying && (
+          <div className={styles.field}>
+            <label htmlFor={`${id}-real-name`} className={styles.fieldLabel}>
+              Your name
+            </label>
+            <input
+              id={`${id}-real-name`}
+              name={`${id}-real-name`}
+              type="text"
+              required
+              maxLength={120}
+              autoComplete="name"
+              value={realName}
+              onChange={(e) => setRealName(e.target.value)}
+              className={styles.email}
+            />
+          </div>
+        )}
+
+        {isArtist && (
           <div className={styles.field}>
             <label htmlFor={`${id}-artist-name`} className={styles.fieldLabel}>
-              Artist name
+              {/* "Artist or band name", ruled by `claude-chat` on board row 1014
+                  after Ric named bands three times in one sentence: a band
+                  reading "Artist name" hesitates over whether the question is
+                  for them. Same field, same column, longer label — see the
+                  note on .fieldsTwoUp, which this label is deliberately
+                  short enough for. */}
+              Artist or band name
             </label>
             <input
               id={`${id}-artist-name`}
@@ -242,6 +519,24 @@ export default function WaitlistForm({
               className={styles.email}
             />
           </div>
+        )}
+
+        <div className={styles.field}>
+          <label htmlFor={`${id}-email`} className={styles.fieldLabel}>
+            Email
+          </label>
+          <input
+            id={`${id}-email`}
+            name={`${id}-email`}
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="you@example.com"
+            className={styles.email}
+          />
+        </div>
+
+        {isArtist && (
           <div className={styles.field}>
             <label htmlFor={`${id}-genre`} className={styles.fieldLabel}>
               Genre
@@ -249,6 +544,10 @@ export default function WaitlistForm({
             <select
               id={`${id}-genre`}
               name={`${id}-genre`}
+              /* Required on the application path only; see the genre check in
+                 onSubmit. The form carries noValidate, so this is semantics
+                 for assistive technology and the enforcement is there. */
+              required={applying}
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
               className={styles.select}
@@ -261,14 +560,60 @@ export default function WaitlistForm({
               ))}
             </select>
           </div>
-        </div>
-      )}
+        )}
+
+        {applying && (
+          <div className={`${styles.field} ${styles.fieldWide}`}>
+            <label htmlFor={`${id}-music-link`} className={styles.fieldLabel}>
+              Link to your music
+            </label>
+            <input
+              id={`${id}-music-link`}
+              name={`${id}-music-link`}
+              /*
+               * `type="url"` is deliberately NOT used. It refuses anything
+               * without a scheme, so "soundcloud.com/me" is rejected by the
+               * browser with a message the person cannot act on, and that is
+               * how most people write a link. Ric opens whatever arrives.
+               */
+              type="text"
+              required
+              maxLength={500}
+              inputMode="url"
+              autoComplete="off"
+              placeholder="Spotify, SoundCloud, YouTube, anywhere we can hear you"
+              value={musicLink}
+              onChange={(e) => setMusicLink(e.target.value)}
+              className={styles.email}
+            />
+          </div>
+        )}
+      </div>
 
       {showOffer && (
         <p className={styles.offer} aria-live="polite">
           {offerFor(role)}
         </p>
       )}
+
+      {/*
+       * THE BUTTON IS THE LAST THING IN THE FORM, AFTER EVERY QUESTION.
+       *
+       * Ric, 17 September 2026, board row 1028, having filled it in on his
+       * phone: "the CTA, or the submit button, is still under where you put
+       * your email, which kind of doesn't make sense... It needs to maybe go
+       * after the last form field."
+       *
+       * Its LABEL follows the same rule as the rest of the application
+       * language: somebody who is applying is told they are applying.
+       */}
+      <button
+        type="submit"
+        className={`btn ${styles.submit}`}
+        disabled={status === "submitting"}
+      >
+        {status === "submitting" ? "Joining\u2026" : applying ? "Apply to join" : label}
+      </button>
 
       {status === "error" && (
         <p className={styles.error} role="alert">
