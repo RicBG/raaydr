@@ -24,6 +24,9 @@ export default function ArtistsPage() {
       waitlistSource="artists-page"
       faqItems={faqData.artists}
       calculator={<Calculator disclaimer />}
+      /* Board row 1075. Its own source, so `waitlist_signups.source` says which of the
+         two positions on this page an applicant actually used. */
+      calculatorCapture={{ source: "artists-page-calc" }}
       pledges={<Pledges />}
       beat={{
         heading: "You didn't sign up to be a content creator.",

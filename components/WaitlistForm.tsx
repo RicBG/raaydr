@@ -49,6 +49,16 @@ type WaitlistFormProps = {
   showOffer?: boolean;
 };
 
+/**
+ * Has anybody started a waitlist form on this page load yet?
+ *
+ * Module level on purpose, so every instance shares one answer. See `markStart`.
+ * A full navigation reloads the module and resets it, which is what "per page load"
+ * should mean; a client-side route change does not, and that is deliberate too,
+ * because it is still the same visitor in the same session.
+ */
+let pageHasStarted = false;
+
 export default function WaitlistForm({
   variant = "hero",
   defaultRole,
@@ -120,9 +130,22 @@ export default function WaitlistForm({
 
   // Fire waitlist_start once, on the visitor's first interaction with the form,
   // so we can measure started-but-not-completed drop-off.
+  //
+  // THE LATCH IS PER PAGE, NOT PER FORM, and that changed when a second copy of
+  // this form went onto /artists above the calculator (board row 1075). It used
+  // to be a ref, which is per instance: a visitor who touched the upper form,
+  // scrolled on and touched the lower one would have reported TWO starts, and
+  // started-but-not-completed would have counted one person as two. The metric
+  // exists to measure people, so it latches on the page.
+  //
+  // It carries the source of the form they touched FIRST, which is the honest
+  // answer to "where did they engage". Which form they SUBMIT is a separate
+  // event and keeps its own source, and that is the one that answers Ric's
+  // question about which position converts.
   function markStart() {
-    if (started.current) return;
+    if (started.current || pageHasStarted) return;
     started.current = true;
+    pageHasStarted = true;
     trackWaitlistStart(analyticsSource);
   }
 

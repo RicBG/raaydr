@@ -67,6 +67,10 @@ type AudiencePageProps = {
   /** Source tag persisted with the signup so this page's captures can be told
    *  apart in the email tool (e.g. "artists-page"). */
   waitlistSource?: string;
+  /** A second waitlist capture rendered immediately above the calculator, with its own
+   *  analytics source so the two positions can be told apart. Board row 1075; only
+   *  `/artists` sets it today. Omitted entirely when absent, so no other page changes. */
+  calculatorCapture?: { source: string };
   /** An earnings calculator specific to this audience (producer/songwriter
    *  split, tastemaker fund) — rendered between the points and the join
    *  section. Omitted entirely (not just hidden) when a page has none. */
@@ -115,6 +119,7 @@ export default function AudiencePage({
   halo,
   role,
   calculator,
+  calculatorCapture,
   beat,
   pointsNote,
   pledgeNote,
@@ -303,6 +308,37 @@ export default function AudiencePage({
           </div>
         </div>
       </section>
+
+      {/*
+        A SECOND CAPTURE, IMMEDIATELY ABOVE THE CALCULATOR. Board row 1075.
+
+        Ric: *"I want to have it in two places. So leave it where it is now on the artist
+        page and then have another one that is above the, just above the calculator."*
+
+        From 1 October the ads drive artists here, and a form only at the foot of a long
+        page is a long way down for somebody who arrived already intending to apply.
+
+        THE ONE AT `#join` IS UNTOUCHED, and so are the hero and header calls to action,
+        which still point at `#join`. Ric was explicit about the first; the second is a
+        separate decision and has been raised rather than assumed.
+
+        IT CARRIES ITS OWN SOURCE so `waitlist_signups.source` can answer which position
+        actually converts. Without that we would have doubled the surface area and
+        learned nothing, and it is a column Ric reads.
+      */}
+      {calculatorCapture && (
+        <section className={styles.calcCapture}>
+          <div className="container">
+            <div data-reveal>
+              <WaitlistForm
+                variant="closing"
+                defaultRole={role}
+                source={calculatorCapture.source}
+              />
+            </div>
+          </div>
+        </section>
+      )}
 
       {calculator && (
         <section className={styles.calcSection} id="calculator">
