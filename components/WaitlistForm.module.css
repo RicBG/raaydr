@@ -2,6 +2,11 @@
   display: grid;
   gap: 18px;
   max-width: 560px;
+  /* Anchors the off-screen honeypot at the end of this file. Without it the
+     honeypot resolves against whatever positioned ancestor happens to be
+     above the form on that page, and this form is used inside animated
+     blocks. No offsets, so nothing else moves. */
+  position: relative;
 }
 
 .row {
@@ -219,4 +224,21 @@
 .select option {
   background: var(--canvas);
   color: var(--ink);
+}
+
+/* The honeypot input. See the comment on it in WaitlistForm.tsx and the
+   ruling in lib/botCheck.
+
+   Taken out of the page with absolute positioning and clip-path rather than
+   `display: none` or `hidden`, because the bots worth catching skip a field
+   the browser would not render. It still has to be genuinely invisible to a
+   person at every width, so it is pinned to a zero-sized box at the form's
+   own origin and cannot contribute to layout wherever the form is used. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }

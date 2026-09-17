@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
 import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
 import {
@@ -14,6 +14,7 @@ import {
   applicationsConfigured,
   submitArtistApplication,
 } from "@/lib/artistApplication";
+import { looksAutomated } from "@/lib/botCheck";
 import { effectiveConsent } from "@/lib/consent";
 import {
   getMetaBrowserIds,
@@ -65,6 +66,21 @@ export default function WaitlistForm({
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const started = useRef(false);
+  /*
+   * When this form became interactive, for the minimum-fill-time check in
+   * lib/botCheck. A ref rather than state, because nothing on the page should
+   * re-render because a clock was read, and stamped in a mount effect rather
+   * than during render, because reading the clock while rendering is impure
+   * and eslint's react-hooks/purity rule rejects it.
+   *
+   * Zero until that effect runs, which reads as an implausibly LARGE elapsed
+   * time rather than a small one. The failure direction matters: a submission
+   * that somehow beats the effect is let through, never silently dropped.
+   */
+  const readyAt = useRef(0);
+  useEffect(() => {
+    readyAt.current = Date.now();
+  }, []);
 
   const label = variant === "hero" ? ctaCopy().primary : ctaCopy().closing;
   const analyticsSource = source ?? "unknown";
@@ -115,7 +131,7 @@ export default function WaitlistForm({
     }
 
     const slug = ROLE_LABEL_TO_SLUG[role];
-    // Artists have to say what they are called. Genre stays optional.
+    // Artists have to say what they are called, on both paths.
     const name = artistName.trim();
     if (slug === "artist" && !name) {
       setStatus("error");
@@ -124,10 +140,22 @@ export default function WaitlistForm({
     }
 
     /*
-     * The two extra answers an application needs, and they are REQUIRED where
-     * a waitlist genre is not: Ric is deciding whether to let this person in,
-     * and he cannot do that without a name to reply to and something to
-     * listen to. Genre stays optional for the same reason it always was.
+     * THE THREE ANSWERS AN APPLICATION REQUIRES THAT A WAITLIST DOES NOT.
+     *
+     * Ric is deciding whether to let this person in, and he cannot do that
+     * without a name to reply to and something to listen to.
+     *
+     * GENRE IS THE THIRD ONE, AND IT IS REQUIRED HERE BECAUSE THE DATABASE
+     * REQUIRES IT. Found by `claude-chat` on board row 1013, correcting its
+     * own row 1010: `apply_to_raaydr` returns silently on a null genre, and
+     * PostgREST answers 204 either way, so an artist who skipped the question
+     * saw the thank-you and was never stored. A real person dropped without
+     * being told is the one class of defect that stops a merge, and the fix
+     * belongs in the form rather than the database: "Other" is already in
+     * WAITLIST_GENRES, so requiring an answer blocks nobody.
+     *
+     * On the WAITLIST path genre stays optional, as it always was. Nothing
+     * there is dropped for want of it.
      */
     const person = realName.trim();
     const link = musicLink.trim();
@@ -139,6 +167,34 @@ export default function WaitlistForm({
     if (applying && !link) {
       setStatus("error");
       setMessage("Add a link to your music. It is the part we listen to.");
+      return;
+    }
+    if (applying && !genre) {
+      setStatus("error");
+      setMessage("Pick the genre that fits you closest. Other is fine.");
+      return;
+    }
+
+    /*
+     * THE BOT CHECKS, AND THEY RUN AFTER EVERY OTHER CHECK ON PURPOSE.
+     *
+     * Board row 1013. A caught submission gets the ordinary thank-you and the
+     * ordinary hand-off, and simply stores nothing — so it has to reach this
+     * point having already passed the same validation a person passes, or the
+     * difference in behaviour is itself the tell that tunes the next bot.
+     *
+     * No analytics either. A bot is not a Lead, and a conversion count that
+     * includes them is a published number that has quietly moved.
+     */
+    const honeypot = (
+      form.elements.namedItem(`${id}-company`) as HTMLInputElement
+    ).value;
+    if (looksAutomated({ honeypot, elapsedMs: Date.now() - readyAt.current })) {
+      setStatus("success");
+      setMessage("Taking you to your page\u2026");
+      window.setTimeout(() => {
+        window.location.replace(joinedDestination(slug));
+      }, ANALYTICS_FLUSH_MS);
       return;
     }
     // Shared id + Meta cookies let the server-side Conversions API "Lead" event
@@ -298,6 +354,27 @@ export default function WaitlistForm({
         </button>
       </div>
 
+      {/*
+        * HONEYPOT. Invisible to people and to screen readers, never focusable
+        * by keyboard, and anything in it means the submission is dropped. See
+        * lib/botCheck for the ruling and for what it does and does not stop.
+        *
+        * Positioned off-screen rather than display:none, which the bots worth
+        * catching already skip, and given a name a naive filler recognises.
+        * autoComplete="off" plus a name browsers do not treat as an address
+        * field keeps a password manager from filling it for a real person.
+        */}
+      <input
+        id={`${id}-company`}
+        name={`${id}-company`}
+        type="text"
+        className={styles.honeypot}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        defaultValue=""
+      />
+
       <fieldset className={styles.roles}>
         <legend className={styles.fieldLabel} style={{ fontWeight: 700 }}>
           I&rsquo;m joining as
@@ -372,6 +449,10 @@ export default function WaitlistForm({
             <select
               id={`${id}-genre`}
               name={`${id}-genre`}
+              /* Required on the application path only; see the genre check in
+                 onSubmit. The form carries noValidate, so this is semantics
+                 for assistive technology and the enforcement is there. */
+              required={applying}
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
               className={styles.select}
