@@ -10,6 +10,10 @@ import {
 import { ANALYTICS_FLUSH_MS, joinedDestination } from "@/lib/joined";
 import { offerFor } from "@/lib/waitlistOffers";
 import { readAttribution } from "@/lib/attribution";
+import {
+  applicationsConfigured,
+  submitArtistApplication,
+} from "@/lib/artistApplication";
 import { effectiveConsent } from "@/lib/consent";
 import {
   getMetaBrowserIds,
@@ -54,6 +58,10 @@ export default function WaitlistForm({
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
   const [artistName, setArtistName] = useState("");
   const [genre, setGenre] = useState("");
+  // Asked only of artists, and only where this deployment can actually send
+  // an application. See `applying` below.
+  const [realName, setRealName] = useState("");
+  const [musicLink, setMusicLink] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const started = useRef(false);
@@ -63,6 +71,25 @@ export default function WaitlistForm({
   // The name and genre questions are for artists and nobody else. Asking a
   // listener what they release would be a question with no right answer.
   const isArtist = role !== null && ROLE_LABEL_TO_SLUG[role] === "artist";
+
+  /*
+   * APPLYING, NOT JOINING A WAITLIST.
+   *
+   * Ruled by Ric on 14 September 2026 and briefed on board rows 976 and 1002:
+   * from 1 October the artist route is apply and approve. He reads each
+   * application and presses Approve once, which mints a code bound to that
+   * address and emails it.
+   *
+   * So the artist path asks two more questions than a waitlist does: who they
+   * are, and where he can hear them. He cannot decide who gets in from an
+   * email address and a genre.
+   *
+   * GATED ON THE DEPLOYMENT BEING ABLE TO SEND ONE. Without the platform
+   * variables this is a preview build that can collect a waitlist signup and
+   * nothing else, so it asks the old questions rather than asking five and
+   * dropping the answers on the floor.
+   */
+  const applying = isArtist && applicationsConfigured();
 
   // Fire waitlist_start once, on the visitor's first interaction with the form,
   // so we can measure started-but-not-completed drop-off.
@@ -95,6 +122,25 @@ export default function WaitlistForm({
       setMessage("Tell us what you release under.");
       return;
     }
+
+    /*
+     * The two extra answers an application needs, and they are REQUIRED where
+     * a waitlist genre is not: Ric is deciding whether to let this person in,
+     * and he cannot do that without a name to reply to and something to
+     * listen to. Genre stays optional for the same reason it always was.
+     */
+    const person = realName.trim();
+    const link = musicLink.trim();
+    if (applying && !person) {
+      setStatus("error");
+      setMessage("Tell us your name, so we know who we are replying to.");
+      return;
+    }
+    if (applying && !link) {
+      setStatus("error");
+      setMessage("Add a link to your music. It is the part we listen to.");
+      return;
+    }
     // Shared id + Meta cookies let the server-side Conversions API "Lead" event
     // dedupe against, and match better than, the browser Pixel event.
     const eventId = newEventId();
@@ -111,6 +157,35 @@ export default function WaitlistForm({
     const attribution = readAttribution();
 
     setStatus("submitting");
+
+    /*
+     * THE APPLICATION GOES FIRST, AND IT IS THE ONE THAT CAN STOP THIS.
+     *
+     * Ruled on board row 1002. The two writes are not equal: the application
+     * is the record Ric reads to decide who gets in, and losing one means a
+     * person is waiting for an answer that will never come. The waitlist write
+     * below carries advertising attribution, which matters and does not matter
+     * as much as that.
+     *
+     * So a failure here is surfaced and the visitor presses the button again.
+     * It is the only error in this form worth showing somebody.
+     */
+    if (applying) {
+      try {
+        await submitArtistApplication({
+          name: person,
+          artistName: name,
+          email,
+          musicLink: link,
+          genre,
+        });
+      } catch {
+        setStatus("error");
+        setMessage("We could not send your application. Please try again.");
+        return;
+      }
+    }
+
     try {
       const res = await fetch("/api/waitlist", {
         method: "POST",
@@ -133,6 +208,32 @@ export default function WaitlistForm({
       if (!res.ok) {
         throw new Error("request-failed");
       }
+    } catch (waitlistError) {
+      /*
+       * A FAILED WAITLIST WRITE IS NOT A FAILED APPLICATION.
+       *
+       * For an applicant this runs AFTER `submitArtistApplication` has already
+       * succeeded, so the thing that decides whether they get in is stored.
+       * Showing an error here would make somebody press the button again over
+       * a lost advertising event, and the second press would send a second
+       * application. It would also be a lie: they have applied.
+       *
+       * So it is swallowed and logged. What is lost is this signup's UTM
+       * attribution and its Meta Lead event, which is a real cost and is why
+       * it is a console warning rather than nothing at all.
+       *
+       * For everyone else the waitlist write is the ONLY write, so a failure
+       * there is still the plain retryable error it has always been.
+       */
+      if (!applying) {
+        setStatus("error");
+        setMessage("Something went wrong. Please try again.");
+        return;
+      }
+      console.warn("waitlist write failed after a stored application", waitlistError);
+    }
+
+    try {
       setStatus("success");
       setMessage("Taking you to your page\u2026");
       // Conversion — fires to GA4 (sign_up) and Meta Pixel (Lead) together.
@@ -152,9 +253,12 @@ export default function WaitlistForm({
         window.location.replace(joinedDestination(slug));
       }, ANALYTICS_FLUSH_MS);
     } catch {
-      // No technical detail shown — just a plain, retryable error.
-      setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      // Analytics or the hand-off, never the writes: both are already done by
+      // here. Nothing to retry, so the visitor is told they are in rather than
+      // sent round again, and the redirect is taken directly.
+      setStatus("success");
+      setMessage("Taking you to your page\u2026");
+      window.location.replace(joinedDestination(slug));
     }
   }
 
@@ -226,6 +330,25 @@ export default function WaitlistForm({
 
       {isArtist && (
         <div className={styles.artistFields}>
+          {/* Only where an application can actually be sent. See `applying`. */}
+          {applying && (
+            <div className={styles.field}>
+              <label htmlFor={`${id}-real-name`} className={styles.fieldLabel}>
+                Your name
+              </label>
+              <input
+                id={`${id}-real-name`}
+                name={`${id}-real-name`}
+                type="text"
+                required
+                maxLength={120}
+                autoComplete="name"
+                value={realName}
+                onChange={(e) => setRealName(e.target.value)}
+                className={styles.email}
+              />
+            </div>
+          )}
           <div className={styles.field}>
             <label htmlFor={`${id}-artist-name`} className={styles.fieldLabel}>
               Artist name
@@ -261,6 +384,32 @@ export default function WaitlistForm({
               ))}
             </select>
           </div>
+          {applying && (
+            <div className={styles.field}>
+              <label htmlFor={`${id}-music-link`} className={styles.fieldLabel}>
+                Link to your music
+              </label>
+              <input
+                id={`${id}-music-link`}
+                name={`${id}-music-link`}
+                /*
+                 * `type="url"` is deliberately NOT used. It refuses anything
+                 * without a scheme, so "soundcloud.com/me" is rejected by the
+                 * browser with a message the person cannot act on, and that is
+                 * how most people write a link. Ric opens whatever arrives.
+                 */
+                type="text"
+                required
+                maxLength={500}
+                inputMode="url"
+                autoComplete="off"
+                placeholder="Spotify, SoundCloud, YouTube, anywhere we can hear you"
+                value={musicLink}
+                onChange={(e) => setMusicLink(e.target.value)}
+                className={styles.email}
+              />
+            </div>
+          )}
         </div>
       )}
 
