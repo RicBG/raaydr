@@ -9,11 +9,27 @@
   position: relative;
 }
 
+/* Holds the email field alone since the submit button moved to the end of the
+   form (board row 1028). The flex rules are kept rather than unwound because a
+   one-child flex row and a bare grid child lay out identically here, and this
+   is a position change that should not be able to move anything else. */
 .row {
   display: flex;
   gap: 12px;
   align-items: flex-end;
   flex-wrap: wrap;
+}
+
+/* The submit button, now a direct child of the form grid.
+
+   Grid items stretch by default, so without this the button would go full
+   width — a different button from the one that ships today, on a change that
+   is meant to move it and nothing else. `start` gives it the same intrinsic
+   width it has beside the email on a desktop and wrapped below it on a phone.
+   Whether a full-width CTA is better on a phone is a question for the design
+   pass across the form's six placements, not for this. */
+.submit {
+  justify-self: start;
 }
 
 .emailField {

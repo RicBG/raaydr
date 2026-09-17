@@ -387,9 +387,6 @@ export default function WaitlistForm({
             className={styles.email}
           />
         </div>
-        <button type="submit" className="btn" disabled={status === "submitting"}>
-          {status === "submitting" ? "Joining…" : label}
-        </button>
       </div>
 
       {/*
@@ -543,6 +540,36 @@ export default function WaitlistForm({
           {offerFor(role)}
         </p>
       )}
+
+      {/*
+       * THE BUTTON IS THE LAST THING IN THE FORM, AFTER EVERY QUESTION.
+       *
+       * Ric, 17 September 2026, board row 1028, having filled it in on his
+       * phone: "the CTA, or the submit button, is still under where you put
+       * your email, which kind of doesn't make sense... It needs to maybe go
+       * after the last form field."
+       *
+       * It used to sit beside the email input, which was right when email was
+       * the only question. An artist now answers five, and a button above four
+       * of them invites a submit before they have been seen — on a phone, where
+       * the rest is below the fold, that is the likely path rather than an
+       * unlucky one.
+       *
+       * It follows whatever the last field happens to be, which differs by
+       * role, so it is placed by document order rather than by a rule about
+       * which field is last.
+       *
+       * POSITION ONLY. `justify-self: start` keeps it at its own width, which
+       * is the width it has today both beside the email on a desktop and
+       * wrapped below it on a phone. The look is the design pass after this.
+       */}
+      <button
+        type="submit"
+        className={`btn ${styles.submit}`}
+        disabled={status === "submitting"}
+      >
+        {status === "submitting" ? "Joining…" : label}
+      </button>
 
       {status === "error" && (
         <p className={styles.error} role="alert">
