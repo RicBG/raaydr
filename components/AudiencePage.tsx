@@ -17,6 +17,7 @@ const PageSpectraNoise = dynamic(
   () => import("@/components/PageSpectraNoise"),
   { ssr: false }
 );
+import LazyMount from "@/components/LazyMount";
 import HeroCallout from "@/components/HeroCallout";
 import TintedSection, {
   type TintedParagraph,
@@ -181,9 +182,43 @@ export default function AudiencePage({
       className={styles.page}
       style={{ "--halo-color": color } as React.CSSProperties}
     >
+      {/*
+        THE BACKGROUND WAITS FOR THE PAGE TO LOAD BEFORE IT BUILDS ITSELF.
+
+        Board rows 1078 and 1082. `raaydr.com/artists` killed iOS Safari's content
+        process for a real visitor Ric sent the link to, the night before paid ads
+        pointed at that page. That message is nearly always memory.
+
+        Ric ruled what changes and what does not: *"I don't want the functionality to
+        change, because that's the beauty of people landing... We just have to find a way
+        to load them quicker. I don't mind the preload, but when the preload finishes,
+        everything should load, or at least the halo should load... The problem before was
+        everything was trying to load at once and it didn't need to."*
+
+        So nothing here is removed or downgraded. What changes is WHEN this starts.
+
+        Until now this WebGL surface was created during hydration, which put its context
+        creation and shader compilation (on an iPhone, a main-thread stall measured in
+        seconds) alongside the halo film's download, React hydrating, six web fonts and
+        GSAP. All at once, which is the sentence above. `LazyMount` holds it until the
+        `load` event, so the film has finished arriving before the GL context is built.
+        Serial rather than simultaneous, which lowers the peak that was killing the tab.
+
+        `eager` because this layer is `position: fixed` and therefore always in view:
+        an IntersectionObserver has nothing useful to say about it, and waiting for its
+        first callback would only add a round trip. `eager` skips the observer, NOT the
+        load gate, which is the part that matters here.
+
+        `persistent` so LazyMount never tears it down on its own. Teardown here is the
+        `calloutActive` conditional immediately around this block, which is the existing
+        single-context rule: while the Hero Callout's gradient is on screen this is
+        unmounted, so the two are never alive together. That rule is untouched.
+      */}
       {halo && !calloutActive && (
         <div className={styles.noiseBg}>
-          <PageSpectraNoise audience={halo} />
+          <LazyMount eager persistent style={{ position: "absolute", inset: 0 }}>
+            <PageSpectraNoise audience={halo} />
+          </LazyMount>
         </div>
       )}
 
