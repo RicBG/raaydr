@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { JOINED_PARAM, JOINED_VALUE } from "@/lib/joined";
+import { APPLIED_PARAM, APPLIED_VALUE, JOINED_PARAM, JOINED_VALUE } from "@/lib/joined";
 import styles from "./JoinedModal.module.css";
 
 const INSTAGRAM = "https://instagram.com/raaydrmusic";
@@ -20,21 +20,36 @@ const INSTAGRAM = "https://instagram.com/raaydrmusic";
  * mount.
  */
 export default function JoinedModal() {
-  const [open, setOpen] = useState(false);
+  /*
+   * Whether the modal is up, and whether the person APPLIED rather than joined
+   * a waitlist (board row 1030). The modal is mounted once in the root layout
+   * and has no other way to know which happened: the form sets the second flag
+   * on the destination when, and only when, it actually sent an application.
+   *
+   * ONE piece of state holding both, rather than two. They are read from the
+   * same URL in the same breath and always change together, and a second
+   * setState in this effect would be a second cascading render for something
+   * that is one fact.
+   */
+  const [entry, setEntry] = useState({ open: false, applied: false });
+  const { open, applied } = entry;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get(JOINED_PARAM) === JOINED_VALUE) setOpen(true);
+    if (params.get(JOINED_PARAM) === JOINED_VALUE) {
+      setEntry({ open: true, applied: params.get(APPLIED_PARAM) === APPLIED_VALUE });
+    }
   }, []);
 
   const close = useCallback(() => {
-    setOpen(false);
+    setEntry((e) => ({ ...e, open: false }));
     document.documentElement.removeAttribute("data-joined");
     // Drop the flag so a refresh or a shared link does not replay the modal.
     // replaceState, not pushState: this must not add a history entry. GA has
     // already read the flagged URL on the page_view fired at load.
     const url = new URL(window.location.href);
     url.searchParams.delete(JOINED_PARAM);
+    url.searchParams.delete(APPLIED_PARAM);
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   }, []);
 
@@ -74,11 +89,27 @@ export default function JoinedModal() {
           <span aria-hidden="true">&times;</span>
         </button>
 
+        {/*
+         * AN APPLICANT IS NOT "IN" AND IS NOT PROMISED A CODE.
+         *
+         * Ruled by Ric on board row 1030. Ric reads every application and some
+         * are refused, so "You're in" and "We'll email you before launch with
+         * your access code" are both claims this platform cannot keep for
+         * somebody who has just applied.
+         *
+         * The wording says "if it's a fit" rather than "we'll email you either
+         * way", which `claude-chat` corrected itself on before it reached the
+         * code: `admin_decide_artist_application` sends nothing on a rejection
+         * and no rejection email exists, so a promise of one would be a second
+         * thing we do not do.
+         */}
         <p id="joined-title" className={styles.title}>
-          You&rsquo;re in.
+          {applied ? "Application in." : "You\u2019re in."}
         </p>
         <p className={styles.line}>
-          We&rsquo;ll email you before launch with your access code.
+          {applied
+            ? "We listen to every one, and if it\u2019s a fit you\u2019ll get an invite by email."
+            : "We\u2019ll email you before launch with your access code."}
         </p>
         <p className={styles.line}>
           Follow @raaydrmusic for the build in real time.

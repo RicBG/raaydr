@@ -9,33 +9,33 @@
   position: relative;
 }
 
-/* Holds the email field alone since the submit button moved to the end of the
-   form (board row 1028). The flex rules are kept rather than unwound because a
-   one-child flex row and a bare grid child lay out identically here, and this
-   is a position change that should not be able to move anything else. */
-.row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
+/* THE SUBMIT BUTTON.
 
-/* The submit button, now a direct child of the form grid.
+   Full width below 640, ruled by Ric on board row 1030 — a thumb target that
+   spans the column, on the width where the form is one column anyway. From
+   640 up it takes its own width, because a button stretched across a two
+   column form reads as a banner rather than as the end of a sentence.
 
-   Grid items stretch by default, so without this the button would go full
-   width — a different button from the one that ships today, on a change that
-   is meant to move it and nothing else. `start` gives it the same intrinsic
-   width it has beside the email on a desktop and wrapped below it on a phone.
-   Whether a full-width CTA is better on a phone is a question for the design
-   pass across the form's six placements, not for this. */
+   640 is the threshold the fields themselves already change at, so this adds
+   no new breakpoint; it borrows the one where the furniture moves. */
 .submit {
-  justify-self: start;
+  justify-self: stretch;
 }
 
-.emailField {
-  flex: 1 1 240px;
-  display: grid;
-  gap: 8px;
+@media (min-width: 640px) {
+  .submit {
+    justify-self: start;
+  }
+}
+
+/* The line above the questions, shown only where an application can actually
+   be sent. Quieter than a heading on purpose: it is context for what happens
+   after the button, not a section title. */
+.note {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  opacity: 0.75;
 }
 
 .fieldLabel {
@@ -154,27 +154,42 @@
   min-height: 2.5em;
 }
 
-/* The artist-only name and genre fields, between the role pills and the offer
-   line. Stacked by default, two equal columns once there is room.
+/* EVERY QUESTION IN ONE GRID, in the order Ric ruled on board row 1030.
 
-   Equal columns work because the two titles are short and parallel. They did
-   not when the first read "Artist name / band name": at 226px of letterspaced
-   uppercase mono against 49px for "Genre", it filled its own column edge to
-   edge and stopped a few pixels short of the second title, so the two read as
-   one run-on line instead of each sitting over the box it names.
+   One column by default, which is the whole of the mobile answer: at 390px
+   these are five full width boxes read top to bottom.
+
+   TWO COLUMNS FROM 640 UP, AND ONLY FOR AN ARTIST. The modifier matters — a
+   lone email field in a two column grid is a half width box with nothing
+   beside it, which is what every other role would get.
+
+   Equal columns work because the titles are short and parallel. They did not
+   when one read "Artist name / band name": at 226px of letterspaced uppercase
+   mono against 49px for "Genre", it filled its own column edge to edge and
+   stopped a few pixels short of the second title, so the two read as one
+   run-on line instead of each sitting over the box it names. The longest title
+   here is "Artist or band name" at 186px, measured, in a 271px column.
 
    An explicit breakpoint rather than auto-fit. Auto-fit handed out columns
    narrower than the longer title at in-between widths, which wrapped it to a
-   second line and pushed the name input a row below the genre select. */
-.artistFields {
+   second line and pushed one input a row below its neighbour. */
+.fields {
   display: grid;
   gap: 12px 18px;
   grid-template-columns: minmax(0, 1fr);
 }
 
 @media (min-width: 640px) {
-  .artistFields {
+  .fieldsTwoUp {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* The music link holds the longest value on the form by some way, and in the
+     ruled order it is the last of five in a two column grid — so it would
+     otherwise sit alone on its own row at half width, with the space beside it
+     empty. It takes the whole row instead. */
+  .fieldsTwoUp > .fieldWide {
+    grid-column: 1 / -1;
   }
 }
 

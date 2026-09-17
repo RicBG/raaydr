@@ -108,6 +108,16 @@ export default function WaitlistForm({
    */
   const applying = isArtist && applicationsConfigured();
 
+  /*
+   * The line under the confirmation title, in the beat before the page is
+   * replaced. Board row 1030: an applicant is told what actually happens next,
+   * which is that somebody reads it and may say no. Everybody else is being
+   * taken to their page, which is all that is happening to them.
+   */
+  const handOffLine = applying
+    ? "We listen to every one, and if it\u2019s a fit you\u2019ll get an invite by email."
+    : "Taking you to your page\u2026";
+
   // Fire waitlist_start once, on the visitor's first interaction with the form,
   // so we can measure started-but-not-completed drop-off.
   function markStart() {
@@ -229,9 +239,9 @@ export default function WaitlistForm({
     ).value;
     if (looksAutomated({ honeypot, elapsedMs: Date.now() - readyAt.current })) {
       setStatus("success");
-      setMessage("Taking you to your page\u2026");
+      setMessage(handOffLine);
       window.setTimeout(() => {
-        window.location.replace(joinedDestination(slug));
+        window.location.replace(joinedDestination(slug, applying));
       }, ANALYTICS_FLUSH_MS);
       return;
     }
@@ -329,7 +339,7 @@ export default function WaitlistForm({
 
     try {
       setStatus("success");
-      setMessage("Taking you to your page\u2026");
+      setMessage(handOffLine);
       // Conversion — fires to GA4 (sign_up) and Meta Pixel (Lead) together.
       // This must happen BEFORE the document is replaced below.
       trackSignup({
@@ -344,22 +354,34 @@ export default function WaitlistForm({
       // history, or Back lands a signed-up visitor back on it to resubmit.
       // The short hold lets the GA4 and Pixel beacons leave first.
       window.setTimeout(() => {
-        window.location.replace(joinedDestination(slug));
+        window.location.replace(joinedDestination(slug, applying));
       }, ANALYTICS_FLUSH_MS);
     } catch {
       // Analytics or the hand-off, never the writes: both are already done by
       // here. Nothing to retry, so the visitor is told they are in rather than
       // sent round again, and the redirect is taken directly.
       setStatus("success");
-      setMessage("Taking you to your page\u2026");
-      window.location.replace(joinedDestination(slug));
+      setMessage(handOffLine);
+      window.location.replace(joinedDestination(slug, applying));
     }
   }
 
   if (status === "success") {
     return (
       <div className={styles.success} role="status">
-        <p className={styles.successTitle}>You&rsquo;re in.</p>
+        {/*
+         * An artist who APPLIED is not "in", and saying so would be the one
+         * lie this flow cannot tell: Ric reads every application and some are
+         * refused. Board row 1030, ruled by Ric on 17 September.
+         *
+         * It follows `applying` rather than the role, like every other piece of
+         * application language in this file. See the note on `applying` above:
+         * where no application can be sent, this is an ordinary waitlist signup
+         * and says so.
+         */}
+        <p className={styles.successTitle}>
+          {applying ? "Application in." : "You\u2019re in."}
+        </p>
         <p>{message}</p>
       </div>
     );
@@ -372,44 +394,12 @@ export default function WaitlistForm({
       onFocusCapture={markStart}
       noValidate
     >
-      <div className={styles.row}>
-        <div className={styles.emailField}>
-          <label htmlFor={`${id}-email`} className={styles.fieldLabel}>
-            Email
-          </label>
-          <input
-            id={`${id}-email`}
-            name={`${id}-email`}
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="you@example.com"
-            className={styles.email}
-          />
-        </div>
-      </div>
-
       {/*
-        * HONEYPOT. Invisible to people and to screen readers, never focusable
-        * by keyboard, and anything in it means the submission is dropped. See
-        * lib/botCheck for the ruling and for what it does and does not stop.
-        *
-        * Positioned off-screen rather than display:none, which the bots worth
-        * catching already skip, and given a name a naive filler recognises.
-        * autoComplete="off" plus a name browsers do not treat as an address
-        * field keeps a password manager from filling it for a real person.
-        */}
-      <input
-        id={`${id}-company`}
-        name={`${id}-company`}
-        type="text"
-        className={styles.honeypot}
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-        defaultValue=""
-      />
-
+       * THE ROLE IS THE FIRST QUESTION, above the email. Ruled by Ric on board
+       * row 1030. It is the answer that decides what the rest of the form even
+       * asks, so asking it after the email had the visitor answer a question
+       * whose context had not arrived yet.
+       */}
       <fieldset className={styles.roles}>
         <legend className={styles.fieldLabel} style={{ fontWeight: 700 }}>
           I&rsquo;m joining as
@@ -440,34 +430,80 @@ export default function WaitlistForm({
         </div>
       </fieldset>
 
-      {isArtist && (
-        <div className={styles.artistFields}>
-          {/* Only where an application can actually be sent. See `applying`. */}
-          {applying && (
-            <div className={styles.field}>
-              <label htmlFor={`${id}-real-name`} className={styles.fieldLabel}>
-                Your name
-              </label>
-              <input
-                id={`${id}-real-name`}
-                name={`${id}-real-name`}
-                type="text"
-                required
-                maxLength={120}
-                autoComplete="name"
-                value={realName}
-                onChange={(e) => setRealName(e.target.value)}
-                className={styles.email}
-              />
-            </div>
-          )}
+      {/*
+        * HONEYPOT. Invisible to people and to screen readers, never focusable
+        * by keyboard, and anything in it means the submission is dropped. See
+        * lib/botCheck for the ruling and for what it does and does not stop.
+        *
+        * Positioned off-screen rather than display:none, which the bots worth
+        * catching already skip, and given a name a naive filler recognises.
+        * autoComplete="off" plus a name browsers do not treat as an address
+        * field keeps a password manager from filling it for a real person.
+        */}
+      <input
+        id={`${id}-company`}
+        name={`${id}-company`}
+        type="text"
+        className={styles.honeypot}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        defaultValue=""
+      />
+
+      {applying && (
+        <p className={styles.note}>
+          We listen to every application before sending an invite.
+        </p>
+      )}
+
+      {/*
+       * ONE CONTAINER FOR EVERY QUESTION, AND THE EMAIL NEVER LEAVES IT.
+       *
+       * The order is Ric's, board row 1030: an artist answers their name, what
+       * they release under, their email, their genre and where we can hear
+       * them. Everybody else answers their email and nothing more.
+       *
+       * The email input is UNCONTROLLED — the submit handler reads it off the
+       * form — so moving it between containers when the role changes would
+       * throw away whatever had been typed into it. Keeping it in a fixed slot
+       * of one container means React reuses the same DOM node whatever else
+       * appears around it. Verified in a browser by typing an address, changing
+       * role, and reading it back.
+       *
+       * Two columns from 640px up, and only for an artist: a lone email field
+       * in a two column grid would be a half width box with nothing beside it.
+       * The music link spans both, because it holds the longest value on the
+       * form by some way.
+       */}
+      <div className={`${styles.fields} ${isArtist ? styles.fieldsTwoUp : ""}`}>
+        {applying && (
+          <div className={styles.field}>
+            <label htmlFor={`${id}-real-name`} className={styles.fieldLabel}>
+              Your name
+            </label>
+            <input
+              id={`${id}-real-name`}
+              name={`${id}-real-name`}
+              type="text"
+              required
+              maxLength={120}
+              autoComplete="name"
+              value={realName}
+              onChange={(e) => setRealName(e.target.value)}
+              className={styles.email}
+            />
+          </div>
+        )}
+
+        {isArtist && (
           <div className={styles.field}>
             <label htmlFor={`${id}-artist-name`} className={styles.fieldLabel}>
               {/* "Artist or band name", ruled by `claude-chat` on board row 1014
                   after Ric named bands three times in one sentence: a band
                   reading "Artist name" hesitates over whether the question is
                   for them. Same field, same column, longer label — see the
-                  note on .artistFields, which this label is deliberately
+                  note on .fieldsTwoUp, which this label is deliberately
                   short enough for. */}
               Artist or band name
             </label>
@@ -483,6 +519,24 @@ export default function WaitlistForm({
               className={styles.email}
             />
           </div>
+        )}
+
+        <div className={styles.field}>
+          <label htmlFor={`${id}-email`} className={styles.fieldLabel}>
+            Email
+          </label>
+          <input
+            id={`${id}-email`}
+            name={`${id}-email`}
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="you@example.com"
+            className={styles.email}
+          />
+        </div>
+
+        {isArtist && (
           <div className={styles.field}>
             <label htmlFor={`${id}-genre`} className={styles.fieldLabel}>
               Genre
@@ -506,34 +560,35 @@ export default function WaitlistForm({
               ))}
             </select>
           </div>
-          {applying && (
-            <div className={styles.field}>
-              <label htmlFor={`${id}-music-link`} className={styles.fieldLabel}>
-                Link to your music
-              </label>
-              <input
-                id={`${id}-music-link`}
-                name={`${id}-music-link`}
-                /*
-                 * `type="url"` is deliberately NOT used. It refuses anything
-                 * without a scheme, so "soundcloud.com/me" is rejected by the
-                 * browser with a message the person cannot act on, and that is
-                 * how most people write a link. Ric opens whatever arrives.
-                 */
-                type="text"
-                required
-                maxLength={500}
-                inputMode="url"
-                autoComplete="off"
-                placeholder="Spotify, SoundCloud, YouTube, anywhere we can hear you"
-                value={musicLink}
-                onChange={(e) => setMusicLink(e.target.value)}
-                className={styles.email}
-              />
-            </div>
-          )}
-        </div>
-      )}
+        )}
+
+        {applying && (
+          <div className={`${styles.field} ${styles.fieldWide}`}>
+            <label htmlFor={`${id}-music-link`} className={styles.fieldLabel}>
+              Link to your music
+            </label>
+            <input
+              id={`${id}-music-link`}
+              name={`${id}-music-link`}
+              /*
+               * `type="url"` is deliberately NOT used. It refuses anything
+               * without a scheme, so "soundcloud.com/me" is rejected by the
+               * browser with a message the person cannot act on, and that is
+               * how most people write a link. Ric opens whatever arrives.
+               */
+              type="text"
+              required
+              maxLength={500}
+              inputMode="url"
+              autoComplete="off"
+              placeholder="Spotify, SoundCloud, YouTube, anywhere we can hear you"
+              value={musicLink}
+              onChange={(e) => setMusicLink(e.target.value)}
+              className={styles.email}
+            />
+          </div>
+        )}
+      </div>
 
       {showOffer && (
         <p className={styles.offer} aria-live="polite">
@@ -549,26 +604,15 @@ export default function WaitlistForm({
        * your email, which kind of doesn't make sense... It needs to maybe go
        * after the last form field."
        *
-       * It used to sit beside the email input, which was right when email was
-       * the only question. An artist now answers five, and a button above four
-       * of them invites a submit before they have been seen — on a phone, where
-       * the rest is below the fold, that is the likely path rather than an
-       * unlucky one.
-       *
-       * It follows whatever the last field happens to be, which differs by
-       * role, so it is placed by document order rather than by a rule about
-       * which field is last.
-       *
-       * POSITION ONLY. `justify-self: start` keeps it at its own width, which
-       * is the width it has today both beside the email on a desktop and
-       * wrapped below it on a phone. The look is the design pass after this.
+       * Its LABEL follows the same rule as the rest of the application
+       * language: somebody who is applying is told they are applying.
        */}
       <button
         type="submit"
         className={`btn ${styles.submit}`}
         disabled={status === "submitting"}
       >
-        {status === "submitting" ? "Joining…" : label}
+        {status === "submitting" ? "Joining\u2026" : applying ? "Apply to join" : label}
       </button>
 
       {status === "error" && (
