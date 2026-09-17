@@ -15,6 +15,7 @@ import {
   submitArtistApplication,
 } from "@/lib/artistApplication";
 import { looksAutomated } from "@/lib/botCheck";
+import { looksLikeEmail } from "@/lib/email";
 import { effectiveConsent } from "@/lib/consent";
 import {
   getMetaBrowserIds,
@@ -140,6 +141,19 @@ export default function WaitlistForm({
     }
 
     /*
+     * ALL FIVE ANSWERS ARE REQUIRED ON AN APPLICATION.
+     *
+     * Ruled by Ric on 17 September 2026, board row 1014, in his own words:
+     * "Those things have to be mandatory so I can actually do some proper
+     * checks." Name, artist or band name, email, genre and a link to the
+     * music. It supersedes every earlier "genre is optional" for this path.
+     *
+     * The database already requires all five. What it does NOT do is say so:
+     * apply_to_raaydr returns silently on any missing one, deliberately, so
+     * that the RPC cannot be used to find out who has already applied. So
+     * every one of the five has to be refused HERE, with its own message, or
+     * the person is dropped believing they applied.
+     *
      * THE THREE ANSWERS AN APPLICATION REQUIRES THAT A WAITLIST DOES NOT.
      *
      * Ric is deciding whether to let this person in, and he cannot do that
@@ -172,6 +186,30 @@ export default function WaitlistForm({
     if (applying && !genre) {
       setStatus("error");
       setMessage("Pick the genre that fits you closest. Other is fine.");
+      return;
+    }
+    /*
+     * EMAIL, WHICH NOTHING WAS CHECKING ON THIS PATH.
+     *
+     * The input carries `required` and the form carries `noValidate`, so the
+     * browser enforces nothing, and an application with a blank or malformed
+     * address went to the RPC, was dropped silently there, and showed the
+     * thank-you. Exactly the genre defect of row 1013, one field along.
+     *
+     * The WAITLIST path is not affected and is left alone: its own route
+     * rejects a bad address and the visitor already sees a retryable error,
+     * so there is nothing silent to fix there.
+     *
+     * The check is lib/email, which /api/waitlist now imports too, so the
+     * form and the route cannot drift apart about what an address is.
+     */
+    if (applying && !looksLikeEmail(email)) {
+      setStatus("error");
+      setMessage(
+        email
+          ? "Check that email address. It is where the invite would go."
+          : "Add your email address. It is where the invite would go.",
+      );
       return;
     }
 
@@ -428,7 +466,13 @@ export default function WaitlistForm({
           )}
           <div className={styles.field}>
             <label htmlFor={`${id}-artist-name`} className={styles.fieldLabel}>
-              Artist name
+              {/* "Artist or band name", ruled by `claude-chat` on board row 1014
+                  after Ric named bands three times in one sentence: a band
+                  reading "Artist name" hesitates over whether the question is
+                  for them. Same field, same column, longer label — see the
+                  note on .artistFields, which this label is deliberately
+                  short enough for. */}
+              Artist or band name
             </label>
             <input
               id={`${id}-artist-name`}

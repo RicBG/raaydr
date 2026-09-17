@@ -6,12 +6,12 @@ import {
   isWaitlistGenreCode,
 } from "@/lib/waitlistGenres";
 import { sendMetaLead } from "@/lib/metaCapi";
+import { looksLikeEmail } from "@/lib/email";
 
 // Uses env + the service-role Supabase client, so it must run on the Node
 // runtime, never the edge.
 export const runtime = "nodejs";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
  * Waitlist signup endpoint.
@@ -105,7 +105,7 @@ export async function POST(request: Request) {
       : null;
   const genre = typeof body.genre === "string" ? body.genre.trim() : "";
 
-  if (!EMAIL_RE.test(email)) {
+  if (!looksLikeEmail(email)) {
     return NextResponse.json(
       { error: "That doesn't look like an email address." },
       { status: 400 }
