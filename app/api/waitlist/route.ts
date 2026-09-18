@@ -8,6 +8,7 @@ import {
 import { sendMetaLead } from "@/lib/metaCapi";
 import { looksLikeEmail } from "@/lib/email";
 import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
+import { requestAcknowledgement } from "@/lib/signupAcknowledgement";
 
 // Uses env + the service-role Supabase client, so it must run on the Node
 // runtime, never the edge.
@@ -235,6 +236,37 @@ export async function POST(request: Request) {
       { status: 502 }
     );
   }
+
+  /*
+   * THE ACKNOWLEDGEMENT, AND IT RUNS AFTER THE ROW IS SAFE.
+   *
+   * Board rows 1096 and 1127. 169 people joined the waitlist and got nothing
+   * at all; this is the call that fixes that, and the platform sends the email
+   * because it holds the signed-off templates and the warmed sending domain.
+   *
+   * IT IS BELOW THE ERROR RETURN ON PURPOSE. A person who is not in the
+   * database must not be thanked for joining, so this only runs once the
+   * upsert has actually succeeded.
+   *
+   * IT IS AWAITED AND IT CANNOT FAIL THE SIGNUP. `requestAcknowledgement`
+   * resolves either way and never throws; a platform that is slow, down, or
+   * missing the secret costs a log line, not a conversion. Awaited rather than
+   * fired and forgotten because this is a serverless function: a promise left
+   * running after the response is returned may simply be killed, which would
+   * make the email arrive or not depending on how fast the platform answered.
+   *
+   * WHETHER TO SEND AT ALL IS NOT DECIDED HERE. The upsert above is an UPSERT,
+   * so this same call fires for somebody signing up a second time. The
+   * platform holds `signup_acknowledgements` and refuses to thank an address
+   * twice (board row 1141), which is the only place that can know, because it
+   * is also where the backfill was sent from.
+   */
+  await requestAcknowledgement({
+    email,
+    role,
+    name,
+    artistName,
+  });
 
   // Server-side Meta "Lead" conversion. Deduped against the browser Pixel via
   // eventId. Awaited but never allowed to fail the signup — a CAPI error only
