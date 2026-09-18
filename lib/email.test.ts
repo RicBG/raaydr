@@ -103,3 +103,53 @@ describe("a pasted mailto: link", () => {
     expect(normaliseEmail("mailto:")).toBe("");
   });
 });
+
+/*
+ * ============================================================================
+ * THE TRAILING DOT, WHICH THIS FILE ALREADY HAS A SECTION ABOUT
+ * ============================================================================
+ *
+ * Board row 1046 tightened `EMAIL_PATTERN` so `ric+reject@wearebeyondgreatness.co.uk.`
+ * would be refused. Board row 1161 found the row it was refused over still sitting in
+ * `waitlist_signups`, stored the afternoon before, and due to be mailed by the backfill.
+ *
+ * The pattern has not changed and these first two assertions pin that. What changed is
+ * that the dot never reaches it.
+ */
+describe("a trailing dot", () => {
+  const TYPED = "ric+reject@wearebeyondgreatness.co.uk.";
+  const MEANT = "ric+reject@wearebeyondgreatness.co.uk";
+
+  it("is still refused by the pattern, which is row 1046 holding", () => {
+    expect(looksLikeEmail(TYPED)).toBe(false);
+  });
+
+  it("comes off before the pattern is asked, so the signup survives", () => {
+    expect(normaliseEmail(TYPED)).toBe(MEANT);
+    expect(looksLikeEmail(normaliseEmail(TYPED))).toBe(true);
+  });
+
+  /* The shape a paste leaves: a space after the dot, or a dot after the space. */
+  it("comes off through the whitespace that hid it", () => {
+    expect(normaliseEmail("a@b.com . ")).toBe("a@b.com");
+    expect(normaliseEmail("  a@b.com.  ")).toBe("a@b.com");
+    expect(normaliseEmail("mailto:a@b.com.")).toBe("a@b.com");
+  });
+
+  /* A dot INSIDE an address is ordinary and must survive untouched. */
+  it("leaves every other dot alone", () => {
+    expect(normaliseEmail("first.last@mail.example.co.uk")).toBe(
+      "first.last@mail.example.co.uk",
+    );
+  });
+
+  /*
+   * NOTHING ELSE BECAME ACCEPTABLE. The strip is one character class at the end of the
+   * string, so every other shape row 1046 ruled out is still ruled out after it runs.
+   */
+  it("does not quietly widen what the form accepts", () => {
+    for (const bad of ["a@b", "a@b.c", "a@b.123", "a@.b.com", "a@b..com", "a b@c.com"]) {
+      expect(looksLikeEmail(normaliseEmail(bad)), bad).toBe(false);
+    }
+  });
+});

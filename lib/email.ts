@@ -98,6 +98,35 @@ export function looksLikeEmail(value: string): boolean {
  * problem nobody has had is how a normaliser starts rewriting real addresses.
  * If it turns up, it belongs here beside this one.
  */
+/*
+ * ============================================================================
+ * AND A TRAILING DOT IS STRIPPED NOW RATHER THAN REFUSED. Board row 1161.
+ * ============================================================================
+ *
+ * This file already has a long section on `ric+reject@wearebeyondgreatness.co.uk.`,
+ * because that address is why `EMAIL_PATTERN` was tightened on 17 September. What row
+ * 1161 found is that the row is still sitting in `waitlist_signups`, stored on the
+ * afternoon before the fix, and that the backfill would have mailed it.
+ *
+ * **Refusing it was the right answer to the wrong half of the question.** A pattern that
+ * takes `co.uk.` is broken and had to be fixed either way; the pattern is unchanged and
+ * still runs, below, on whatever comes out of here. But refusing the SUBMISSION means a
+ * person who typed their address correctly, and whose keyboard or paste added a dot, is
+ * told their address is wrong. They will read it, see it is right, and try again.
+ *
+ * We know what they meant, exactly as we do with `mailto:`, and the same argument
+ * applies: a signup lost to punctuation is a signup lost. So the dot comes off, and then
+ * the pattern decides. Nothing that was refused before is accepted now except this one
+ * character, and nothing that was stored before is rewritten.
+ *
+ * Trailing whitespace goes with it, and the order matters: `"a@b.com . "` has to lose
+ * the space, then the dot, then the space again, which is why it is one character class
+ * repeated rather than two separate strips.
+ */
 export function normaliseEmail(value: string): string {
-  return value.trim().replace(/^mailto:/i, "").trim();
+  return value
+    .trim()
+    .replace(/^mailto:/i, "")
+    .replace(/[\s.]+$/, "")
+    .trim();
 }
