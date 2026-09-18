@@ -8,7 +8,10 @@ import {
 import { sendMetaLead } from "@/lib/metaCapi";
 import { looksLikeEmail } from "@/lib/email";
 import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
-import { requestAcknowledgement } from "@/lib/signupAcknowledgement";
+import {
+  requestAcknowledgement,
+  requestApplicationAlert,
+} from "@/lib/signupAcknowledgement";
 
 // Uses env + the service-role Supabase client, so it must run on the Node
 // runtime, never the edge.
@@ -39,6 +42,8 @@ export async function POST(request: Request) {
     name?: unknown;
     artist_name?: unknown;
     genre?: unknown;
+    applied?: unknown;
+    musicLink?: unknown;
     eventId?: unknown;
     fbp?: unknown;
     fbc?: unknown;
@@ -130,6 +135,29 @@ export async function POST(request: Request) {
   const name =
     typeof body.name === "string" && body.name.trim()
       ? body.name.trim().slice(0, NAME_MAX_LENGTH)
+      : null;
+
+  /*
+   * WHETHER AN APPLICATION WAS ACTUALLY STORED, and the link to the music.
+   *
+   * Board rows 1097 and 1148. Neither is written to `waitlist_signups`:
+   * `applied` decides whether Ric is told, and `musicLink` is one of the five
+   * answers his alert carries. The application row on the platform is the
+   * record of both.
+   *
+   * `applied` is a claim from the browser and is treated as one. It is only
+   * ever believed in the direction that sends an email to us, never in a
+   * direction that changes what is stored, and the endpoint it reaches is
+   * behind the shared secret. Absent means no, as with `consent` above.
+   *
+   * The link is capped like everything else here. 2048 is the length beyond
+   * which a URL stops being reliably usable anyway, and this one is going into
+   * an email.
+   */
+  const applied = body.applied === true;
+  const musicLink =
+    typeof body.musicLink === "string" && body.musicLink.trim()
+      ? body.musicLink.trim().slice(0, 2048)
       : null;
 
   if (!looksLikeEmail(email)) {
@@ -267,6 +295,36 @@ export async function POST(request: Request) {
     name,
     artistName,
   });
+
+  /*
+   * AND TELL RIC, IF THIS WAS AN APPLICATION.
+   *
+   * Board rows 1097 and 1148. He had no way of knowing an application existed
+   * unless he opened the admin page and looked.
+   *
+   * GATED ON `applied`, NOT ON THE ROLE, and the two are not the same
+   * question. When the platform variables are missing from a deployment the
+   * artist form collects a plain waitlist signup and never calls
+   * `apply_to_raaydr` at all — a preview build does exactly that. Alerting on
+   * `role === "artist"` would send Ric to read an application that is not
+   * there.
+   *
+   * The music link is passed through and never stored: this project has no
+   * column for it, and the application row on the platform is already the
+   * record.
+   *
+   * Best effort, like the call above, and separately so that one failing
+   * cannot take the other with it.
+   */
+  if (applied) {
+    await requestApplicationAlert({
+      email,
+      name,
+      artistName,
+      musicLink,
+      genre: genre || null,
+    });
+  }
 
   // Server-side Meta "Lead" conversion. Deduped against the browser Pixel via
   // eventId. Awaited but never allowed to fail the signup — a CAPI error only

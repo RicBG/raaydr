@@ -108,6 +108,74 @@ describe("the call cannot break a signup", () => {
   });
 });
 
+/*
+ * ===========================================================================
+ * THE ALERT IS GATED ON A STORED APPLICATION, NOT ON THE ROLE
+ * ===========================================================================
+ *
+ * Board rows 1097 and 1148. `role === "artist"` and "an application exists"
+ * are different questions, and the gap between them is a real deployment
+ * rather than a hypothetical: when the platform variables are missing,
+ * `applicationsConfigured()` is false and the artist form collects a plain
+ * waitlist signup without ever calling `apply_to_raaydr`. A preview build does
+ * exactly this.
+ *
+ * Alerting on the role there would send Ric to read an application that was
+ * never written, which is worse than not telling him: he would go and look,
+ * find nothing, and trust the next alert less.
+ *
+ * Read from the source, because what has to be true is which value the gate
+ * tests. A test that called the route would need the platform, and would pass
+ * against a gate reading either field.
+ */
+describe("who the application alert is sent for", () => {
+  const ROUTE = readFileSync(
+    join(import.meta.dirname, "../app/api/waitlist/route.ts"),
+    "utf8"
+  );
+  const FORM = readFileSync(
+    join(import.meta.dirname, "../components/WaitlistForm.tsx"),
+    "utf8"
+  );
+
+  it("gates on the stored application, never on the role", () => {
+    expect(ROUTE).toContain("if (applied) {");
+    expect(ROUTE).toContain("const applied = body.applied === true;");
+    /* The one thing that must not appear: a role test deciding this. */
+    expect(ROUTE).not.toMatch(/if \(\s*role === ["']artist["']\s*\)[\s\S]{0,120}requestApplicationAlert/);
+  });
+
+  it("only claims an application once the write has actually returned", () => {
+    /* Set after the await, inside the try, so a throw leaves it false. */
+    const block = FORM.slice(FORM.indexOf("let applicationStored = false;"));
+    const set = block.indexOf("applicationStored = true;");
+    const submit = block.indexOf("await submitArtistApplication({");
+    const caught = block.indexOf("} catch {");
+    expect(submit).toBeGreaterThan(-1);
+    expect(set).toBeGreaterThan(submit);
+    expect(set).toBeLessThan(caught);
+  });
+
+  it("sends the flag and the link together, or neither", () => {
+    expect(FORM).toContain(
+      "...(applicationStored ? { applied: true, musicLink: link } : {})"
+    );
+  });
+
+  /*
+   * The link is one of the five answers the alert carries and this project has
+   * no column for it. It must reach the route and stop there: a second copy of
+   * somebody's music link on a second database is a second thing to keep right
+   * and a second thing to delete when they ask.
+   */
+  it("never writes the music link to the waitlist row", () => {
+    const upsert = ROUTE.slice(ROUTE.indexOf("const core = {"), ROUTE.indexOf("let { error }"));
+    expect(upsert).not.toContain("musicLink");
+    expect(upsert).not.toContain("music_link");
+    expect(ROUTE).not.toContain("p_music_link");
+  });
+});
+
 /**
  * The text inside each `console.something(...)` call, by balancing brackets.
  *

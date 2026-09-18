@@ -66,19 +66,62 @@ export const PLATFORM_ROLE: Record<WaitlistRoleSlug, PlatformRole> = {
 /** What the platform expects the shared secret in. Board row 1131. */
 export const SECRET_HEADER = "x-raaydr-signup-secret";
 
-function endpoint(): { url: string; secret: string } | null {
+function endpoint(path: string): { url: string; secret: string } | null {
   const base = process.env.PLATFORM_APP_URL?.trim();
   const secret = process.env.SIGNUP_NOTIFY_SECRET?.trim();
   if (!base || !secret) return null;
-  return {
-    url: `${base.replace(/\/+$/, "")}/api/signup-acknowledgement`,
-    secret,
-  };
+  return { url: `${base.replace(/\/+$/, "")}${path}`, secret };
 }
 
-/** Whether this deployment can ask for acknowledgements at all. */
+/**
+ * One POST to the platform, with the secret, that cannot throw.
+ *
+ * Shared by both calls below rather than written twice, because the half that
+ * matters is the `catch`: a signup must survive the platform being slow, down
+ * or unconfigured, and a second copy of this is the copy that one day rethrows.
+ */
+async function tell(
+  path: string,
+  what: string,
+  payload: Record<string, unknown>,
+): Promise<void> {
+  const config = endpoint(path);
+  if (!config) {
+    console.warn(
+      `[${what}] PLATFORM_APP_URL or SIGNUP_NOTIFY_SECRET not set: signup saved, platform not told`,
+    );
+    return;
+  }
+
+  try {
+    const response = await fetch(config.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        [SECRET_HEADER]: config.secret,
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      // The status and nothing else. The platform's refusal body says nothing
+      // by design, and there is no detail here worth carrying into a log.
+      console.error(`[${what}] platform refused: ${response.status}`);
+    }
+  } catch (error) {
+    console.error(
+      `[${what}] could not reach the platform: ${(error as Error).message}`,
+    );
+  }
+}
+
+/**
+ * Whether this deployment can tell the platform anything at all.
+ *
+ * Both calls need the same two variables, so there is one answer rather than
+ * one per endpoint.
+ */
 export function acknowledgementsConfigured(): boolean {
-  return endpoint() !== null;
+  return endpoint("/api/signup-acknowledgement") !== null;
 }
 
 /**
@@ -98,36 +141,53 @@ export async function requestAcknowledgement(signup: {
   name: string | null;
   artistName: string | null;
 }): Promise<void> {
-  const config = endpoint();
-  if (!config) {
-    console.warn(
-      "[acknowledgement] PLATFORM_APP_URL or SIGNUP_NOTIFY_SECRET not set: signup saved, no email requested",
-    );
-    return;
-  }
+  return tell("/api/signup-acknowledgement", "acknowledgement", {
+    email: signup.email,
+    role: PLATFORM_ROLE[signup.role],
+    name: signup.name,
+    artistName: signup.artistName,
+  });
+}
 
-  try {
-    const response = await fetch(config.url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        [SECRET_HEADER]: config.secret,
-      },
-      body: JSON.stringify({
-        email: signup.email,
-        role: PLATFORM_ROLE[signup.role],
-        name: signup.name,
-        artistName: signup.artistName,
-      }),
-    });
-    if (!response.ok) {
-      // The status and nothing else. The platform's refusal body says nothing
-      // by design, and there is no detail here worth carrying into a log.
-      console.error(`[acknowledgement] platform refused: ${response.status}`);
-    }
-  } catch (error) {
-    console.error(
-      `[acknowledgement] could not reach the platform: ${(error as Error).message}`,
-    );
-  }
+/**
+ * Tell the platform an artist has applied, so Ric hears about it.
+ *
+ * Board rows 1097 and 1148. He had no way of knowing an application existed
+ * unless he opened the admin page, and from 1 October there is paid
+ * advertising pointing at that form.
+ *
+ * ===========================================================================
+ * ONLY WHEN AN APPLICATION WAS ACTUALLY STORED
+ * ===========================================================================
+ *
+ * `role === "artist"` is NOT the same question. When the platform variables
+ * are missing from a deployment, `applicationsConfigured()` is false and the
+ * artist form collects a plain waitlist signup without ever calling
+ * `apply_to_raaydr` — a preview build does exactly this. Alerting on the role
+ * would tell Ric to go and read an application that is not there.
+ *
+ * So the browser says whether the application write succeeded, and this only
+ * runs when it did. That is a claim from the client, which is worth naming:
+ * the cost of a forged one is an email about an application Ric will not find,
+ * and the endpoint is behind the shared secret so the forger would have to be
+ * us.
+ *
+ * ===========================================================================
+ * THE MUSIC LINK PASSES THROUGH AND IS NEVER STORED HERE
+ * ===========================================================================
+ *
+ * Board row 1097 asks the alert to carry the five answers, and the link is the
+ * one this project has no column for. It reaches the route, goes into the
+ * alert, and is not written to `waitlist_signups`: the application row on the
+ * platform is already the record of it, and a second copy on a second project
+ * is a second thing to keep right.
+ */
+export async function requestApplicationAlert(application: {
+  email: string;
+  name: string | null;
+  artistName: string | null;
+  musicLink: string | null;
+  genre: string | null;
+}): Promise<void> {
+  return tell("/api/application-alert", "application-alert", application);
 }
