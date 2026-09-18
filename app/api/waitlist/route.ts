@@ -7,6 +7,7 @@ import {
 } from "@/lib/waitlistGenres";
 import { sendMetaLead } from "@/lib/metaCapi";
 import { looksLikeEmail } from "@/lib/email";
+import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
 
 // Uses env + the service-role Supabase client, so it must run on the Node
 // runtime, never the edge.
@@ -16,8 +17,8 @@ export const runtime = "nodejs";
 /**
  * Waitlist signup endpoint.
  *
- * Accepts POST { email, role, source }, the attribution fields, and — from the
- * artist form only — { artist_name, genre }, and upserts into
+ * Accepts POST { email, role, source, name }, the attribution fields, and —
+ * from the artist form only — { artist_name, genre }, and upserts into
  * `waitlist_signups` (case-insensitive on email) via the
  * `upsert_waitlist_signup` Postgres function, which runs INSERT ... ON CONFLICT
  * (lower(email)) against the table's unique lower(email) index — inserting a
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
     email?: unknown;
     role?: unknown;
     source?: unknown;
+    name?: unknown;
     artist_name?: unknown;
     genre?: unknown;
     eventId?: unknown;
@@ -105,6 +107,30 @@ export async function POST(request: Request) {
       : null;
   const genre = typeof body.genre === "string" ? body.genre.trim() : "";
 
+  /*
+   * WHAT TO CALL THIS PERSON, AND WHY THE ROUTE DOES NOT REFUSE WITHOUT IT.
+   *
+   * Every role is asked for a name from 18 September 2026 (board rows 1093 and
+   * 1103), and the FORM requires one on all four paths — a submission with the
+   * field blank never reaches here from a current browser.
+   *
+   * The route is deliberately more forgiving than the form, exactly as it
+   * already is about `artist_name`. A visitor still holding yesterday's cached
+   * bundle posts no name at all, and rejecting them would turn a deploy into a
+   * window where real signups 400 for a field their page never showed them. A
+   * row without a name is a worse row; it is not a wasted person. Role and
+   * email are refused above because a row missing either is not a signup at
+   * all, which is a different thing.
+   *
+   * So: same untrusted treatment as everything else here — trimmed, capped to
+   * the shared ceiling, empty becomes null rather than an empty string, which
+   * is what the function's coalesce guard reads as "no answer this time".
+   */
+  const name =
+    typeof body.name === "string" && body.name.trim()
+      ? body.name.trim().slice(0, NAME_MAX_LENGTH)
+      : null;
+
   if (!looksLikeEmail(email)) {
     return NextResponse.json(
       { error: "That doesn't look like an email address." },
@@ -160,10 +186,15 @@ export async function POST(request: Request) {
     p_genre: genre || null,
   };
 
+  const person = {
+    p_name: name,
+  };
+
   let { error } = await supabase.rpc("upsert_waitlist_signup", {
     ...core,
     ...attribution,
     ...profile,
+    ...person,
   });
 
   // PGRST202 is PostgREST saying no function of that name takes these named
@@ -172,6 +203,14 @@ export async function POST(request: Request) {
   // lands. Extra fields are worth having and are never worth losing a
   // conversion over, and this removes the deploy ordering trap where shipping
   // the code before running the migration would reject every signup.
+  if (error?.code === "PGRST202") {
+    console.error("[waitlist] name migration not applied; saved without it");
+    ({ error } = await supabase.rpc("upsert_waitlist_signup", {
+      ...core,
+      ...attribution,
+      ...profile,
+    }));
+  }
   if (error?.code === "PGRST202") {
     console.error(
       "[waitlist] artist/genre migration not applied; saved without them"
