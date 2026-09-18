@@ -6,8 +6,12 @@ import {
   isWaitlistGenreCode,
 } from "@/lib/waitlistGenres";
 import { sendMetaLead } from "@/lib/metaCapi";
-import { looksLikeEmail } from "@/lib/email";
+import { looksLikeEmail, normaliseEmail } from "@/lib/email";
 import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
+import {
+  requestAcknowledgement,
+  requestApplicationAlert,
+} from "@/lib/signupAcknowledgement";
 
 // Uses env + the service-role Supabase client, so it must run on the Node
 // runtime, never the edge.
@@ -38,6 +42,8 @@ export async function POST(request: Request) {
     name?: unknown;
     artist_name?: unknown;
     genre?: unknown;
+    applied?: unknown;
+    musicLink?: unknown;
     eventId?: unknown;
     fbp?: unknown;
     fbc?: unknown;
@@ -56,8 +62,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
+  /*
+   * Normalised here as well as in the form, because a request body is never
+   * trusted and an older cached bundle will not have the form's copy. See
+   * `lib/email`: a `mailto:` prefix passes every check we had and is then
+   * refused by Resend, which loses the acknowledgement and says so only in a
+   * log.
+   */
   const email =
-    typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    typeof body.email === "string"
+      ? normaliseEmail(body.email).toLowerCase()
+      : "";
   const role = typeof body.role === "string" ? body.role.trim() : "";
   const source =
     typeof body.source === "string" ? body.source.trim().slice(0, 64) : "";
@@ -129,6 +144,29 @@ export async function POST(request: Request) {
   const name =
     typeof body.name === "string" && body.name.trim()
       ? body.name.trim().slice(0, NAME_MAX_LENGTH)
+      : null;
+
+  /*
+   * WHETHER AN APPLICATION WAS ACTUALLY STORED, and the link to the music.
+   *
+   * Board rows 1097 and 1148. Neither is written to `waitlist_signups`:
+   * `applied` decides whether Ric is told, and `musicLink` is one of the five
+   * answers his alert carries. The application row on the platform is the
+   * record of both.
+   *
+   * `applied` is a claim from the browser and is treated as one. It is only
+   * ever believed in the direction that sends an email to us, never in a
+   * direction that changes what is stored, and the endpoint it reaches is
+   * behind the shared secret. Absent means no, as with `consent` above.
+   *
+   * The link is capped like everything else here. 2048 is the length beyond
+   * which a URL stops being reliably usable anyway, and this one is going into
+   * an email.
+   */
+  const applied = body.applied === true;
+  const musicLink =
+    typeof body.musicLink === "string" && body.musicLink.trim()
+      ? body.musicLink.trim().slice(0, 2048)
       : null;
 
   if (!looksLikeEmail(email)) {
@@ -234,6 +272,67 @@ export async function POST(request: Request) {
       { error: "Couldn't save your spot. Try again." },
       { status: 502 }
     );
+  }
+
+  /*
+   * THE ACKNOWLEDGEMENT, AND IT RUNS AFTER THE ROW IS SAFE.
+   *
+   * Board rows 1096 and 1127. 169 people joined the waitlist and got nothing
+   * at all; this is the call that fixes that, and the platform sends the email
+   * because it holds the signed-off templates and the warmed sending domain.
+   *
+   * IT IS BELOW THE ERROR RETURN ON PURPOSE. A person who is not in the
+   * database must not be thanked for joining, so this only runs once the
+   * upsert has actually succeeded.
+   *
+   * IT IS AWAITED AND IT CANNOT FAIL THE SIGNUP. `requestAcknowledgement`
+   * resolves either way and never throws; a platform that is slow, down, or
+   * missing the secret costs a log line, not a conversion. Awaited rather than
+   * fired and forgotten because this is a serverless function: a promise left
+   * running after the response is returned may simply be killed, which would
+   * make the email arrive or not depending on how fast the platform answered.
+   *
+   * WHETHER TO SEND AT ALL IS NOT DECIDED HERE. The upsert above is an UPSERT,
+   * so this same call fires for somebody signing up a second time. The
+   * platform holds `signup_acknowledgements` and refuses to thank an address
+   * twice (board row 1141), which is the only place that can know, because it
+   * is also where the backfill was sent from.
+   */
+  await requestAcknowledgement({
+    email,
+    role,
+    name,
+    artistName,
+  });
+
+  /*
+   * AND TELL RIC, IF THIS WAS AN APPLICATION.
+   *
+   * Board rows 1097 and 1148. He had no way of knowing an application existed
+   * unless he opened the admin page and looked.
+   *
+   * GATED ON `applied`, NOT ON THE ROLE, and the two are not the same
+   * question. When the platform variables are missing from a deployment the
+   * artist form collects a plain waitlist signup and never calls
+   * `apply_to_raaydr` at all — a preview build does exactly that. Alerting on
+   * `role === "artist"` would send Ric to read an application that is not
+   * there.
+   *
+   * The music link is passed through and never stored: this project has no
+   * column for it, and the application row on the platform is already the
+   * record.
+   *
+   * Best effort, like the call above, and separately so that one failing
+   * cannot take the other with it.
+   */
+  if (applied) {
+    await requestApplicationAlert({
+      email,
+      name,
+      artistName,
+      musicLink,
+      genre: genre || null,
+    });
   }
 
   // Server-side Meta "Lead" conversion. Deduped against the browser Pixel via

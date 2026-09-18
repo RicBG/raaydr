@@ -15,7 +15,7 @@ import {
   submitArtistApplication,
 } from "@/lib/artistApplication";
 import { looksAutomated } from "@/lib/botCheck";
-import { looksLikeEmail } from "@/lib/email";
+import { looksLikeEmail, normaliseEmail } from "@/lib/email";
 import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
 import { effectiveConsent } from "@/lib/consent";
 import {
@@ -170,9 +170,16 @@ export default function WaitlistForm({
     if (status === "submitting") return;
 
     const form = e.currentTarget;
-    const email = (
-      form.elements.namedItem(`${id}-email`) as HTMLInputElement
-    ).value.trim();
+    /*
+     * NORMALISED HERE, NOT JUST IN THE ROUTE, because the artist application
+     * does not go through the route. `submitArtistApplication` posts straight
+     * from this browser to the platform's PostgREST, so an address decorated
+     * with `mailto:` by somebody's phone would reach `artist_applications`
+     * untouched. There is already one such row in `invites` on production.
+     */
+    const email = normaliseEmail(
+      (form.elements.namedItem(`${id}-email`) as HTMLInputElement).value,
+    );
 
     if (!role) {
       setStatus("error");
@@ -331,6 +338,18 @@ export default function WaitlistForm({
      * So a failure here is surfaced and the visitor presses the button again.
      * It is the only error in this form worth showing somebody.
      */
+    /*
+     * WHETHER THE APPLICATION ACTUALLY STORED, which the waitlist call below
+     * passes on so Ric is told about it. Board rows 1097 and 1148.
+     *
+     * It is NOT the same as `applying`. When the platform variables are
+     * missing, `applicationsConfigured()` is false, this block never runs, and
+     * the artist form collects a plain waitlist signup exactly as it did
+     * before applications existed. Telling Ric on `applying` alone would send
+     * him to read an application that was never written.
+     */
+    let applicationStored = false;
+
     if (applying) {
       try {
         await submitArtistApplication({
@@ -340,6 +359,7 @@ export default function WaitlistForm({
           musicLink: link,
           genre,
         });
+        applicationStored = true;
       } catch {
         setStatus("error");
         setMessage("We could not send your application. Please try again.");
@@ -363,6 +383,12 @@ export default function WaitlistForm({
           // else rather than carrying a stale answer from a switched role.
           ...(slug === "artist" && name ? { artist_name: name } : {}),
           ...(slug === "artist" && genre ? { genre } : {}),
+          /*
+            Only when an application really landed, and only then is the link
+            sent. Neither is stored by the route: they decide whether Ric gets
+            an alert and what it says. Board rows 1097 and 1148.
+          */
+          ...(applicationStored ? { applied: true, musicLink: link } : {}),
           ...(source ? { source } : {}),
           eventId,
           consent,
