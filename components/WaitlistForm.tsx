@@ -15,7 +15,7 @@ import {
   submitArtistApplication,
 } from "@/lib/artistApplication";
 import { looksAutomated } from "@/lib/botCheck";
-import { looksLikeEmail } from "@/lib/email";
+import { looksLikeEmail, normaliseEmail } from "@/lib/email";
 import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
 import { effectiveConsent } from "@/lib/consent";
 import {
@@ -170,9 +170,16 @@ export default function WaitlistForm({
     if (status === "submitting") return;
 
     const form = e.currentTarget;
-    const email = (
-      form.elements.namedItem(`${id}-email`) as HTMLInputElement
-    ).value.trim();
+    /*
+     * NORMALISED HERE, NOT JUST IN THE ROUTE, because the artist application
+     * does not go through the route. `submitArtistApplication` posts straight
+     * from this browser to the platform's PostgREST, so an address decorated
+     * with `mailto:` by somebody's phone would reach `artist_applications`
+     * untouched. There is already one such row in `invites` on production.
+     */
+    const email = normaliseEmail(
+      (form.elements.namedItem(`${id}-email`) as HTMLInputElement).value,
+    );
 
     if (!role) {
       setStatus("error");

@@ -57,3 +57,47 @@ export const EMAIL_PATTERN = new RegExp(
 export function looksLikeEmail(value: string): boolean {
   return EMAIL_PATTERN.test(value);
 }
+
+/*
+ * ============================================================================
+ * A PASTED ADDRESS CAN ARRIVE AS A `mailto:` LINK, AND EVERY CHECK ABOVE TAKES IT
+ * ============================================================================
+ *
+ * Found on production, 18 September 2026, on the first real use of the
+ * acknowledgement endpoint. Ric signed up with:
+ *
+ *     mailto:ricardo+acktest1@wearebeyondgreatness.co.uk
+ *
+ * which is what a phone gives you when you copy an address out of a contact
+ * card or a link rather than out of a text field.
+ *
+ * **Every guard we had accepted it.** `EMAIL_PATTERN`'s local part is
+ * `[^\s@]+`, and `mailto:ricardo+acktest1` has no space and no @, so it is a
+ * perfectly good local part as far as that regex is concerned. The platform
+ * endpoint's own check is `includes("@")`, which it also passes. The row
+ * stored, the signup succeeded, and **Resend refused the send**: `Invalid to
+ * field`. The acknowledgement was lost and the only evidence was a log line.
+ *
+ * The same prefix is already sitting in `invites` on the platform, which is
+ * the same paste arriving through the artist application. That one is Ric's
+ * test address so nothing has gone to a broken address yet; if it happens to a
+ * real artist they are invited at an address nothing else will match.
+ *
+ * ============================================================================
+ * IT IS STRIPPED RATHER THAN REFUSED, AND THAT IS THE POINT
+ * ============================================================================
+ *
+ * Tightening `EMAIL_PATTERN` to reject a colon would be one character and the
+ * wrong fix: the person typed the right address, their phone decorated it, and
+ * an error telling them to check an address that is correct is a signup lost
+ * to a machine's helpfulness. We know exactly what they meant.
+ *
+ * ONLY `mailto:`, and only at the start. `<ric@raaydr.com>` is the other thing
+ * an email client will hand you and it would fail the same way; it is not
+ * handled here because it has not happened, and inventing the shape of a
+ * problem nobody has had is how a normaliser starts rewriting real addresses.
+ * If it turns up, it belongs here beside this one.
+ */
+export function normaliseEmail(value: string): string {
+  return value.trim().replace(/^mailto:/i, "").trim();
+}

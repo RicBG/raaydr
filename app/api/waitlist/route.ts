@@ -6,7 +6,7 @@ import {
   isWaitlistGenreCode,
 } from "@/lib/waitlistGenres";
 import { sendMetaLead } from "@/lib/metaCapi";
-import { looksLikeEmail } from "@/lib/email";
+import { looksLikeEmail, normaliseEmail } from "@/lib/email";
 import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
 import {
   requestAcknowledgement,
@@ -62,8 +62,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
+  /*
+   * Normalised here as well as in the form, because a request body is never
+   * trusted and an older cached bundle will not have the form's copy. See
+   * `lib/email`: a `mailto:` prefix passes every check we had and is then
+   * refused by Resend, which loses the acknowledgement and says so only in a
+   * log.
+   */
   const email =
-    typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    typeof body.email === "string"
+      ? normaliseEmail(body.email).toLowerCase()
+      : "";
   const role = typeof body.role === "string" ? body.role.trim() : "";
   const source =
     typeof body.source === "string" ? body.source.trim().slice(0, 64) : "";
