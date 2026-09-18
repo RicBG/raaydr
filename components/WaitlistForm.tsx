@@ -16,6 +16,7 @@ import {
 } from "@/lib/artistApplication";
 import { looksAutomated } from "@/lib/botCheck";
 import { looksLikeEmail } from "@/lib/email";
+import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
 import { effectiveConsent } from "@/lib/consent";
 import {
   getMetaBrowserIds,
@@ -70,8 +71,23 @@ export default function WaitlistForm({
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
   const [artistName, setArtistName] = useState("");
   const [genre, setGenre] = useState("");
-  // Asked only of artists, and only where this deployment can actually send
-  // an application. See `applying` below.
+  /*
+   * WHAT THIS PERSON IS CALLED. ASKED OF EVERY ROLE SINCE 18 SEPTEMBER 2026.
+   *
+   * Ric, board rows 1093 and 1103: "are we not capturing name for the other
+   * audiences, for listener, producer songwriter and also tastemaker? If not,
+   * I think we should."
+   *
+   * It used to be an application-only question, which meant 17 of the 25
+   * people who joined on 17 September left no name at all and Ric had a list
+   * of addresses with nothing to call anyone. It is also what the four
+   * acknowledgement emails signed off on rows 1098 and 1099 open with, so
+   * without it three of the four roles get "Hi," on a mail that reads like a
+   * blast.
+   *
+   * Separate from `artistName`, which is what an artist RELEASES under. A
+   * band answers both and the two answers are different.
+   */
   const [realName, setRealName] = useState("");
   const [musicLink, setMusicLink] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -165,7 +181,31 @@ export default function WaitlistForm({
     }
 
     const slug = ROLE_LABEL_TO_SLUG[role];
-    // Artists have to say what they are called, on both paths.
+
+    /*
+     * THE NAME IS REQUIRED ON EVERY PATH, and it is checked FIRST because it
+     * is the first field on the form. The checks below it run in the order the
+     * questions are asked, so somebody filling it in top to bottom is told
+     * about the first thing they missed rather than the last.
+     *
+     * The form carries `noValidate`, so `required` on the input is semantics
+     * for assistive technology and nothing else — this is the enforcement.
+     * That is the trap row 1023 recorded: an input that says `required` and a
+     * form that says `noValidate` looks guarded and is not, which is how a
+     * blank email reached the RPC and was dropped in silence.
+     */
+    const person = realName.trim();
+    if (!person) {
+      setStatus("error");
+      setMessage(
+        applying
+          ? "Tell us your name, so we know who we are replying to."
+          : "Tell us your name, so we know what to call you.",
+      );
+      return;
+    }
+
+    // Artists have to say what they RELEASE under as well, on both paths.
     const name = artistName.trim();
     if (slug === "artist" && !name) {
       setStatus("error");
@@ -204,13 +244,7 @@ export default function WaitlistForm({
      * On the WAITLIST path genre stays optional, as it always was. Nothing
      * there is dropped for want of it.
      */
-    const person = realName.trim();
     const link = musicLink.trim();
-    if (applying && !person) {
-      setStatus("error");
-      setMessage("Tell us your name, so we know who we are replying to.");
-      return;
-    }
     if (applying && !link) {
       setStatus("error");
       setMessage("Add a link to your music. It is the part we listen to.");
@@ -320,6 +354,11 @@ export default function WaitlistForm({
         body: JSON.stringify({
           email,
           role: slug,
+          // Sent by every role, because every role is now asked. The route
+          // caps it to the same ceiling this input does and the function only
+          // overwrites a stored name when this one is non-empty, so a blank
+          // can never take back what somebody already told us.
+          name: person,
           // Only ever sent for artists, so the columns stay null for everyone
           // else rather than carrying a stale answer from a switched role.
           ...(slug === "artist" && name ? { artist_name: name } : {}),
@@ -485,7 +524,10 @@ export default function WaitlistForm({
        *
        * The order is Ric's, board row 1030: an artist answers their name, what
        * they release under, their email, their genre and where we can hear
-       * them. Everybody else answers their email and nothing more.
+       * them. Everybody else answers their name and their email — the name
+       * added on 18 September, row 1103, and put in the same first slot so
+       * the four roles read as one form asking for more of you rather than
+       * four different forms.
        *
        * The email input is UNCONTROLLED — the submit handler reads it off the
        * form — so moving it between containers when the role changes would
@@ -494,30 +536,33 @@ export default function WaitlistForm({
        * appears around it. Verified in a browser by typing an address, changing
        * role, and reading it back.
        *
-       * Two columns from 640px up, and only for an artist: a lone email field
-       * in a two column grid would be a half width box with nothing beside it.
+       * TWO COLUMNS FROM 640px UP, FOR EVERY ROLE. It used to be artists only,
+       * because every other role answered one question and a lone email field
+       * in a two column grid is a half width box with nothing beside it. Now
+       * that the name is asked of everybody the shortest form is two fields,
+       * so the grid always has something to put in both tracks: name beside
+       * email for three roles, and the five ruled questions for an artist.
+       *
        * The music link spans both, because it holds the longest value on the
        * form by some way.
        */}
-      <div className={`${styles.fields} ${isArtist ? styles.fieldsTwoUp : ""}`}>
-        {applying && (
-          <div className={styles.field}>
-            <label htmlFor={`${id}-real-name`} className={styles.fieldLabel}>
-              Your name
-            </label>
-            <input
-              id={`${id}-real-name`}
-              name={`${id}-real-name`}
-              type="text"
-              required
-              maxLength={120}
-              autoComplete="name"
-              value={realName}
-              onChange={(e) => setRealName(e.target.value)}
-              className={styles.email}
-            />
-          </div>
-        )}
+      <div className={`${styles.fields} ${styles.fieldsTwoUp}`}>
+        <div className={styles.field}>
+          <label htmlFor={`${id}-real-name`} className={styles.fieldLabel}>
+            Your name
+          </label>
+          <input
+            id={`${id}-real-name`}
+            name={`${id}-real-name`}
+            type="text"
+            required
+            maxLength={NAME_MAX_LENGTH}
+            autoComplete="name"
+            value={realName}
+            onChange={(e) => setRealName(e.target.value)}
+            className={styles.email}
+          />
+        </div>
 
         {isArtist && (
           <div className={styles.field}>
