@@ -7,6 +7,7 @@ import HeroCallout from "@/components/HeroCallout";
 import FaqAccordion from "@/components/FaqAccordion";
 import { InstagramIcon, TikTokIcon } from "@/components/SocialIcons";
 import { faqData } from "@/lib/faqData";
+import { siteConfig } from "@/lib/siteConfig";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
 import styles from "@/app/about/about.module.css";
@@ -103,11 +104,11 @@ export default function AboutContent() {
               automatically from splits built into every record.
             </p>
             <p data-reveal>
-              We&rsquo;re launching in waves. The first 1,000 Day Ones back the
-              first cohort of independent artists on the platform, and the
-              earliest in pay least: £6.99 forever for the first 250, £7.99 for
-              the next 750. After that, membership opens at £9.99. Early counts
-              here.
+              We&rsquo;re launching in waves. The first{" "}
+              {siteConfig.pricing.dayOneCap} Day Ones back the first cohort of
+              independent artists on the platform: £{siteConfig.pricing.dayOne}{" "}
+              a month, locked for as long as they stay subscribed. After that,
+              RAAYDR is £{siteConfig.pricing.standard}. Early counts here.
             </p>
           </div>
 

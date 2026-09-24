@@ -14,7 +14,7 @@
 // so anything asserted here is eligible for rich results and AI citation and
 // has to reproduce from the rate model.
 
-import { CANONICAL } from "./raaydrRates";
+import { CANONICAL, PRICING } from "./raaydrRates";
 
 export type FaqItem = {
   question: string;
@@ -43,13 +43,11 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     },
     {
       question: "Is RAAYDR live yet?",
-      answer:
-        "Not yet, we're in waitlist mode right now while we finish building the platform. Joining the waitlist locks in Day One pricing and early access.",
+      answer: `Not yet, we're in waitlist mode right now while we finish building the platform. Join the waitlist for early access and a shot at one of the ${PRICING.dayOneCap} Day One places.`,
     },
     {
       question: "What's the Day One offer?",
-      answer:
-        "The first 1,000 listeners are the Day Ones. The first 250 get RAAYDR at £6.99 a month locked forever, the next 750 at £7.99, against the standard £9.99. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.",
+      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at £${PRICING.dayOne} a month, locked for as long as they stay subscribed, against the standard £${PRICING.standard}. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.`,
     },
     {
       question: "Where is RAAYDR available?",
@@ -206,8 +204,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     },
     {
       question: "What's the Day One offer?",
-      answer:
-        "The first 1,000 listeners are the Day Ones. The first 250 to join lock £6.99 a month for as long as they stay subscribed. The next 750 lock £7.99. Everyone after that pays £9.99. There is no lock in beyond keeping your price.",
+      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at £${PRICING.dayOne} a month, locked for as long as they stay subscribed, against the standard £${PRICING.standard}. There is no lock in beyond keeping your price.`,
     },
     {
       question:
