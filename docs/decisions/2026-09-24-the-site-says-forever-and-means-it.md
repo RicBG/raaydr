@@ -81,14 +81,21 @@ approved sentences, all reported rather than rewritten:
 - `lib/faqData.ts:228` — *"no lock in beyond keeping your Day One price for as long as you
   stay subscribed."*
 
-**And one finding that is not about wording at all.** `public/llms.txt` lines 35 to 38
-still publish the **retired** pricing model: *"the first 1,000 listeners, in two price
+**And one finding that was not about wording at all, now fixed on Riz's authority.**
+`public/llms.txt` published the **retired** pricing model: *"the first 1,000 listeners, in two price
 bands... The first 250 pay £6.99 a month and the next 750 pay £7.99."* Day One became a
 flat 100 listeners at £6.99 on 24 September (board row 1416, shipped in #77), and #77
 updated the components but not this file. It is a live public file served at
-`raaydr.com/llms.txt` and read by AI crawlers, so it is currently telling them a price
-band that no longer exists. Not changed here, because it moves published numbers and that
-goes to Ric first.
+`raaydr.com/llms.txt` and read by AI crawlers, so it was telling them a price band that no
+longer exists.
+
+**It is corrected in this PR.** Board row 1486 item 1 rules the fix in as "facts only, diff
+on the board", which is what this is: the figures now match `lib/raaydrRates.ts` (100
+listeners, GBP 6.99, standard GBP 9.99), and the only phrase added, "locked forever, even if
+they cancel and come back", is Ric's own approved wording from row 1473 rather than anything
+improvised here. The structure, tone and the closing sentence about terms being published on
+the site are untouched. It still moves published numbers, so it ships parked in this PR for
+Ric rather than merged.
 
 Three Pulse posts (`what-is-raaydr.md`, `where-your-9-99-actually-goes.md`,
 `what-is-attention-based-streaming-payment.md`) also still cite the two-band structure.
