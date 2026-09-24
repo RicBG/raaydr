@@ -47,7 +47,7 @@ export default function ForListenersPage() {
       tintSections={[
         {
           body: [
-            "Early access to new music. Discounts on merch and tickets. A shout-out from the artist themselves, when you've actually shown up. Every artist decides what unlocks and when, but showing up matters here in ways it never did on a platform that only counted your stream.",
+            "Early access to new music. Discounts on merch. A shout-out from the artist themselves, when you've actually shown up. Every artist decides what unlocks and when, but showing up matters here in ways it never did on a platform that only counted your stream.",
             "At the end of every month, we show you where your subscription went. Which artists. Which tastemakers. Actual amounts. Nobody else can show you this, because nobody else knows.",
           ],
         },
