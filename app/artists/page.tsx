@@ -42,7 +42,7 @@ export default function ArtistsPage() {
         },
         {
           title: "Splits built in.",
-          body: "Producers, songwriters and features are credited and paid automatically, the moment your work plays. Set the split when you upload the track. Every month, your share and theirs move at the same time, automatically. No invoices, no chasing.",
+          body: "Producers, songwriters and features are credited and paid automatically, the moment your work plays. Credit everyone when you upload the track. Splits are coming soon. Every month, your share and theirs move at the same time, automatically. No invoices, no chasing.",
         },
         {
           title: "Traceable, monthly.",
