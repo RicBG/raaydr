@@ -115,7 +115,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "What is RAAYDR+?",
       answer:
-        "A deeper analytics and tools layer for artists, producers, songwriters and tastemakers. It is £3.99 a month, and free forever for our founding creators. Everything you need to trust your numbers, what you earned, who it came from and when it lands, is free for every creator. RAAYDR+ is about what you do with that.",
+        "A deeper analytics and tools layer for artists, producers, songwriters and tastemakers. It is £3.99 a month, and free forever for our Day One creators. Everything you need to trust your numbers, what you earned, who it came from and when it lands, is free for every creator. RAAYDR+ is about what you do with that.",
     },
     {
       question: "Do I need a label or distributor to join?",
