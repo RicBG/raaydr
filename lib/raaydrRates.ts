@@ -20,26 +20,37 @@
  */
 
 /**
- * The Day One cohort is 1,000 listeners, and it holds two price bands: the
- * earliest pay least. Both bands are locked forever. `dayOne` is the first
- * band, `dayOneNext` the second — anyone past the 1,000th listener is standard.
+ * The Day One cohort is 100 listeners, one flat band. `dayOne` is its price,
+ * locked for as long as a Day One stays subscribed; anyone past the 100th
+ * listener is standard.
+ *
+ * RULED 24 SEPTEMBER 2026 (board row 1416), REPLACING TWO BANDS OF 1,000. Ric,
+ * 13:37: "1st 100 get 6.99 then everyone else after that pays the 9.99." The
+ * cohort was 1,000 listeners in two price bands, 250 at £6.99 and 750 at
+ * £7.99, until this ruling. `dayOneNext` (£7.99) and its derived PER_FAN /
+ * DISTRIBUTABLE figures stay below, UNUSED BY ANY LIVE PRICE OR COPY: three
+ * published Pulse posts cite the retired two-band structure and its £7.99
+ * figures as history, and rewriting them is editorial work outside this
+ * ruling's scope (flagged on the board rather than done here). Do not read
+ * `dayOneNext` for anything new.
  */
 export const PRICING = {
-  /** Band one: the first 250 listeners of the Day One cohort. */
+  /** The Day One price. Locked for as long as a Day One stays subscribed. */
   dayOne: 6.99,
-  /** Band two: the next 750, still Day Ones, still locked forever. */
+  /** RETAINED FOR HISTORICAL PULSE COPY ONLY. See the note above PRICING. */
   dayOneNext: 7.99,
   standard: 9.99,
   plus: 3.99,
-  /** The Day One cohort closes after this many listeners, across both bands. */
-  dayOneCap: 1000,
-  /** How many of that 1,000 get the first band. The rest get the second. */
-  dayOneFirstBand: 250,
+  /** The Day One cohort closes after this many listeners. */
+  dayOneCap: 100,
+  /** RETAINED FOR HISTORICAL PULSE COPY ONLY. See the note above PRICING. */
+  dayOneFirstBand: 100,
   /** RAAYDR+ is included for Day Ones and for the founding creator cohorts. */
   plusIncludedForDayOnes: true,
 } as const;
 
-/** Listeners in the second Day One band: whatever the cohort has left. */
+/** RETAINED FOR HISTORICAL PULSE COPY ONLY: the cohort has one band now, so
+ *  this is 0. See the note above PRICING. */
 export const DAY_ONE_NEXT_BAND = PRICING.dayOneCap - PRICING.dayOneFirstBand;
 
 /** Share of distributable revenue. Distributable is net of VAT, publishing and payment costs. */
