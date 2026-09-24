@@ -15,22 +15,25 @@ import {
 export type PricingTier = RatesTier; // "standard" | "dayOne" | "dayOneNext"
 
 /**
- * Tier selector options, shared so every calculator offers the same three in
+ * Tier selector options, shared so every calculator offers the same two in
  * the same order with the same labels. Cheapest first, because that is the
- * order listeners join in. Prices and band sizes come from PRICING; no
+ * order listeners join in. Prices and the cohort size come from PRICING; no
  * calculator spells a rate, a price or a cohort size out for itself.
+ *
+ * TWO, NOT THREE, since board row 1416 (24 September 2026): the Day One
+ * cohort is one flat band now, so `dayOneNext` never appears in a picker.
+ * `TIER_LABEL` still has to define it, since `PricingTier` still carries it
+ * for the historical rate figures `dayOneNext` other than this UI reads (see
+ * `raaydrRates.ts`) — that entry is unreachable here.
  */
-export const PRICING_TIERS: readonly PricingTier[] = [
-  "dayOne",
-  "dayOneNext",
-  "standard",
-];
+export const PRICING_TIERS: readonly PricingTier[] = ["dayOne", "standard"];
 
 /** Default tier for every calculator: standard is the steady state. */
 export const PRICING_TIER_DEFAULT: PricingTier = "standard";
 
 export const TIER_LABEL: Record<PricingTier, string> = {
   dayOne: `£${PRICING.dayOne} · first ${PRICING.dayOneFirstBand}`,
+  /** UNREACHABLE: `dayOneNext` is not in PRICING_TIERS. See the note above it. */
   dayOneNext: `£${PRICING.dayOneNext} · next ${DAY_ONE_NEXT_BAND}`,
   standard: `£${PRICING.standard} · standard`,
 };
