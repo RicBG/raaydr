@@ -100,11 +100,6 @@
   gap: 16px;
 }
 
-.cta {
-  font-size: 14px;
-  padding: 0.85em 1.5em;
-}
-
 .navSocial {
   display: flex;
   align-items: center;
@@ -203,7 +198,7 @@
    carries the same links. */
 @media (max-width: 1140px) {
   .links,
-  .actions .cta,
+  .actions > a,
   .navSocial {
     display: none;
   }
