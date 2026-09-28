@@ -47,7 +47,7 @@ export default function TermsPage() {
           <h1 className={`display-section ${styles.title}`}>Terms</h1>
           <div className={styles.body}>
             <p>
-              <strong>Last updated 28 September 2026.</strong> These terms cover
+              <strong>Last updated 28 September 2026.</strong>{" "}These terms cover
               this site, the waitlist, and early artist uploads. Fuller terms,
               reviewed by a solicitor, will replace them before Day One
               memberships open. We&rsquo;re publishing these now because
@@ -55,7 +55,7 @@ export default function TermsPage() {
               contract language behind them.
             </p>
             <p>
-              <strong>1. Who we are.</strong> RAAYDR is operated by RAAYDR
+              <strong>1. Who we are.</strong>{" "}RAAYDR is operated by RAAYDR
               LIMITED, registered in England and Wales, company number 17418893,
               registered office 66 Paul Street, London, EC2A 4NA. Contact:{" "}
               <a href="mailto:hello@raaydr.com" className="link-sweep">
@@ -64,7 +64,7 @@ export default function TermsPage() {
               .
             </p>
             <p>
-              <strong>2. The service right now.</strong> Joining the waitlist
+              <strong>2. The service right now.</strong>{" "}Joining the waitlist
               creates no payment obligation. Early platform access is by
               invitation and access code. Playing another artist&rsquo;s music
               needs either a listener subscription or an access grant we give you
@@ -74,7 +74,7 @@ export default function TermsPage() {
               grant only.
             </p>
             <p>
-              <strong>3. Your music stays yours.</strong> If you upload music to
+              <strong>3. Your music stays yours.</strong>{" "}If you upload music to
               RAAYDR, you keep full ownership of your recordings, your rights and
               your catalogue. Uploading grants RAAYDR a non exclusive,
               revocable, royalty free licence, worldwide, to host your music,
@@ -87,7 +87,7 @@ export default function TermsPage() {
               still reaches you.
             </p>
             <p>
-              <strong>4. Your music is never used to train AI.</strong> RAAYDR
+              <strong>4. Your music is never used to train AI.</strong>{" "}RAAYDR
               will not use your music, your artwork or your metadata to train any
               machine learning or artificial intelligence model of any kind,
               generative or otherwise. We will not license, sell or share it to
@@ -103,13 +103,13 @@ export default function TermsPage() {
               disclosure to listeners, not a permission you give us.
             </p>
             <p>
-              <strong>5. Uploading is free.</strong> RAAYDR does not charge
+              <strong>5. Uploading is free.</strong>{" "}RAAYDR does not charge
               artists to upload or host music, and paying for any optional RAAYDR
               product is never a condition of uploading, being streamed, or being
               paid.
             </p>
             <p>
-              <strong>6. How the money moves.</strong> None of this is running
+              <strong>6. How the money moves.</strong>{" "}None of this is running
               yet: listener subscriptions are not on sale, no payment has been
               taken and no payout has been made. This is how it will work when it
               starts.
@@ -139,26 +139,26 @@ export default function TermsPage() {
               these terms when they claim it.
             </p>
             <p>
-              <strong>7. What you promise us.</strong> By uploading, you confirm
+              <strong>7. What you promise us.</strong>{" "}By uploading, you confirm
               you own or control all rights in the music, including any samples,
               and that nothing in it infringes anyone else&rsquo;s rights or
               breaks the law. If a track turns out to infringe, we can remove it,
               void its plays and recover any money it generated.
             </p>
             <p>
-              <strong>8. Reversed payments.</strong> If a subscriber&rsquo;s
+              <strong>8. Reversed payments.</strong>{" "}If a subscriber&rsquo;s
               payment is disputed or refunded, the earnings that payment funded
               are reversed. Amounts already paid out are deducted from future
               balances; we never invoice an artist back.
             </p>
             <p>
-              <strong>9. Suspension.</strong> We can suspend accounts we
+              <strong>9. Suspension.</strong>{" "}We can suspend accounts we
               reasonably believe are defrauding the platform or infringing
               rights. Suspension decisions that affect money are reviewed by a
               human before any payout is withheld.
             </p>
             <p>
-              <strong>10. Changes and contact.</strong> We&rsquo;ll give notice
+              <strong>10. Changes and contact.</strong>{" "}We&rsquo;ll give notice
               on this page and by email before these terms change materially.
               These terms are governed by the law of England and Wales.
               Questions:{" "}
