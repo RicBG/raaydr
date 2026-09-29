@@ -70,11 +70,9 @@ The edges. What is still open, and what would change the answer.
 
 **This table listed `RicBG/raaydr-platform`'s own decision records, not this repository's,
 for some time.** Copying the README brought its whole file, table included, rather than
-just the header and template above it. Found and fixed 24 September 2026 while adding the
-row for `2026-09-24-tickets-were-never-a-launch-unlock`: none of this repo's three
-pre-existing records (all dated 18 September) appeared in the inherited table at all. Corrected
-to list only this repository's own records; `raaydr-platform`'s table is the one in its own
-copy of this file.
+just the header and template above it. Found and fixed 24 September 2026: none of this
+repo's own records appeared in the inherited table at all. Corrected to list only this
+repository's own records; `raaydr-platform`'s table is the one in its own copy of this file.
 
 | Date | Record | About |
 | --- | --- | --- |
@@ -82,3 +80,5 @@ copy of this file.
 | 2026-09-18 | [every-audience-is-asked-its-name](2026-09-18-every-audience-is-asked-its-name.md) | The waitlist form gains a name field, for every audience, not only artists. |
 | 2026-09-18 | [the-platform-sends-the-acknowledgement](2026-09-18-the-platform-sends-the-acknowledgement.md) | This site asks the platform to send the signup acknowledgement rather than sending its own. |
 | 2026-09-24 | [tickets-were-never-a-launch-unlock](2026-09-24-tickets-were-never-a-launch-unlock.md) | The loyalty copy named merch and ticket discounts as unlocks. Only merch ships at launch. |
+| 2026-09-24 | [about-drops-the-borrowed-green](2026-09-24-about-drops-the-borrowed-green.md) | The About page borrowed Signal Green as "neutral" before the 25 Aug violet ruling. The noise band is dropped rather than recoloured, following an existing precedent. |
+| 2026-09-24 | [artists-drops-the-present-tense-split-claim](2026-09-24-artists-drops-the-present-tense-split-claim.md) | "Set the split when you upload the track" described a control that does not exist. Ric's ruled replacement, verbatim. |
