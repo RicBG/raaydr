@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import PageSpectraNoise from "@/components/PageSpectraNoise";
 import HeroCallout from "@/components/HeroCallout";
 import FaqAccordion from "@/components/FaqAccordion";
 import { InstagramIcon, TikTokIcon } from "@/components/SocialIcons";
@@ -13,13 +12,22 @@ import { useReveal } from "@/lib/useReveal";
 import styles from "@/app/about/about.module.css";
 
 /**
- * The About page body. Client-side because it coordinates the page's single
- * heavy WebGL context: while the Hero Callout is on screen its gradient is the
- * only live context and the full-page PageSpectraNoise (fixed, so it never
- * scrolls off on its own) is unmounted — both driven by one IntersectionObserver
- * boolean, so the two are never live at once. The About page has no natural
- * audience colour, so — as with the existing noise band — it borrows Signal
- * Green (the "listeners" colour), the site's own primary.
+ * The About page body. Client-side because the IntersectionObserver below
+ * gates the Hero Callout's own WebGL gradient, mounting it only while the
+ * section is actually on screen.
+ *
+ * NO NOISE BAND, UNLIKE AN AUDIENCE PAGE. This page carried one until 24
+ * September, tinted "listeners" green on the strength of a comment claiming
+ * Signal Green was "the site's own primary/action colour, the closest thing
+ * to a neutral pick" — true before 25 August, false since: that ruling moved
+ * the site's action colour to `--brand` (#9B6BFF) and left green scoped to
+ * listeners specifically (`app/globals.css` carries the exact wording,
+ * "Ruled 25 Aug 2026, replacing Signal Green"). About was rendering as a
+ * listener page.
+ * `AudiencePage.tsx`'s own `halo?: RaaydrAudience` is already optional and
+ * already skips the noise band entirely when a page has no natural audience
+ * ("no audience to colour it" is that prop's own comment) — About follows
+ * that existing precedent instead of inventing a fifth audience.
  */
 export default function AboutContent() {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -44,15 +52,6 @@ export default function AboutContent() {
 
   return (
     <main className={styles.page}>
-      {!calloutActive && (
-        <div className={styles.noiseBg}>
-          {/* Not audience-specific, so this page doesn't have a natural
-              colour — Signal Green (--green) is the site's own primary/
-              action colour, the closest thing to a neutral pick. */}
-          <PageSpectraNoise audience="listeners" />
-        </div>
-      )}
-
       <section className={styles.content}>
         <div className="container">
           <p className="eyebrow">About</p>
@@ -75,7 +74,7 @@ export default function AboutContent() {
       <HeroCallout
         ref={calloutRef}
         audience="listeners"
-        color="#3BCE7B"
+        color="#9B6BFF"
         active={calloutActive}
         heading="The industry isn't broken. It was built this way."
         body={[
