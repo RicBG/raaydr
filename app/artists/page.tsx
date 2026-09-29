@@ -42,7 +42,7 @@ export default function ArtistsPage() {
         },
         {
           title: "Splits built in.",
-          body: "Producers, songwriters and features are credited and paid automatically, the moment your work plays. Set the split when you upload the track. Every month, your share and theirs move at the same time, automatically. No invoices, no chasing.",
+          body: "Producers, songwriters and features are credited and paid automatically, the moment your work plays. Credit everyone when you upload the track. Splits are coming soon. Every month, your share and theirs move at the same time, automatically. No invoices, no chasing.",
         },
         {
           title: "Traceable, monthly.",
@@ -51,7 +51,7 @@ export default function ArtistsPage() {
       ]}
       heroCallout={{
         heading: "Your most loyal fans deserve more than a stream count.",
-        body: "Early access to new tracks. Discounts on merch and tickets. A personal thank you when someone's actually shown up for you. You set what unlocks and at what point. It's not a loyalty scheme bolted on after the fact. It's built into how RAAYDR works.",
+        body: "Early access to new tracks. Discounts on merch. A personal thank you when someone's actually shown up for you. You set what unlocks and at what point. It's not a loyalty scheme bolted on after the fact. It's built into how RAAYDR works.",
       }}
       tintMarquee={{
         top: "You cannot buy",

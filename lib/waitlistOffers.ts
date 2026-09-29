@@ -19,7 +19,7 @@ import type { WaitlistRoleLabel } from "./waitlistRoles";
  * most visitors are listeners, and an empty slot that fills in on selection
  * reads as a layout jump.
  */
-export const DEFAULT_OFFER = `The first ${PRICING.dayOneCap} listeners lock £${PRICING.dayOne} a month for as long as they stay subscribed. After that, RAAYDR is £${PRICING.standard}.`;
+export const DEFAULT_OFFER = `The first ${PRICING.dayOneCap} listeners lock £${PRICING.dayOne} a month forever, even if they cancel and come back. After that, RAAYDR is £${PRICING.standard}.`;
 
 export const ROLE_OFFER: Record<WaitlistRoleLabel, string> = {
   Listener: DEFAULT_OFFER,

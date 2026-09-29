@@ -47,7 +47,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     },
     {
       question: "What's the Day One offer?",
-      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at £${PRICING.dayOne} a month, locked for as long as they stay subscribed, against the standard £${PRICING.standard}. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.`,
+      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at £${PRICING.dayOne} a month, locked forever, even if they cancel and come back, against the standard £${PRICING.standard}. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.`,
     },
     {
       question: "Where is RAAYDR available?",
