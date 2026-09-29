@@ -51,7 +51,7 @@ export default function ArtistsPage() {
       ]}
       heroCallout={{
         heading: "Your most loyal fans deserve more than a stream count.",
-        body: "Early access to new tracks. Discounts on merch and tickets. A personal thank you when someone's actually shown up for you. You set what unlocks and at what point. It's not a loyalty scheme bolted on after the fact. It's built into how RAAYDR works.",
+        body: "Early access to new tracks. Discounts on merch. A personal thank you when someone's actually shown up for you. You set what unlocks and at what point. It's not a loyalty scheme bolted on after the fact. It's built into how RAAYDR works.",
       }}
       tintMarquee={{
         top: "You cannot buy",

@@ -16,6 +16,8 @@ heroAlt: "A single coin on a dark surface, glowing Signal Green, with green flec
 **The Pulse · The RAAYDR Blog**
 *By Ric, Founder of RAAYDR · Last updated July 2026*
 
+Update, 24 September 2026: Day One is now the first 100 listeners at £6.99 a month. Everyone after pays £9.99.
+
 A standard RAAYDR subscription is £9.99 a month. Of that, 55% goes to artists, 15% is ring fenced for tastemakers and RAAYDR keeps 30%, each a share of what is left after tax, publishing royalties and card fees. This page shows the full working, because no streaming service tells you what their percentage is a percentage of.
 
 ## The number nobody publishes

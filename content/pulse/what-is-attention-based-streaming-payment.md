@@ -16,6 +16,8 @@ heroAlt: "A listener with headphones, eyes closed, face lit by a faint violet gl
 **The Pulse · The RAAYDR Blog**
 *By Ric, Founder of RAAYDR · Last updated July 2026*
 
+Update, 24 September 2026: Day One is now the first 100 listeners at £6.99 a month. Everyone after pays £9.99.
+
 Attention-based payment is a streaming royalty model where each listener's subscription money is divided among the artists that listener actually played, in proportion to their listening time. It replaces the industry-standard pro-rata model, where all subscriber money is pooled platform-wide and divided by total streams.
 
 The idea has gone by several names: user-centric payment (UCPS), fan-powered royalties, artist-centric models. This guide explains how each version works, what the evidence says, and how RAAYDR's implementation differs.

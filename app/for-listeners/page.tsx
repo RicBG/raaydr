@@ -3,6 +3,7 @@ import AudiencePage from "@/components/AudiencePage";
 import WhereYourMoneyGoes from "@/components/sections/WhereYourMoneyGoes";
 import { faqData } from "@/lib/faqData";
 import { pageMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/siteConfig";
 
 export const metadata: Metadata = pageMetadata({
   title: "RAAYDR for Listeners: Your money follows your ears.",
@@ -31,7 +32,7 @@ export default function ForListenersPage() {
         },
         {
           title: "Loyalty can unlock things.",
-          body: "Artists can choose to open things up to the listeners who show up most. Some will, some won't, and that is theirs to decide. What is certain is that being early counts, and being earliest counts most. The first 250 Day Ones lock £6.99 a month forever, the next 750 lock £7.99.",
+          body: `Artists can choose to open things up to the listeners who show up most. Some will, some won't, and that is theirs to decide. What is certain is that being early counts, and being earliest counts most. The first ${siteConfig.pricing.dayOneCap} listeners lock £${siteConfig.pricing.dayOne} a month for as long as they stay subscribed. After that, RAAYDR is £${siteConfig.pricing.standard}.`,
         },
       ]}
       heroCallout={{
@@ -47,7 +48,7 @@ export default function ForListenersPage() {
       tintSections={[
         {
           body: [
-            "Early access to new music. Discounts on merch and tickets. A shout-out from the artist themselves, when you've actually shown up. Every artist decides what unlocks and when, but showing up matters here in ways it never did on a platform that only counted your stream.",
+            "Early access to new music. Discounts on merch. A shout-out from the artist themselves, when you've actually shown up. Every artist decides what unlocks and when, but showing up matters here in ways it never did on a platform that only counted your stream.",
             "At the end of every month, we show you where your subscription went. Which artists. Which tastemakers. Actual amounts. Nobody else can show you this, because nobody else knows.",
           ],
         },

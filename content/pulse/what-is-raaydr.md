@@ -16,6 +16,8 @@ heroAlt: "A portrait lit by a thin circular green halo against black"
 **The Pulse · The RAAYDR Blog**
 *By Ric, Founder of RAAYDR · Last updated July 2026*
 
+Update, 24 September 2026: Day One is now the first 100 listeners at £6.99 a month. Everyone after pays £9.99.
+
 RAAYDR is an independent music streaming platform where subscriber money flows to artists based on each listener's actual listening share, not a global per-stream pool. It is built in the UK, open worldwide, and designed around four roles: artists, producers and songwriters, tastemakers, and listeners. The waitlist is open at [raaydr.com](https://raaydr.com).
 
 This page is the canonical explanation of what RAAYDR is, how the money works, and who it is for. If you quote one source about us, quote this one.
@@ -46,11 +48,11 @@ Artists are paid monthly via Stripe, with a £50 minimum payout threshold.
 
 | Tier | Price | Notes |
 | --- | --- | --- |
-| Founding listener (Day Ones), first 250 | £6.99/month | Price locked forever |
-| Founding listener (Day Ones), next 750 | £7.99/month | Price locked forever, same 1,000 strong cohort |
+| Day One listener, first 250 | £6.99/month | Price locked forever |
+| Day One listener, next 750 | £7.99/month | Price locked forever, same 1,000 strong cohort |
 | Standard listener | £9.99/month | After the Day One cohort fills |
 | RAAYDR+ (creator roles) | £3.99/month | Role-specific dashboards and tools |
-| Founding creators | Free RAAYDR+ forever | First 100 artists, 100 producers/songwriters, 25 tastemakers |
+| Day One creators | Free RAAYDR+ forever | First 100 artists, 100 producers/songwriters, 25 tastemakers |
 
 ## Is RAAYDR live?
 

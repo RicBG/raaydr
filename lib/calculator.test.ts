@@ -110,14 +110,13 @@ describe("artistPerFan", () => {
 });
 
 describe("tier selector options", () => {
-  it("offers all three bands, cheapest first, and defaults to standard", () => {
-    expect([...PRICING_TIERS]).toEqual(["dayOne", "dayOneNext", "standard"]);
+  it("offers both live bands, cheapest first, and defaults to standard", () => {
+    expect([...PRICING_TIERS]).toEqual(["dayOne", "standard"]);
     expect(PRICING_TIER_DEFAULT).toBe("standard");
   });
 
   it("builds its labels from the pricing constants", () => {
-    expect(TIER_LABEL.dayOne).toBe("£6.99 · first 250");
-    expect(TIER_LABEL.dayOneNext).toBe("£7.99 · next 750");
+    expect(TIER_LABEL.dayOne).toBe("£6.99 · first 100");
     expect(TIER_LABEL.standard).toBe("£9.99 · standard");
   });
 });
