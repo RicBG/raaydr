@@ -30,7 +30,7 @@ RAAYDR was founded by Ric, a former session vocalist with 16 years in marketing.
 
 Through attention-based payment. Each listener's subscription creates their own artist pool, divided among the artists they actually played that month, proportional to listening time.
 
-The numbers are published, not hidden. The Day Ones are the first 1,000 listeners, and the earliest pay least: the first 250 pay £6.99 a month and the next 750 pay £7.99, both locked forever. The standard price is £9.99. After tax, publishing royalties and card fees, 55% of every subscription goes to artists, up to 15% is ring fenced for tastemakers, and RAAYDR keeps 30%. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier, up to {{rates.perFan.dayOneNext}} on the £7.99 band and up to {{rates.perFan.dayOne}} on the £6.99 band. A fan who gives you {{scenario.attention}} of their listening sends you about {{scenario.perFan}} that month; {{scenario.fans}} such fans is roughly {{scenario.raaydrMonthly}} a month. To match that on Spotify, where you are paid per play rather than per fan, you would need around {{scenario.spotifyStreams}} plays a month. The full working is in [our per-stream analysis](/pulse/how-much-does-spotify-pay-per-stream), backed by real distributor data.
+The numbers are published, not hidden. The Day Ones are the first 1,000 listeners, and the earliest pay least: the first 250 pay £6.99 a month and the next 750 pay £7.99, both locked forever. The standard price is £9.99. After tax, publishing royalties and card fees, {{rates.split.artists}} of every subscription goes to artists, up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and RAAYDR keeps {{rates.split.raaydr}}. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier, up to {{rates.perFan.dayOneNext}} on the £7.99 band and up to {{rates.perFan.dayOne}} on the £6.99 band. A fan who gives you {{scenario.attention}} of their listening sends you about {{scenario.perFan}} that month; {{scenario.fans}} such fans is roughly {{scenario.raaydrMonthly}} a month. To match that on Spotify, where you are paid per play rather than per fan, you would need around {{scenario.spotifyStreams}} plays a month. The full working is in [our per-stream analysis](/pulse/how-much-does-spotify-pay-per-stream), backed by real distributor data.
 
 Artists are paid monthly via Stripe, with a £50 minimum payout threshold.
 
@@ -40,7 +40,7 @@ Artists are paid monthly via Stripe, with a £50 minimum payout threshold.
 
 **Producers and songwriters** get their own dashboards and structural splits: an agreed percentage per song applied automatically to the artist's earnings, with a standing promise that we tell you when you're owed something.
 
-**Tastemakers** are paid for curation from a ring-fenced fund, up to 15% of every subscription, distributed by the same fan-count and attention mechanics artists enjoy. Whatever the fund does not pay out goes to the artists. No one can buy their way onto a tastemaker's list.
+**Tastemakers** are paid for curation from a ring-fenced fund, up to {{rates.split.tastemakers}} of every subscription, distributed by the same fan-count and attention mechanics artists enjoy. Whatever the fund does not pay out goes to the artists. No one can buy their way onto a tastemaker's list.
 
 **Listeners** get a platform where their money supports the music they actually play. On RAAYDR, people are the algorithm.
 

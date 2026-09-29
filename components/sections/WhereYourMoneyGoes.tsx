@@ -83,7 +83,7 @@ export default function WhereYourMoneyGoes() {
       <div
         className={styles.bar}
         role="img"
-        aria-label="Where your subscription goes: artists 55 percent, RAAYDR 30 percent, tastemakers up to 15 percent, of your subscription after tax, publishing royalties and card fees."
+        aria-label={`Where your subscription goes: artists ${SPLIT.artists} percent, RAAYDR ${SPLIT.raaydr} percent, tastemakers up to ${SPLIT.tastemakers} percent, of your subscription after tax, publishing royalties and card fees.`}
       >
         {segments.map((s) => (
           <div

@@ -14,7 +14,7 @@
 // so anything asserted here is eligible for rich results and AI citation and
 // has to reproduce from the rate model.
 
-import { CANONICAL, PRICING } from "./raaydrRates";
+import { CANONICAL, PRICING, SPLIT } from "./raaydrRates";
 
 export type FaqItem = {
   question: string;
@@ -82,7 +82,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "What is a tastemaker on RAAYDR?",
       answer:
-        "Someone whose recommendations genuinely move listeners to discover and stick with new artists. RAAYDR pays them from a ring-fenced share of every subscription, up to 15%, and anything nobody earns goes to the artists.",
+        `Someone whose recommendations genuinely move listeners to discover and stick with new artists. RAAYDR pays them from a ring-fenced share of every subscription, up to ${SPLIT.tastemakers}%, and anything nobody earns goes to the artists.`,
     },
     {
       question: "Is there a free plan?",
@@ -171,7 +171,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "How does the tastemaker fund work?",
       answer:
-        "Up to 15% of every subscription is ring fenced for tastemakers, after tax, publishing royalties and card fees. You earn from it based on how much of a listener's attention your recommendations actually drove. Anything nobody earns goes to the artists.",
+        `Up to ${SPLIT.tastemakers}% of every subscription is ring fenced for tastemakers, after tax, publishing royalties and card fees. You earn from it based on how much of a listener's attention your recommendations actually drove. Anything nobody earns goes to the artists.`,
     },
     {
       question: "Do I need to be a celebrity or influencer to qualify?",
