@@ -11,13 +11,20 @@ import Stance from "@/components/sections/Stance";
 import TickerMarquee from "@/components/TickerMarquee";
 import FirstWave from "@/components/sections/FirstWave";
 import ComparePill from "@/components/ComparePill";
+import SocietyLogoRow from "@/components/sections/SocietyLogoRow";
+import WritersSocietySection from "@/components/sections/WritersSocietySection";
+import { showSocietyLogos } from "@/lib/societies";
 import FaqAccordion from "@/components/FaqAccordion";
 import { faqData } from "@/lib/faqData";
 
 export default function Home() {
+  /* Read on the server, per request's build: off in production until Ric turns it on. See
+     `lib/societies.ts`. */
+  const showLogos = showSocietyLogos();
   return (
     <main>
       <Hero />
+      {showLogos ? <SocietyLogoRow /> : null}
       <Problem />
       <HowItWorks />
       <PledgeTimeline />
@@ -37,6 +44,7 @@ export default function Home() {
           order, so both sections and Stance were re-checked for pinning and
           scroll progress. */}
       <RealNumbers />
+      <WritersSocietySection showLogos={showLogos} />
       <FindYourPlace />
       <Stance />
       <TickerMarquee
