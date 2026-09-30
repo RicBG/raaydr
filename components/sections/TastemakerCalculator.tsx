@@ -11,7 +11,7 @@ import {
   type PricingTier,
   formatGbp as gbp,
 } from "@/lib/calculator";
-import { MODELLED_SHARE_NOTE } from "@/lib/raaydrRates";
+import { MODELLED_SHARE_NOTE, SPLIT } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import styles from "./Calculator.module.css";
 
@@ -173,8 +173,8 @@ export default function TastemakerCalculator() {
       </div>
 
       <p className={styles.footnote}>
-        Illustrative estimate, not a guarantee. Up to 15% of every subscription,
-        after tax, publishing royalties and card fees, is ring fenced for
+        Illustrative estimate, not a guarantee. Up to {SPLIT.tastemakers}% of every
+        subscription, after tax, publishing royalties and card fees, is ring fenced for
         tastemakers, and you earn from it in proportion to the listening you
         actually drive. Figures are projections based on your inputs, not a
         guarantee.

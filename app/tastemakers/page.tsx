@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import TastemakerCalculator from "@/components/sections/TastemakerCalculator";
 import { faqData } from "@/lib/faqData";
+import { SPLIT } from "@/lib/raaydrRates";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
   title: "RAAYDR for Tastemakers: Back music early. Earn for your taste.",
   description:
-    "Up to 15% of every subscription is ring fenced for the people who find music first. Be early and right, and the fund pays you for it.",
+    `Up to ${SPLIT.tastemakers}% of every subscription is ring fenced for the people who find music first. Be early and right, and the fund pays you for it.`,
   path: "/tastemakers",
 });
 
@@ -16,7 +17,7 @@ export default function TastemakersPage() {
     <AudiencePage
       eyebrow="For tastemakers"
       title="Back music early. Earn for your taste."
-      lead="Up to 15% of every subscription is ring fenced for the people who find music first. Whatever is not earned goes to the artists. Surface what's worth hearing, be early and right, and the fund pays you for it."
+      lead={`Up to ${SPLIT.tastemakers}% of every subscription is ring fenced for the people who find music first. Whatever is not earned goes to the artists. Surface what's worth hearing, be early and right, and the fund pays you for it.`}
       color="#E585AC"
       halo="tastemakers"
       role="Tastemaker"

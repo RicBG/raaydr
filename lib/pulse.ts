@@ -1,14 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
-  artistEarnings,
-  equivalentStreams,
-  spotifyEquivalentStreams,
   CANONICAL,
   DISTRIBUTABLE,
   PER_FAN,
   PLATFORM_PER_STREAM_ESTIMATES,
+  SPLIT,
   SPOTIFY,
+  artistEarnings,
+  equivalentStreams,
+  spotifyEquivalentStreams,
 } from "./raaydrRates";
 
 // The Pulse (RAAYDR blog) content loader. Reads content/pulse/*.md at build
@@ -108,6 +109,14 @@ const CONTENT_TOKENS: Record<string, string> = {
   "platform.appleMusic.streamsPerFan": count(
     equivalentStreams(PER_FAN.artist.standard, PLATFORM_PER_STREAM_ESTIMATES.appleMusic)
   ),
+  // The revenue split, stated in four posts and hand-typed in every one of them
+  // until 29 September 2026, when Ric moved the tastemaker share from 15 to 10
+  // and RAAYDR's from 30 to 35 (board rows 2009, 2010). Four posts each carrying
+  // their own copy of a ruled percentage is the same failure this token map was
+  // built for: a rate typed into prose is a copy, and copies go stale silently.
+  "rates.split.artists": `${SPLIT.artists}%`,
+  "rates.split.tastemakers": `${SPLIT.tastemakers}%`,
+  "rates.split.raaydr": `${SPLIT.raaydr}%`,
   // Distributable revenue. Published figure, not derived from PER_FAN: see the
   // note on DISTRIBUTABLE in raaydrRates.
   "rates.distributable.standard": money(DISTRIBUTABLE.standard),

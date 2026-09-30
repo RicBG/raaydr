@@ -18,7 +18,7 @@ heroAlt: "A single coin on a dark surface, glowing Signal Green, with green flec
 
 Update, 24 September 2026: Day One is now the first 100 listeners at £6.99 a month. Everyone after pays £9.99.
 
-A standard RAAYDR subscription is £9.99 a month. Of that, 55% goes to artists, 15% is ring fenced for tastemakers and RAAYDR keeps 30%, each a share of what is left after tax, publishing royalties and card fees. This page shows the full working, because no streaming service tells you what their percentage is a percentage of.
+A standard RAAYDR subscription is £9.99 a month. Of that, {{rates.split.artists}} goes to artists, up to {{rates.split.tastemakers}} is ring fenced for tastemakers and RAAYDR keeps {{rates.split.raaydr}}, each a share of what is left after tax, publishing royalties and card fees. This page shows the full working, because no streaming service tells you what their percentage is a percentage of.
 
 ## The number nobody publishes
 
@@ -42,9 +42,9 @@ What remains after those three is the distributable amount. On a £9.99 subscrip
 
 | Share | Who | Of the distributable amount |
 |---|---|---|
-| Artists | The artists that subscriber actually listens to | 55% |
-| Tastemakers | The people whose picks that subscriber acts on | up to 15% |
-| RAAYDR | Running the platform, and nothing else | 30% |
+| Artists | The artists that subscriber actually listens to | {{rates.split.artists}} |
+| Tastemakers | The people whose picks that subscriber acts on | up to {{rates.split.tastemakers}} |
+| RAAYDR | Running the platform, and nothing else | {{rates.split.raaydr}} |
 
 The artist share is not divided by total plays across the platform. It is divided by attention: the share of that one subscriber's listening each artist holds. A fan who plays you constantly is worth more to you than one who plays you occasionally, and neither is diluted by a global chart they have nothing to do with.
 
@@ -72,17 +72,17 @@ No free tier. Playing music requires a subscription. That is deliberate. It is w
 
 ## FAQ
 
-**What is the denominator for the 55%?**
-It is the distributable amount: your subscription after VAT, publishing royalties and card fees. On £9.99 that is roughly {{rates.distributable.standard}}, and 55% of it goes to artists.
+**What is the denominator for the {{rates.split.artists}}?**
+It is the distributable amount: your subscription after VAT, publishing royalties and card fees. On £9.99 that is roughly {{rates.distributable.standard}}, and {{rates.split.artists}} of it goes to artists.
 
 **Why is publishing taken out before the split?**
 Publishing royalties are owed to songwriters and composers by law, collected through PRS and MCPS. They are not RAAYDR's to keep or to split, so they come off the top like tax.
 
 **Does RAAYDR keep the unearned tastemaker fund?**
-No. Up to 15% is ring fenced for tastemakers, and whatever they do not earn goes to the artists. It never comes back to us.
+No. Up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and whatever they do not earn goes to the artists. It never comes back to us.
 
 **Is any of this different on the Day One price?**
-The percentages are the same. Day Ones pay £6.99 or £7.99 a month locked forever, depending on which band of the first 1,000 they joined in, so the pound amounts are smaller, but 55% still goes to artists, up to 15% to tastemakers and 30% to RAAYDR, each after the same costs.
+The percentages are the same. Day Ones pay £6.99 or £7.99 a month locked forever, depending on which band of the first 1,000 they joined in, so the pound amounts are smaller, but {{rates.split.artists}} still goes to artists, up to {{rates.split.tastemakers}} to tastemakers and {{rates.split.raaydr}} to RAAYDR, each after the same costs.
 
 ---
 

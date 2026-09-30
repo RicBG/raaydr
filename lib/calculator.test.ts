@@ -122,17 +122,37 @@ describe("tier selector options", () => {
 });
 
 describe("tastemakerPerFan", () => {
+  // Moved from 0.97 / 0.67 / 0.77 on 29 September 2026 when Ric took the tastemaker
+  // share from 15 to 10 (board rows 2009, 2010). These are the arithmetic consequence
+  // rather than a second decision, and the derivation is asserted further down against
+  // DISTRIBUTABLE_EXACT so neither set can be typed without the waterfall agreeing.
   it("reads the per-fan tastemaker rate per tier", () => {
-    expect(tastemakerPerFan()).toBeCloseTo(0.97, 10);
-    expect(tastemakerPerFan("standard")).toBeCloseTo(0.97, 10);
-    expect(tastemakerPerFan("dayOne")).toBeCloseTo(0.67, 10);
-    expect(tastemakerPerFan("dayOneNext")).toBeCloseTo(0.77, 10);
+    expect(tastemakerPerFan()).toBeCloseTo(0.64, 10);
+    expect(tastemakerPerFan("standard")).toBeCloseTo(0.64, 10);
+    expect(tastemakerPerFan("dayOne")).toBeCloseTo(0.44, 10);
+    expect(tastemakerPerFan("dayOneNext")).toBeCloseTo(0.51, 10);
   });
 });
 
 describe("tastemakerMonthly", () => {
   it("scales per-fan by fan count and driven share", () => {
-    expect(tastemakerMonthly(1000, 0.25)).toBeCloseTo(1000 * 0.97 * 0.25, 6);
+    expect(tastemakerMonthly(1000, 0.25)).toBeCloseTo(1000 * 0.64 * 0.25, 6);
+  });
+});
+
+describe("the revenue split", () => {
+  // raaydrRates throws at module load if this is false. Asserted here as well because a
+  // boot-time throw is only reached by something importing the module, and a copy change
+  // that moved one share and left the other two alone would otherwise sum to 95 in prose
+  // long before anything noticed.
+  it("is exhaustive: money in equals money out", () => {
+    expect(SPLIT.artists + SPLIT.tastemakers + SPLIT.raaydr).toBe(100);
+  });
+
+  it("carries the 29 September ruling: 55 artists, up to 10 tastemakers, 35 RAAYDR", () => {
+    expect(SPLIT.artists).toBe(55);
+    expect(SPLIT.tastemakers).toBe(10);
+    expect(SPLIT.raaydr).toBe(35);
   });
 });
 
@@ -339,17 +359,33 @@ describe("every per-fan rate derives from the waterfall", () => {
     expect(floorToPence(DISTRIBUTABLE_EXACT[tier])).toBeCloseTo(DISTRIBUTABLE[tier], 10);
   });
 
-  // The correction itself, pinned. £2.82/£0.76 must not come back.
+  // The correction itself, pinned. £2.82 must not come back.
   it("carries the settled £7.99 figures, not the retired ones", () => {
     expect(PER_FAN.artist.dayOneNext).toBeCloseTo(2.83, 10);
-    expect(PER_FAN.tastemaker.dayOneNext).toBeCloseTo(0.77, 10);
+    expect(PER_FAN.tastemaker.dayOneNext).toBeCloseTo(0.51, 10);
   });
 
-  // The 8p-Connect story explains £2.82 but never explained £0.76: 15% of that
-  // waterfall still floors to 77p. Nothing in the stated inputs reaches 76p.
-  it("cannot reach £0.76 from the artist rate's own implied range", () => {
+  // THIS ASSERTION CHANGED SHAPE ON 29 SEPTEMBER 2026 AND THE REASON IS WORTH KEEPING.
+  //
+  // It used to read "cannot reach £0.76 from the artist rate's own implied range", and it
+  // was about one 3 August dispute: the 8p-Connect story explained the retired £2.82 but
+  // never explained £0.76, because 15% of that waterfall still floors to 77p.
+  //
+  // At a 10% tastemaker share the figure is 51p, so "greater than 76p" is simply false and
+  // the old assertion would fail on a correct change. Renumbering 0.76 to some new
+  // threshold would keep a green test that no longer guards anything: the dispute it
+  // encoded is about a rate nobody pays now.
+  //
+  // What was load bearing is the METHOD -- that the tastemaker figure is REACHABLE from
+  // the artist rate's own implied distributable range rather than typed beside it -- so
+  // that is what is asserted instead. It still fails on a hand-typed tastemaker rate,
+  // which is the fault that put £0.76 on the live site for four days.
+  it("derives the tastemaker rate from the artist rate's own implied range", () => {
     const low = PER_FAN.artist.dayOneNext / (SPLIT.artists / 100);
-    expect(floorToPence(low * (SPLIT.tastemakers / 100))).toBeGreaterThan(0.76);
+    expect(floorToPence(low * (SPLIT.tastemakers / 100))).toBeCloseTo(
+      PER_FAN.tastemaker.dayOneNext,
+      10,
+    );
   });
 });
 

@@ -64,12 +64,36 @@ export const PRICING = {
  *  this is 0. See the note above PRICING. */
 export const DAY_ONE_NEXT_BAND = PRICING.dayOneCap - PRICING.dayOneFirstBand;
 
-/** Share of distributable revenue. Distributable is net of VAT, publishing and payment costs. */
+/**
+ * Share of distributable revenue. Distributable is net of VAT, publishing and payment costs.
+ *
+ * RULED 29 SEPTEMBER 2026, board rows 2009 and 2010. Ric, asked whether the tastemaker share
+ * is 15% or the proposed 10%: *"Yes it's the new split of 10."* The split was 55 / 15 / 30
+ * until that ruling, and every figure below that reads `tastemakers` moved with it.
+ *
+ * The tastemaker share is a CEILING, not a rate: whatever the fund does not pay out goes to
+ * that fan's artists at cycle close (engine spec 7.2), so copy says "up to". The artist share
+ * did not move. RAAYDR's did, 30 to 35, because the three must sum to 100 and the five points
+ * had to come from somewhere.
+ */
 export const SPLIT = {
   artists: 55,
-  tastemakers: 15,
-  raaydr: 30,
+  tastemakers: 10,
+  raaydr: 35,
 } as const;
+
+/**
+ * The split must be exhaustive, for the reason the platform repo's rates file states as
+ * principle 1 of the engine spec: money in equals money out. Asserted at module load so a bad
+ * edit fails at boot rather than at payout. This side had no such check before 29 September,
+ * which is how a copy change could have moved one share and left the other two summing to 95.
+ */
+const SPLIT_TOTAL = SPLIT.artists + SPLIT.tastemakers + SPLIT.raaydr;
+if (SPLIT_TOTAL !== 100) {
+  throw new Error(
+    `raaydrRates: the revenue split must sum to 100, got ${SPLIT_TOTAL}. Money in must equal money out.`,
+  );
+}
 
 /**
  * Floor a money amount to whole pence.
@@ -105,7 +129,20 @@ const flooredPerTier = (rate: PerTierRate): PerTierRate => ({
  */
 export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
   artist: flooredPerTier({ standard: 3.56, dayOne: 2.46, dayOneNext: 2.83 }),
-  tastemaker: flooredPerTier({ standard: 0.97, dayOne: 0.67, dayOneNext: 0.77 }),
+  /**
+   * MOVED 29 SEPTEMBER 2026 with the split above, from 0.97 / 0.67 / 0.77.
+   *
+   * These are not copy. They are the fund's size expressed per fan, so the 15 to 10 ruling
+   * moves them by arithmetic rather than by choice: `floorToPence(DISTRIBUTABLE_EXACT * 10%)`
+   * on each tier gives 0.64, 0.44 and 0.51, and `calculator.test.ts` derives all three from
+   * DISTRIBUTABLE_EXACT rather than reading these, so a typed figure cannot drift from the
+   * waterfall that produced it.
+   *
+   * Worth saying plainly because it is the largest published number this ruling moves and it
+   * is not the one the ruling names: the tastemaker calculator's own example, 1,000 followers
+   * at a 20% driven share, falls from £194 a month to £128.
+   */
+  tastemaker: flooredPerTier({ standard: 0.64, dayOne: 0.44, dayOneNext: 0.51 }),
 };
 
 /*
@@ -118,7 +155,9 @@ export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
  * (648.322p and 447.922p unrounded, giving 3.56/0.97 and 2.46/0.67 exactly),
  * so putting £7.99 through the identical maths is the same computation, not a
  * reconstruction of it. At the floor-in-pence Connect rule's 7p it gives
- * 514.722p, and 55% / 15% of that floor to 283p and 77p.
+ * 514.722p, and 55% / 15% of that floor to 283p and 77p. (15% was the tastemaker
+ * share until 29 September 2026; see SPLIT. This paragraph records a derivation made
+ * under it and is deliberately left in its own terms.)
  *
  * §3a attributed the old £2.82 to an implementation that invented 8p for
  * Connect. That explains the artist figure and only the artist figure: 8p
@@ -317,7 +356,7 @@ export const PLATFORM_PER_STREAM_ESTIMATES = {
 } as const;
 
 /**
- * Distributable revenue per subscription: what the 55/15/30 split is a share
+ * Distributable revenue per subscription: what the 55/10/35 split is a share
  * of, after VAT, publishing royalties and payment costs.
  *
  * NOT DERIVED FROM THE CONSTANTS ABOVE. It comes from the waterfall, not from

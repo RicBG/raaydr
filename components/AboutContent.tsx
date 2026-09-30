@@ -6,6 +6,7 @@ import HeroCallout from "@/components/HeroCallout";
 import FaqAccordion from "@/components/FaqAccordion";
 import { InstagramIcon, TikTokIcon } from "@/components/SocialIcons";
 import { faqData } from "@/lib/faqData";
+import { SPLIT } from "@/lib/raaydrRates";
 import { siteConfig } from "@/lib/siteConfig";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
@@ -94,9 +95,10 @@ export default function AboutContent() {
               listening, and you can trace where it went.
             </p>
             <p data-reveal>
-              The split is simple and public. 55% of every subscription goes
-              to artists, up to 15% is ring fenced for the tastemakers who find
-              music first, and we keep 30%, each a share of what is left after
+              The split is simple and public. {SPLIT.artists}% of every
+              subscription goes to artists, up to {SPLIT.tastemakers}% is ring
+              fenced for the tastemakers who find music first, and we keep{" "}
+              {SPLIT.raaydr}%, each a share of what is left after
               tax, publishing royalties and card fees. The artists&rsquo; share
               follows the ones you actually listened to, divided by attention,
               not by play count. Producers and songwriters are paid
