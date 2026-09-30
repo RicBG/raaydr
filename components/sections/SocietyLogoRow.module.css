@@ -67,3 +67,49 @@
     height: 40px;
   }
 }
+
+/* The version that sits at the foot of the pinned hero (work_items 256). Transparent over the
+   hero's own canvas, tighter, and never taller than a fifth of the viewport so the orb, the
+   heading and the button keep their room. */
+.inHero {
+  background: transparent;
+  padding: 0 var(--gutter) 28px;
+}
+
+.inHero .inner {
+  gap: 16px;
+}
+
+.inHero .logos {
+  gap: 36px;
+}
+
+.inHero .logo {
+  height: 40px;
+}
+
+@media (max-width: 720px) {
+  .inHero {
+    padding: 0 var(--gutter) 20px;
+  }
+
+  .inHero .inner {
+    gap: 10px;
+  }
+
+  .inHero .logos {
+    gap: 14px 16px;
+  }
+
+  .inHero .logo {
+    height: 30px;
+  }
+
+  /* Each logo carries its own optical height inline (a wide wordmark and a tall mark weigh
+     the same at desktop size). On a phone the tall ones overflow a 30px slot and sit on top
+     of their neighbours, so the hero version clamps them. !important is the only way past an
+     inline style. */
+  .inHero .logo img {
+    max-height: 30px !important;
+  }
+}

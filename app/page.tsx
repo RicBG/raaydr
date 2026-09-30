@@ -23,8 +23,7 @@ export default function Home() {
   const showLogos = showSocietyLogos();
   return (
     <main>
-      <Hero />
-      {showLogos ? <SocietyLogoRow /> : null}
+      <Hero footer={showLogos ? <SocietyLogoRow inHero /> : null} />
       <Problem />
       <HowItWorks />
       <PledgeTimeline />

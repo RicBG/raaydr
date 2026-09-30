@@ -20,6 +20,16 @@
   overflow: hidden;
 }
 
+/* The slot at the foot of the pinned hero, for a row that has to be visible with it
+   (the society logos, work_items 256). Above the orb and the recede layer, below the nav. */
+.footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
 /* Everything visible in the hero, as one group, so the recede animation can
    scale/dim/blur it as a single unit while the section itself stays put. */
 .content {

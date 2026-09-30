@@ -29,7 +29,7 @@ function OrbPresence({ onGone }: { onGone: () => void }) {
   return null;
 }
 
-export default function Hero() {
+export default function Hero({ footer = null }: { footer?: React.ReactNode }) {
   const sectionRef = useRef<HTMLElement>(null);
   const heroPinRef = useRef<HTMLDivElement>(null);
   const orbLayerRef = useRef<HTMLDivElement>(null);
@@ -243,6 +243,12 @@ export default function Hero() {
           </div>
         </div>
       </div>
+      {/* Lives INSIDE the sticky hero, at the foot of its visible viewport, because the
+          Problem card is pulled up over this wrapper's second viewport
+          (`margin-top: -100svh`) and covers anything placed after it. Outside
+          `.content`, so the recede animation does not scale or blur it. Work_items 256;
+          Riz's check on the preview found the row hidden under Problem. */}
+      {footer ? <div className={styles.footer}>{footer}</div> : null}
     </section>
     </div>
   );

@@ -37,3 +37,13 @@ Next build passes (`/opengraph-image`, `/twitter-image`, `/icon.svg` and `/apple
 
 - **Turning the logos on in production.** That is Ric's.
 - **Whether the society names may be used at all.** The flag exists because nobody has asked them.
+
+## After review (Riz, board row 2245): the logo row was hidden, and now lives inside the pinned hero
+
+**The first build put the row after the hero wrapper, and the next section covered it.** The hero is `position: sticky` inside a 200svh wrapper, and the Problem card is pulled up over that wrapper's second viewport with `margin-top: -100svh` so it scrolls over the hero. Riz measured it at 1440: the row rendered at y=1800, 215px tall, opacity 1, while Problem ran from y=1115 to 2049 and painted over it. In the DOM and invisible on the page. I had verified the row on an isolated test page and said so as not proven in situ; this is the thing that caveat was about.
+
+**The fix puts the row inside the sticky hero, at the foot of its visible viewport** (`Hero` takes a `footer` slot; `SocietyLogoRow` has an `inHero` variant: transparent, compact, absolutely positioned at the bottom). It sits outside `.content`, so the recede animation does not scale or blur it, and it leaves with the hero when the Problem card scrolls over it, which is what "under the hero" meant.
+
+**Measured on a production build with `SHOW_SOCIETY_LOGOS=true`, at the row's scroll position rather than a full-page capture** (a full-page capture flattens the pin): at 1440x900 the row is at y=797 to 900 with the button ending at 579 and the heading at 460; at 390x844 it is at y=721 to 844 with the button ending at 603. Seven logos, none overlapping. On a phone the hero version clamps each logo to 30px, because the per-logo optical heights are inline and the tall marks (BMI, SIAE) otherwise overflowed their slot onto their neighbours.
+
+**One honest limit: the cookie bar covers it on a first visit.** The consent bar is fixed to the bottom of the viewport, 111px tall at 1440 and 226px at 390, exactly where the row sits, so a first-time visitor sees the row once they have chosen Accept or Reject. Captured both ways. Moving the row above the bar would put it on top of the orb on a phone; that is a design call for Ric and is not made here.
