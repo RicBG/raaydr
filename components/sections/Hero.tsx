@@ -188,6 +188,7 @@ export default function Hero({ footer = null }: { footer?: React.ReactNode }) {
       ref={sectionRef}
       id="hero"
       className={styles.hero}
+      data-footer={footer ? "true" : undefined}
       aria-label="RAAYDR"
     >
       <div className={styles.content}>
