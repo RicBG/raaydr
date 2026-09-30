@@ -1,0 +1,26 @@
+.page {
+  padding-top: 76px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.content {
+  padding: clamp(56px, 10vw, 140px) 0;
+}
+
+.title {
+  margin-top: 20px;
+}
+
+.lead {
+  margin-top: clamp(20px, 3vw, 32px);
+  max-width: 46ch;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
+.action {
+  margin-top: clamp(32px, 4vw, 48px);
+}
