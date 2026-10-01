@@ -55,6 +55,19 @@
  * already stamps `data-joined` and paints its own cover for its own reasons;
  * two covers on one paint is one too many, so this one stands down.
  *
+ * THE OPENING IS THIS SAME CURTAIN, PLAYED LONGER ON THE FIRST LOAD OF A SESSION.
+ * Ric's ruling (platform board rows 2396, 2401) is that the Opening plays on the
+ * marketing site as well as in the Control Room, on the first visit of a session.
+ * The site already had a curtain doing a job the Opening does not do (holding a
+ * reader at the top while fonts, hydration and WebGL settle, including on a reload
+ * part way down the page), so a second overlay beside it would have been two covers
+ * on one paint. Instead this one has two modes. The first load of a session, and
+ * any load with `?opening=1`, stamps `data-opening` as well and plays the
+ * lockup for OPENING_HOLD_MS before it pushes out. Every later load, and a reload,
+ * gets the short curtain it always had, with every guarantee below unchanged.
+ * Storage that is blocked counts as "not the first load": the short curtain, never
+ * the long one on every page.
+ *
  * It also carries a second, unrelated stamp — `data-motion` — for the same
  * reason it is in <head>: something has to be known before first paint. See
  * MOTION_ATTR below.
@@ -90,21 +103,60 @@ export const FADE_MS = 650;
 /** Ceiling on the wait for an idle frame once the page has loaded. */
 export const IDLE_MS = 1200;
 
+/**
+ * THE OPENING (first load of a session, or `?opening=1`).
+ *
+ * The hold is the same 3.5 seconds the Control Room's Opening holds, a starting
+ * point Ric asked for on 1 October (board row 2396) to be judged by eye on a
+ * preview. The push out is 0.9 seconds and must match the transitions in
+ * globals.css, as FADE_MS does. Reduced motion is a different animation, not a
+ * slower one: a still lockup, then a short fade, with no scale or blur.
+ *
+ * OPENING_MAX_MS is the escape for the long curtain and is deliberately not
+ * MAX_MS: that one would cut the lockup off before it had held. It is the hold
+ * plus room for a slow page, and it is a guarantee, like MAX_MS, not a tuning
+ * knob. The platform's Opening uses twelve seconds for the same job; this is
+ * shorter because a stalled marketing page is a reader leaving.
+ */
+export const OPENING_HOLD_MS = 3500;
+export const OPENING_REDUCED_HOLD_MS = 1500;
+export const OPENING_OUT_MS = 900;
+export const OPENING_REDUCED_OUT_MS = 400;
+export const OPENING_MAX_MS = 8000;
+/** sessionStorage key: set at the START of the opening, so a refresh does not replay it. */
+export const OPENING_STORAGE_KEY = "raaydr-opening";
+/** `?opening=1` replays it, for reviewing it. */
+export const OPENING_REPLAY_PARAM = "opening";
+
 export const BOOT_PREPAINT_SCRIPT = `(function(){try{
 var d=document,h=d.documentElement;
 // Unconditional, and before the early return below: this says what the
 // document will do, not what the curtain is doing.
-if(!matchMedia('(prefers-reduced-motion: reduce)').matches)h.setAttribute('${MOTION_ATTR}','on');
+var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduced)h.setAttribute('${MOTION_ATTR}','on');
 if(h.getAttribute('data-joined')==='1')return;
+// First load of a session, or an explicit replay. The flag is set now, at the
+// start, so a refresh at one second does not play it again. Storage that throws
+// (blocked, private window) means no opening, never an opening on every page.
+var play=false;
+try{
+var s=window.sessionStorage,
+r=/[?&]${OPENING_REPLAY_PARAM}=1(&|$)/.test(location.search);
+if(r||!s.getItem('${OPENING_STORAGE_KEY}')){s.setItem('${OPENING_STORAGE_KEY}','1');play=true;}
+}catch(e){}
 h.setAttribute('data-booting','1');
+if(play)h.setAttribute('data-opening',reduced?'reduced':'1');
+var min=play?(reduced?${OPENING_REDUCED_HOLD_MS}:${OPENING_HOLD_MS}):${MIN_MS},
+fade=play?(reduced?${OPENING_REDUCED_OUT_MS}:${OPENING_OUT_MS}):${FADE_MS},
+max=play?${OPENING_MAX_MS}:${MAX_MS};
 var t0=Date.now(),done=false;
 var lift=function(){
 if(done)return;done=true;
 h.setAttribute('data-booting','0');
 // Attribute only — never touch the node itself. See the note above.
-setTimeout(function(){h.removeAttribute('data-booting')},${FADE_MS});
+setTimeout(function(){h.removeAttribute('data-booting');h.removeAttribute('data-opening')},fade);
 };
-var hard=setTimeout(lift,${MAX_MS});
+var hard=setTimeout(lift,max);
 var settle=function(){
 setTimeout(function(){
 var go=function(){clearTimeout(hard);lift();};
@@ -114,7 +166,7 @@ var go=function(){clearTimeout(hard);lift();};
 // in the reader's first scroll.
 if(typeof requestIdleCallback==='function')requestIdleCallback(go,{timeout:${IDLE_MS}});
 else setTimeout(go,200);
-},Math.max(0,${MIN_MS}-(Date.now()-t0)));
+},Math.max(0,min-(Date.now()-t0)));
 };
 var ready=function(){
 var f=d.fonts&&d.fonts.ready;
@@ -122,4 +174,4 @@ if(f&&f.then)f.then(settle,settle);else settle();
 };
 if(d.readyState==='complete')ready();
 else addEventListener('load',ready,{once:true});
-}catch(e){try{document.documentElement.removeAttribute('data-booting')}catch(e2){}}})();`;
+}catch(e){try{var x=document.documentElement;x.removeAttribute('data-booting');x.removeAttribute('data-opening')}catch(e2){}}})();`;
