@@ -552,3 +552,202 @@ html[data-booting="1"] {
     transform: scale(1.03);
   }
 }
+
+/* ---------- The Opening ----------
+   The same curtain, played longer on the first load of a session or with
+   ?opening=1. lib/boot.ts stamps `data-opening` ("1", or "reduced") beside
+   `data-booting`, and EVERYTHING below is gated on it, so every later load gets
+   the short curtain above exactly as it was.
+
+   Matches the Control Room's Opening (platform packages/tokens/src/opening.css):
+   0.34s the lockup fades and settles in, 0.8s the bars breathe, the hold ends at
+   the later of 3.5s and the page being ready, then the lockup pushes out towards
+   you (scale 1.35, blur 12px) and the veil lifts off the page. OPENING_OUT_MS in
+   lib/boot.ts is the 0.9s these add up to; change one and change the other.
+
+   ONE DIFFERENCE FROM THE PLATFORM, AND IT IS DELIBERATE: the page does not also
+   "rise" (translateY) as the veil lifts. This page pins sections with ScrollTrigger
+   and positions things fixed, and a transform on any ancestor makes a fixed element
+   position against that ancestor instead of the viewport. The veil fading is what
+   lets the page through, and nothing is left on the page afterwards. */
+
+.bootBars {
+  display: none;
+}
+
+html[data-opening] .bootInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  animation: boot-lock-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 340ms both;
+}
+
+html[data-opening] .bootGlow {
+  display: none;
+}
+
+html[data-opening] .bootBars {
+  display: block;
+  width: 112px;
+  height: 112px;
+}
+
+html[data-opening] .bootMark {
+  width: min(72vw, 276px);
+}
+
+@media (min-width: 900px) {
+  html[data-opening] .bootInner {
+    flex-direction: row;
+    gap: 26px;
+  }
+  html[data-opening] .bootBars {
+    width: 190px;
+    height: 190px;
+  }
+  html[data-opening] .bootMark {
+    width: 566px;
+  }
+}
+
+.bootStopFrom {
+  stop-color: var(--cyan);
+}
+.bootStopTo {
+  /* The platform's action violet, the same value as the blip in the wordmark. */
+  stop-color: #7c4dff;
+}
+
+.bootBar {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: boot-bar 1.6s ease-in-out 800ms infinite;
+}
+.bootBar[data-bar="1"] {
+  animation-delay: 950ms;
+}
+.bootBar[data-bar="2"] {
+  animation-delay: 1100ms;
+}
+.bootBar[data-bar="3"] {
+  animation-delay: 1250ms;
+}
+
+/* The push out. The blur is on the lockup, not on the full-bleed panel, for the
+   reason given on `.bootMark` above. The base reveal rules write a blur and a
+   scale to .bootMark; the lockup carries that here, so they are neutralised. */
+html[data-opening][data-booting="0"] .bootMark {
+  filter: none;
+  transform: none;
+}
+html[data-opening][data-booting="0"] .bootInner {
+  animation: boot-lock-out 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+/* THE LOCKUP GOES FIRST, THEN THE VEIL. Riz's check (board row 2417) caught the hero's own
+   copy showing through the lockup, two texts on top of each other, and Ric saw the same on
+   his phone. The cause: the veil faded as a whole, lockup included, so the page came through
+   while the lockup was still half there. Here .boot keeps opacity 1 and only its BACKGROUND
+   fades, starting at 0.4s, after the lockup's own 0.5s push out has all but finished. The
+   page is not visible until the lockup has gone. */
+html[data-opening][data-booting] .boot {
+  transition: background-color 500ms linear 400ms;
+}
+html[data-opening][data-booting="0"] .boot {
+  opacity: 1;
+  background-color: transparent;
+}
+
+@keyframes boot-lock-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes boot-lock-out {
+  from {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35);
+    filter: blur(12px);
+  }
+}
+@keyframes boot-bar {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  25% {
+    transform: scaleY(1.3);
+  }
+  75% {
+    transform: scaleY(0.6);
+  }
+}
+
+/* Reduced motion: the lockup appears still, then fades to the page. No scale, no
+   blur, no breathing. `!important` because the blanket rule under "Motion hygiene"
+   flattens every duration, and this variant needs its own two. */
+html[data-opening="reduced"] .bootInner {
+  animation: boot-fade-in 300ms linear both !important;
+}
+html[data-opening="reduced"] .bootBar {
+  animation: none !important;
+}
+html[data-opening="reduced"][data-booting="0"] .bootInner {
+  animation: boot-fade-out 200ms linear both !important;
+}
+html[data-opening="reduced"][data-booting] .boot {
+  transition: background-color 200ms linear 200ms !important;
+}
+@keyframes boot-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes boot-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The CSS-only backstop on the Opening. lib/boot.ts ends it at OPENING_MAX_MS, but that is a
+   timer on the main thread, and the main thread is exactly what a slow phone has busy while
+   fonts, hydration and WebGL land. This takes the veil out of hit testing and out of sight at
+   the end of the push out (hold 3.5s, push out 0.9s, 4.4s) whatever script is doing. Riz
+   measured the lockup on screen for 9 to 10 seconds on a throttled run without it (board row
+   2417).
+
+   IT ANIMATES visibility ONLY, AND THAT IS DELIBERATE. A first cut animated opacity as well,
+   to fade the veil on the way out, and on a throttled run it fought the push out's own
+   opacity transition: the lockup sat at full strength and was then cut off in a single frame.
+   When script is on time this does nothing visible at all, because the veil is already
+   transparent by then. When script is late it is a cut rather than a fade, which is the right
+   trade for a path that exists to guarantee the curtain goes. */
+html[data-opening] .boot {
+  animation: boot-cap 1ms linear 4400ms forwards;
+}
+html[data-opening="reduced"] .boot {
+  animation: boot-cap 1ms linear 1900ms forwards !important;
+}
+@keyframes boot-cap {
+  to {
+    visibility: hidden;
+  }
+}
