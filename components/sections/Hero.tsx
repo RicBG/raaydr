@@ -231,7 +231,7 @@ export default function Hero() {
               Music streaming is broken. We fixed it. Now everyone wins.
             </h1>
             <p ref={subcopyRef} className={styles.subcopy}>
-              Attention over streams.
+              Attention pays.
             </p>
             <a
               ref={ctaRef}

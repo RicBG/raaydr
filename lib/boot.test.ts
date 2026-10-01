@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   BOOT_PREPAINT_SCRIPT,
@@ -27,6 +28,8 @@ type Harness = {
   attrs: Map<string, string>;
   fire: (event: string) => void;
   removals: number;
+  transitions: () => number;
+  skipped: () => number;
   fontsReady: Promise<void>;
   storage: Map<string, string>;
 };
@@ -53,7 +56,7 @@ function boot({
   const attrs = new Map<string, string>();
   if (joined) attrs.set("data-joined", "1");
   const listeners = new Map<string, Array<() => void>>();
-  const state = { removals: 0 };
+  const state = { removals: 0, transitions: 0, skipped: 0 };
 
   const bootNode = {
     parentNode: {
@@ -74,6 +77,15 @@ function boot({
     },
     fonts: { ready: Promise.resolve() },
     getElementById: () => bootNode,
+    startViewTransition: () => {
+      state.transitions += 1;
+      return {
+        ready: Promise.resolve(),
+        skipTransition: () => {
+          state.skipped += 1;
+        },
+      };
+    },
   });
   vi.stubGlobal("matchMedia", (q: string) => ({
     matches: q.includes("reduce") ? reducedMotion : !reducedMotion,
@@ -108,6 +120,8 @@ function boot({
     },
     fontsReady: Promise.resolve(),
     storage,
+    transitions: () => state.transitions,
+    skipped: () => state.skipped,
   } as Harness;
   return harness;
 }
@@ -255,13 +269,20 @@ describe("the opening", () => {
     expect(OPENING_OUT_MS).toBe(900);
   });
 
-  it("ends as soon as the page is ready after the hold, not later", async () => {
+  // Riz measured the first cut on screen for 9 to 10 seconds (board row 2417)
+  // because it waited for the page after its hold. It must not: the hold ends
+  // it, whatever load, fonts and idle are doing.
+  it("ends at the hold even when the page is not ready, and never waits for it", async () => {
     const h = first();
-    await vi.advanceTimersByTimeAsync(OPENING_HOLD_MS + 500);
-    expect(h.attrs.get("data-booting")).toBe("1"); // load has not fired: still waiting
-    h.fire("load");
-    await vi.advanceTimersByTimeAsync(300);
-    expect(h.attrs.get("data-booting")).toBe("0");
+    await vi.advanceTimersByTimeAsync(OPENING_MAX_MS + 50);
+    expect(h.attrs.get("data-booting")).toBe("0"); // load has not fired
+    await vi.advanceTimersByTimeAsync(OPENING_OUT_MS + 50);
+    expect(h.attrs.has("data-booting")).toBe(false);
+    expect(h.attrs.has("data-opening")).toBe(false);
+  });
+
+  it("is over by about 4.5 seconds in all, from first paint", () => {
+    expect(OPENING_MAX_MS + OPENING_OUT_MS).toBeLessThanOrEqual(4500);
   });
 
   it("takes both attributes back off after the push out, and never the node", async () => {
@@ -285,9 +306,8 @@ describe("the opening", () => {
     expect(h.attrs.has("data-opening")).toBe(false);
   });
 
-  it("has an escape that is later than the hold, or the hold could never finish", () => {
+  it("has a cap that is later than the hold, or the hold could never finish", () => {
     expect(OPENING_MAX_MS).toBeGreaterThan(OPENING_HOLD_MS);
-    expect(OPENING_MAX_MS).toBeGreaterThan(MAX_MS);
   });
 
   it("is a different, shorter animation under reduced motion", async () => {
@@ -308,5 +328,93 @@ describe("the opening", () => {
     expect(h.attrs.get("data-booting")).toBe("0");
     await vi.advanceTimersByTimeAsync(FADE_MS + 50);
     expect(h.attrs.has("data-booting")).toBe(false);
+  });
+});
+
+// A root view transition snapshots the whole viewport, the curtain included, so
+// one starting while the lockup is up fades the lockup out and a copy back in
+// from below: the flash Ric saw on his own device (board row 2418).
+describe("view transitions while the curtain is up", () => {
+  // Skipping before `ready` rejects it, and React chains onto `ready` without a
+  // catch: an uncaught AbortError in the console on every first load.
+  it("skips a transition that starts while the curtain is up, once it is ready", async () => {
+    const h = boot({ storage: new Map() });
+    (document as unknown as { startViewTransition: () => unknown }).startViewTransition();
+    expect(h.transitions()).toBe(1); // it still ran, so the update callback still runs
+    expect(h.skipped()).toBe(0); // not yet: skipping before ready would reject it
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(h.skipped()).toBe(1);
+  });
+
+  it("skips it for the short curtain too, and during the push out", async () => {
+    const h = boot();
+    h.fire("load");
+    await vi.advanceTimersByTimeAsync(MIN_MS + 100);
+    expect(h.attrs.get("data-booting")).toBe("0");
+    (document as unknown as { startViewTransition: () => unknown }).startViewTransition();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(h.skipped()).toBe(1);
+  });
+
+  it("leaves a transition alone once the curtain is gone", async () => {
+    const h = boot();
+    h.fire("load");
+    await vi.advanceTimersByTimeAsync(MIN_MS + 100 + FADE_MS + 50);
+    expect(h.attrs.has("data-booting")).toBe(false);
+    (document as unknown as { startViewTransition: () => unknown }).startViewTransition();
+    expect(h.skipped()).toBe(0);
+  });
+
+  it("does nothing where the browser has no view transitions", () => {
+    expect(() => boot({ storage: new Map() })).not.toThrow();
+  });
+});
+
+// THE HAND-OFF, read from the stylesheet. These pin the two decisions Riz's check
+// and Ric's own phone forced (board rows 2417, 2418), so a tidy-up cannot undo
+// them without a test saying why.
+describe("the Opening's hand-off, in the stylesheet", () => {
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(
+    /\/\*[\s\S]*?\*\//g,
+    "",
+  );
+  const rule = (selector: string) => {
+    const at = css.indexOf(selector + " {");
+    expect(at, `${selector} has a rule`).toBeGreaterThan(-1);
+    return css.slice(at, css.indexOf("}", at));
+  };
+
+  // The page must not show through the lockup. If the veil faded as a whole
+  // (opacity), the lockup would go with it while the hero came up underneath.
+  it("lifts the veil by fading its background, not its opacity, so the lockup goes first", () => {
+    expect(rule('html[data-opening][data-booting="0"] .boot')).toMatch(/opacity:\s*1/);
+    expect(rule('html[data-opening][data-booting="0"] .boot')).toMatch(/background-color:\s*transparent/);
+    expect(rule("html[data-opening][data-booting] .boot")).toMatch(/transition:\s*background-color/);
+  });
+
+  it("starts lifting the veil only after the lockup's push out has all but finished", () => {
+    const delay = rule("html[data-opening][data-booting] .boot").match(/background-color\s+(\d+)ms\s+linear\s+(\d+)ms/);
+    expect(delay).not.toBeNull();
+    const [, , after] = delay!;
+    expect(Number(after)).toBeGreaterThanOrEqual(400);
+  });
+
+  // The backstop is the one thing standing between a stalled main thread and a
+  // lockup on screen for ten seconds. It must outlive neither the push out nor
+  // be able to fight its opacity.
+  it("has a CSS-only backstop that animates visibility and nothing else", () => {
+    expect(rule("html[data-opening] .boot")).toMatch(/animation:\s*boot-cap/);
+    const frames = css.slice(css.indexOf("@keyframes boot-cap"));
+    const body = frames.slice(0, frames.indexOf("\n}\n"));
+    expect(body).toMatch(/visibility:\s*hidden/);
+    expect(body).not.toMatch(/opacity/);
+  });
+
+  it("times the backstop at the end of the push out", () => {
+    const m = rule("html[data-opening] .boot").match(/boot-cap\s+1ms\s+linear\s+(\d+)ms/);
+    expect(m).not.toBeNull();
+    expect(Number(m![1])).toBe(OPENING_HOLD_MS + OPENING_OUT_MS);
   });
 });

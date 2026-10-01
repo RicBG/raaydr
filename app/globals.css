@@ -644,8 +644,18 @@ html[data-opening][data-booting="0"] .bootMark {
 html[data-opening][data-booting="0"] .bootInner {
   animation: boot-lock-out 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+/* THE LOCKUP GOES FIRST, THEN THE VEIL. Riz's check (board row 2417) caught the hero's own
+   copy showing through the lockup, two texts on top of each other, and Ric saw the same on
+   his phone. The cause: the veil faded as a whole, lockup included, so the page came through
+   while the lockup was still half there. Here .boot keeps opacity 1 and only its BACKGROUND
+   fades, starting at 0.4s, after the lockup's own 0.5s push out has all but finished. The
+   page is not visible until the lockup has gone. */
 html[data-opening][data-booting] .boot {
-  transition: opacity 750ms linear 100ms;
+  transition: background-color 500ms linear 400ms;
+}
+html[data-opening][data-booting="0"] .boot {
+  opacity: 1;
+  background-color: transparent;
 }
 
 @keyframes boot-lock-in {
@@ -695,12 +705,18 @@ html[data-opening="reduced"] .bootBar {
   animation: none !important;
 }
 html[data-opening="reduced"][data-booting="0"] .bootInner {
-  animation: none !important;
-  opacity: 1;
+  animation: boot-fade-out 200ms linear both !important;
 }
 html[data-opening="reduced"][data-booting] .boot {
-  transition: opacity 400ms linear !important;
-  transition-delay: 0s !important;
+  transition: background-color 200ms linear 200ms !important;
+}
+@keyframes boot-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 @keyframes boot-fade-in {
   from {
@@ -708,5 +724,30 @@ html[data-opening="reduced"][data-booting] .boot {
   }
   to {
     opacity: 1;
+  }
+}
+
+/* The CSS-only backstop on the Opening. lib/boot.ts ends it at OPENING_MAX_MS, but that is a
+   timer on the main thread, and the main thread is exactly what a slow phone has busy while
+   fonts, hydration and WebGL land. This takes the veil out of hit testing and out of sight at
+   the end of the push out (hold 3.5s, push out 0.9s, 4.4s) whatever script is doing. Riz
+   measured the lockup on screen for 9 to 10 seconds on a throttled run without it (board row
+   2417).
+
+   IT ANIMATES visibility ONLY, AND THAT IS DELIBERATE. A first cut animated opacity as well,
+   to fade the veil on the way out, and on a throttled run it fought the push out's own
+   opacity transition: the lockup sat at full strength and was then cut off in a single frame.
+   When script is on time this does nothing visible at all, because the veil is already
+   transparent by then. When script is late it is a cut rather than a fade, which is the right
+   trade for a path that exists to guarantee the curtain goes. */
+html[data-opening] .boot {
+  animation: boot-cap 1ms linear 4400ms forwards;
+}
+html[data-opening="reduced"] .boot {
+  animation: boot-cap 1ms linear 1900ms forwards !important;
+}
+@keyframes boot-cap {
+  to {
+    visibility: hidden;
   }
 }

@@ -112,17 +112,23 @@ export const IDLE_MS = 1200;
  * globals.css, as FADE_MS does. Reduced motion is a different animation, not a
  * slower one: a still lockup, then a short fade, with no scale or blur.
  *
- * OPENING_MAX_MS is the escape for the long curtain and is deliberately not
- * MAX_MS: that one would cut the lockup off before it had held. It is the hold
- * plus room for a slow page, and it is a guarantee, like MAX_MS, not a tuning
- * knob. The platform's Opening uses twelve seconds for the same job; this is
- * shorter because a stalled marketing page is a reader leaving.
+ * OPENING_MAX_MS IS THE CAP, AND IT IS THE HOLD PLUS A BREATH. Riz's check of the
+ * first cut (board row 2417) found the lockup on screen for 9 to 10 seconds on a
+ * slow, throttled run, because the Opening waited for fonts, load and an idle
+ * frame after its hold and only gave up at 8 seconds. On a marketing site every
+ * visitor from an ad arrives on a first load, so that wait is a bounce. The
+ * Opening now ends at the hold whatever the page is doing: at most this long
+ * from first paint, then the 0.9 second push out, about 4.5 seconds in all. It no
+ * longer waits for the page, which is a change from the Control Room's Opening and
+ * is deliberate: the page behind it is the short curtain's old job, and the short
+ * curtain's own cap was 3.8 seconds. A matching CSS-only cap in globals.css
+ * covers the case where script itself is late.
  */
 export const OPENING_HOLD_MS = 3500;
 export const OPENING_REDUCED_HOLD_MS = 1500;
 export const OPENING_OUT_MS = 900;
 export const OPENING_REDUCED_OUT_MS = 400;
-export const OPENING_MAX_MS = 8000;
+export const OPENING_MAX_MS = 3600;
 /** sessionStorage key: set at the START of the opening, so a refresh does not replay it. */
 export const OPENING_STORAGE_KEY = "raaydr-opening";
 /** `?opening=1` replays it, for reviewing it. */
@@ -145,6 +151,20 @@ r=/[?&]${OPENING_REPLAY_PARAM}=1(&|$)/.test(location.search);
 if(r||!s.getItem('${OPENING_STORAGE_KEY}')){s.setItem('${OPENING_STORAGE_KEY}','1');play=true;}
 }catch(e){}
 h.setAttribute('data-booting','1');
+// React's <ViewTransition> (RouteTransition) starts a ROOT view transition when
+// the page hydrates, and a root transition snapshots the whole viewport, the
+// curtain included: the lockup is faded out and a copy of it faded back in from
+// below, which reads as a flash, and the frozen snapshot can outlast the cap.
+// Measured: one started at 2.5s and ran for a second on a throttled run. While
+// the curtain is up a transition is skipped once it is ready (its update still runs).
+// Skipping BEFORE ready rejects the ready promise, which React chains onto and does not catch,
+// and that surfaced as an uncaught AbortError in the console.
+var svt=d.startViewTransition;
+if(typeof svt==='function')d.startViewTransition=function(){
+var vt=svt.apply(d,arguments);
+try{if(h.getAttribute('data-booting')!==null){vt.ready.then(function(){vt.skipTransition();},function(){});}}catch(e){}
+return vt;
+};
 if(play)h.setAttribute('data-opening',reduced?'reduced':'1');
 var min=play?(reduced?${OPENING_REDUCED_HOLD_MS}:${OPENING_HOLD_MS}):${MIN_MS},
 fade=play?(reduced?${OPENING_REDUCED_OUT_MS}:${OPENING_OUT_MS}):${FADE_MS},
