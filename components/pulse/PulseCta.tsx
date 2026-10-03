@@ -47,7 +47,7 @@ export default function PulseCta({ slug }: { slug: string }) {
           {config.label}
         </Link>
         <Link href="/#join" className={styles.secondary}>
-          Or join the free waitlist
+          Or claim your spot
         </Link>
       </div>
     </aside>

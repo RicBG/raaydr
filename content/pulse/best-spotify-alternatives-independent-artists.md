@@ -64,7 +64,7 @@ For income per fan, usually yes: one £7 album sale equals thousands of streams.
 A payment model where each listener's subscription is divided among the artists that listener actually played, rather than pooled platform-wide. We explain it fully in [our attention-based payment guide](/pulse/what-is-attention-based-streaming-payment).
 
 **How do I get on RAAYDR?**
-The waitlist is open at [raaydr.com](https://raaydr.com). The first 100 artists get RAAYDR+ free forever.
+Sign-ups are open at [raaydr.com](https://raaydr.com). The first 100 artists get RAAYDR+ free forever.
 
 ---
 

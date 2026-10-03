@@ -15,7 +15,7 @@ export const siteConfig = {
     dayOneNextBand: DAY_ONE_NEXT_BAND,
   },
   cta: {
-    waitlist: { primary: "Join the free waitlist", closing: "Claim your spot" },
+    waitlist: { primary: "Claim your spot", closing: "Claim your spot" },
     live: { primary: "Start listening", closing: "Become a member" },
   },
 };

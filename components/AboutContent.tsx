@@ -108,13 +108,13 @@ export default function AboutContent() {
               We&rsquo;re launching in waves. The first{" "}
               {siteConfig.pricing.dayOneCap} Day Ones back the first cohort of
               independent artists on the platform: £{siteConfig.pricing.dayOne}{" "}
-              a month, locked for as long as they stay subscribed. After that,
+              a month, locked forever, even if they cancel and come back. After that,
               RAAYDR is £{siteConfig.pricing.standard}. Early counts here.
             </p>
           </div>
 
           <Link href="/#join" className="btn">
-            Join the free waitlist
+            Claim your spot
           </Link>
         </div>
       </section>

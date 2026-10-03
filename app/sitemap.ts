@@ -13,6 +13,8 @@ const STATIC_ROUTES = [
   "/for-listeners",
   "/privacy",
   "/terms",
+  "/website-terms",
+  "/cookies",
   "/pulse",
 ];
 
