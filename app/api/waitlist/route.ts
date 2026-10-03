@@ -8,6 +8,7 @@ import {
 import { sendMetaLead } from "@/lib/metaCapi";
 import { looksLikeEmail, normaliseEmail } from "@/lib/email";
 import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
+import { countryFromHeaders } from "@/lib/signupCountry";
 import {
   requestAcknowledgement,
   requestApplicationAlert,
@@ -228,12 +229,35 @@ export async function POST(request: Request) {
     p_name: name,
   };
 
+  /*
+   * WHERE THEY SIGNED UP FROM: the country code and never the address. Board rows 2566
+   * and 2603 (sign-ups by country, work_items 297). Sent only when the edge told us, so a
+   * request with no header is byte for byte what it was, and so the step back below has
+   * something to step back from. See `lib/signupCountry`.
+   */
+  const country = countryFromHeaders(request.headers);
+  const geo = country ? { p_country: country } : {};
+
   let { error } = await supabase.rpc("upsert_waitlist_signup", {
     ...core,
     ...attribution,
     ...profile,
     ...person,
+    ...geo,
   });
+
+  // Newest first, like the two steps below: the function that takes `p_country` is a later
+  // migration than the one that takes `p_name`, and shipping this code before that migration
+  // is applied must not reject a single signup. The row lands without a country.
+  if (country && error?.code === "PGRST202") {
+    console.error("[waitlist] country migration not applied; saved without it");
+    ({ error } = await supabase.rpc("upsert_waitlist_signup", {
+      ...core,
+      ...attribution,
+      ...profile,
+      ...person,
+    }));
+  }
 
   // PGRST202 is PostgREST saying no function of that name takes these named
   // arguments — i.e. a migration this code assumes has not been applied yet.
