@@ -25,6 +25,7 @@ import {
   trackWaitlistStart,
 } from "@/lib/analytics";
 import styles from "./WaitlistForm.module.css";
+import { withScheme } from "@/lib/musicLink";
 
 // The human-readable labels shown as role pills. The API/database store the
 // slug form (see lib/waitlistRoles); we map label -> slug on submit.
@@ -251,7 +252,8 @@ export default function WaitlistForm({
      * On the WAITLIST path genre stays optional, as it always was. Nothing
      * there is dropped for want of it.
      */
-    const link = musicLink.trim();
+    /* Stored with a scheme (row 2624): a bare domain became a path inside the Control Room. */
+    const link = withScheme(musicLink);
     if (applying && !link) {
       setStatus("error");
       setMessage("Add a link to your music. It is the part we listen to.");
