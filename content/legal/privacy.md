@@ -13,7 +13,7 @@
 | What you listen to, when and for how long | To pay artists by attention, show you your listening, and stop fake plays | Our contract with you |
 | Payment details | Taken and held by Stripe, not us. We see your plan, payment status and the last four digits of your card | Our contract with you |
 | Identity and bank details for payouts | Collected and held by Stripe to pay you | Our contract with you, and the law |
-| Sign-up details from raaydr.com: email, role, artist name and genre, and how you reached us | To get you set up, and learn which of our channels work | Our legitimate interests |
+| Sign-up details from raaydr.com: email, role, artist name and genre, how you reached us, and the country you signed up from (worked out from your connection; we don't keep your IP address) | To get you set up, and learn which of our channels work | Our legitimate interests |
 | Cookies for analytics and ads (Google Analytics, Meta) | To measure our marketing | Your consent, which you can withdraw any time |
 | Messages you send us | To reply and support you | Our legitimate interests |
 | Payment and payout records | Tax and accounting | The law |
