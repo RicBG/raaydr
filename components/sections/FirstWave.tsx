@@ -22,7 +22,7 @@ const copy = {
     headline: `Be one of the first ${siteConfig.pricing.dayOneCap.toLocaleString("en-GB")}.`,
     body: `The first ${siteConfig.pricing.dayOneCap} listeners lock £${siteConfig.pricing.dayOne} a month forever, even if they cancel and come back. After that, RAAYDR is £${siteConfig.pricing.standard}. You were early. On RAAYDR, that counts.`,
     micro:
-      "No payment required to join the waitlist. We'll let you know when Day One spots open.",
+      "No payment needed to sign up. We'll be in touch to get you set up.",
   },
   live: {
     eyebrow: "Membership",

@@ -3,7 +3,7 @@ title: "What Are the Best Spotify Alternatives for Independent Artists in 2026?"
 slug: "best-spotify-alternatives-independent-artists"
 description: "Bandcamp for direct sales, SoundCloud for fan-powered royalties, Apple Music for a higher per-stream rate, RAAYDR for listening-share income."
 datePublished: "2026-05-21"
-dateUpdated: "2026-05-21"
+dateUpdated: "2026-10-03"
 author: "Ric, Founder of RAAYDR"
 accent: "amber"
 readingTime: "5 min read"
@@ -35,7 +35,7 @@ Different alternatives fix different parts of that. Here is the honest map.
 | Apple Music | Pooled pro-rata, roughly £0.008 per stream (estimate) | Higher per-stream income at scale | Same pooled model as Spotify; no direct artist relationship |
 | Tidal | Pooled pro-rata at comparatively high rates | Audio quality, artist-friendly positioning | Smaller audience; still a pool |
 | YouTube | Ad revenue plus Music streaming | Reach, video, discovery | Among the lowest effective music rates |
-| RAAYDR | Attention-based: 55% of each fan's subscription follows their listening, up to {{rates.perFan.standard}} per fan | Artists with genuine fans; depth over reach | New platform in waitlist phase; audience is growing, not established |
+| RAAYDR | Attention-based: 55% of each fan's subscription follows their listening, up to {{rates.perFan.standard}} per fan | Artists with genuine fans; depth over reach | New platform, artists joining now; audience is growing, not established |
 
 ## What makes RAAYDR different from fan-powered royalties?
 
@@ -64,7 +64,7 @@ For income per fan, usually yes: one £7 album sale equals thousands of streams.
 A payment model where each listener's subscription is divided among the artists that listener actually played, rather than pooled platform-wide. We explain it fully in [our attention-based payment guide](/pulse/what-is-attention-based-streaming-payment).
 
 **How do I get on RAAYDR?**
-The waitlist is open at [raaydr.com](https://raaydr.com). The first 100 artists get RAAYDR+ free forever.
+Sign-ups are open at [raaydr.com](https://raaydr.com). The first 100 artists get RAAYDR+ free forever.
 
 ---
 

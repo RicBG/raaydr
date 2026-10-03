@@ -3,7 +3,7 @@ title: "How Much Does Spotify Actually Pay Per Stream? (2026, With Real Numbers)
 slug: "how-much-does-spotify-pay-per-stream"
 description: "Spotify pays artists roughly £0.003 per stream. We prove it with a real distributor dashboard: $24.6K earned from 6.92 million streams."
 datePublished: "2026-07-21"
-dateUpdated: "2026-07-21"
+dateUpdated: "2026-10-03"
 author: "Ric, Founder of RAAYDR"
 accent: "green"
 readingTime: "7 min read"
@@ -112,7 +112,7 @@ Since early 2024, tracks with fewer than 1,000 streams in a 12-month period gene
 Generally yes. Apple Music has said it averages around a penny per stream, and several smaller platforms pay more than Spotify. But every major platform still uses a pooled pro-rata model, so the deeper problem, your fans' money not following their listening, remains the same everywhere.
 
 **What is RAAYDR?**
-RAAYDR is an independent music streaming platform built on attention-based payment: subscriber money flows to artists based on each listener's actual listening share, not a global per-stream pool. The waitlist is open at [raaydr.com](https://raaydr.com).
+RAAYDR is an independent music streaming platform built on attention-based payment: subscriber money flows to artists based on each listener's actual listening share, not a global per-stream pool. Sign-ups are open at [raaydr.com](https://raaydr.com).
 
 ---
 

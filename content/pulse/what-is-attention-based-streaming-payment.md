@@ -3,7 +3,7 @@ title: "What Is Attention-Based Streaming Payment? User-Centric Royalties Explai
 slug: "what-is-attention-based-streaming-payment"
 description: "Attention-based payment divides each listener's subscription among the artists they actually played, in proportion to listening time. Explained."
 datePublished: "2026-04-21"
-dateUpdated: "2026-07-30"
+dateUpdated: "2026-10-03"
 author: "Ric, Founder of RAAYDR"
 accent: "amber"
 readingTime: "5 min read"
@@ -38,7 +38,7 @@ That last finding matters, and it is why implementation details decide everythin
 
 ## How does RAAYDR's attention-based model work?
 
-RAAYDR is built user-centric from the ground up, with the amounts published rather than buried. The first 250 Day Ones pay £6.99 a month and the next 750 pay £7.99; the standard price is £9.99. After tax, publishing royalties and card fees, {{rates.split.artists}} of every subscription flows to artists based on that fan's listening share, up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and RAAYDR keeps {{rates.split.raaydr}}. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier, up to {{rates.perFan.dayOneNext}} on the £7.99 band and up to {{rates.perFan.dayOne}} on the £6.99 band.
+RAAYDR is built user-centric from the ground up, with the amounts published rather than buried. The first 100 listeners, our Day Ones, pay £6.99 a month, locked forever; the standard price is £9.99. After tax, publishing royalties and card fees, {{rates.split.artists}} of every subscription flows to artists based on that fan's listening share, up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and RAAYDR keeps {{rates.split.raaydr}}. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier and up to {{rates.perFan.dayOne}} on the £6.99 Day One price.
 
 A worked example. A fan gives you {{scenario.attention}} of their listening this month. On the standard tier you earn {{scenario.attention}} of their per-fan share, about {{scenario.perFan}} from that one fan this month. {{scenario.fans}} fans at that attention share is roughly {{scenario.raaydrMonthly}} a month, about {{scenario.raaydrAnnual}} a year. On a pro-rata platform the same money would take around {{scenario.spotifyStreams}} plays a month, because there what you earn tracks how often people press play rather than how much they care.
 
