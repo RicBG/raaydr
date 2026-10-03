@@ -1,70 +1,19 @@
 import type { Metadata } from "next";
-import PageSpectraNoise from "@/components/PageSpectraNoise";
+import LegalDocument from "@/components/LegalDocument";
+import { readLegal } from "@/lib/legal";
 import { pageMetadata } from "@/lib/seo";
-import styles from "../about/about.module.css";
 
+/*
+ * Published verbatim from content/legal/privacy.md, the text Ric approved on
+ * 3 October 2026 (board rows 2558 and 2559, corrected per rows 2570 and 2571).
+ * Change the words there, never here.
+ */
 export const metadata: Metadata = pageMetadata({
-  title: "Privacy: RAAYDR",
+  title: "Privacy policy: RAAYDR",
+  description: "What personal data RAAYDR collects, why, who sees it, and your rights.",
   path: "/privacy",
 });
 
-export default function PrivacyPage() {
-  return (
-    <main className={styles.page}>
-      <div className={styles.noiseBg}>
-        {/* Not audience-specific — see About for why "listeners" is the
-            neutral pick there; rotated to a different colour here so the
-            legal pages aren't all identical. */}
-        <PageSpectraNoise audience="producers" />
-      </div>
-
-      <div className={styles.content}>
-        <div className="container">
-          <p className="eyebrow">Legal</p>
-          <h1 className={`display-section ${styles.title}`}>Privacy</h1>
-          <div className={styles.body}>
-            <p>
-              While RAAYDR is in waitlist mode, signing up stores your email
-              address, the role you choose, and how you reached us: the campaign
-              tags on the link you followed, the site that referred you, and the
-              page you landed on. If you join as an artist, it also stores the
-              artist or band name you give us and, if you pick one, your genre.
-              We use your email to tell you when Day One spots open, and the
-              rest to understand which of our own channels actually work. We
-              never sell your data.
-            </p>
-            <p>
-              <strong>Cookies and tracking.</strong> We use Google Analytics to
-              see how the site is used and the Meta pixel to measure whether our
-              ads reach the right people. Both set cookies and both are off
-              until you accept them on the banner. If you reject, neither runs,
-              nothing about your signup is sent to Meta, and everything on the
-              site still works. You can change your mind at any time by clearing
-              this site&rsquo;s data in your browser, which brings the banner
-              back.
-            </p>
-            <p>
-              We also measure page speed and rough traffic volume through
-              Vercel. That one sets no cookies and cannot identify you, so it
-              runs without needing your permission.
-            </p>
-            <p>
-              <strong>If your browser sends Global Privacy Control</strong>,
-              which Brave and DuckDuckGo do by default and Firefox and several
-              extensions can be set to, we treat that as a no and don&rsquo;t
-              show you the banner at all. If you&rsquo;re in the US, that also
-              covers your right to opt out of your information being shared for
-              advertising.
-            </p>
-            <p>
-              Want your details removed, or a copy of what we hold? One email:{" "}
-              <a href="mailto:hello@raaydr.com" className="link-sweep">
-                hello@raaydr.com
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+export default function Page() {
+  return <LegalDocument doc={readLegal("privacy")} current="/privacy" audience="tastemakers" />;
 }

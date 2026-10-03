@@ -1,0 +1,222 @@
+.page {
+  padding-top: 76px;
+}
+
+.noiseBg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+.content {
+  padding-top: clamp(56px, 8vw, 120px);
+  padding-bottom: clamp(96px, 12vw, 160px);
+}
+
+.title {
+  margin-top: 20px;
+  max-width: 18ch;
+}
+
+.layout {
+  display: grid;
+  gap: clamp(32px, 5vw, 72px);
+  margin-top: clamp(40px, 5vw, 64px);
+}
+
+/* Phone: the contents list is long for the terms, so it stays out of the way
+   and the other legal pages sit at the end, after the text. */
+.aside {
+  order: 2;
+}
+
+.toc {
+  display: none;
+}
+
+.asideLabel {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+  margin-bottom: 12px;
+}
+
+.aside ol,
+.aside ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.aside a {
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.35;
+  transition: color 0.2s ease;
+}
+
+.aside a:hover,
+.aside a:focus-visible {
+  color: var(--ink);
+}
+
+.aside [aria-current="page"] {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.others {
+  border-top: 1px solid var(--stone);
+  padding-top: 20px;
+}
+
+.body {
+  display: grid;
+  gap: 1.1em;
+  max-width: 68ch;
+  font-size: 17px;
+  line-height: 1.6;
+  min-width: 0;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  line-height: 1.2;
+  margin-top: 1.4em;
+  scroll-margin-top: 110px;
+}
+
+.h2:first-child {
+  margin-top: 0;
+}
+
+.meta {
+  font-size: 15px;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.list {
+  display: grid;
+  gap: 0.5em;
+  padding-left: 1.25em;
+  margin: 0;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--stone);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--canvas) 86%, transparent);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--stone);
+}
+
+.table th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Phone: a three-column table squeezed to 390px reads as a column of single
+   words. Each row becomes a small card instead, with its column name above
+   each value, so nothing scrolls sideways and nothing is cramped. */
+@media (max-width: 639px) {
+  .table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .table tr {
+    display: block;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--stone);
+  }
+
+  .table tr:last-child {
+    border-bottom: 0;
+  }
+
+  .table td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .table td + td {
+    margin-top: 10px;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ink) 55%, transparent);
+    margin-bottom: 2px;
+  }
+
+  .table td:first-child {
+    font-weight: 600;
+  }
+
+  .tableWrap {
+    overflow-x: visible;
+  }
+}
+
+/* Desktop uses the width on purpose: contents on the left, sticky. */
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .aside {
+    order: 0;
+    position: sticky;
+    top: 110px;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    display: grid;
+    gap: 28px;
+  }
+
+  .toc {
+    display: block;
+  }
+
+  .others {
+    border-top: 0;
+    padding-top: 0;
+  }
+}

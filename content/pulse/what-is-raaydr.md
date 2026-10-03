@@ -32,7 +32,7 @@ Through attention-based payment. Each listener's subscription creates their own 
 
 The numbers are published, not hidden. The Day Ones are the first 1,000 listeners, and the earliest pay least: the first 250 pay £6.99 a month and the next 750 pay £7.99, both locked forever. The standard price is £9.99. After tax, publishing royalties and card fees, {{rates.split.artists}} of every subscription goes to artists, up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and RAAYDR keeps {{rates.split.raaydr}}. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier, up to {{rates.perFan.dayOneNext}} on the £7.99 band and up to {{rates.perFan.dayOne}} on the £6.99 band. A fan who gives you {{scenario.attention}} of their listening sends you about {{scenario.perFan}} that month; {{scenario.fans}} such fans is roughly {{scenario.raaydrMonthly}} a month. To match that on Spotify, where you are paid per play rather than per fan, you would need around {{scenario.spotifyStreams}} plays a month. The full working is in [our per-stream analysis](/pulse/how-much-does-spotify-pay-per-stream), backed by real distributor data.
 
-Artists are paid monthly via Stripe, with a £50 minimum payout threshold.
+Artists are paid monthly via Stripe, with a £25 minimum payout threshold.
 
 ## What are the four RAAYDR roles?
 
@@ -56,7 +56,7 @@ Artists are paid monthly via Stripe, with a £50 minimum payout threshold.
 
 ## Is RAAYDR live?
 
-RAAYDR is in pre-launch, with the waitlist open at [raaydr.com](https://raaydr.com) for all four roles. Marketing is UK-focused; signup is open worldwide. Early cohort places, the locked Day One prices of £6.99 and £7.99, and free-forever creator RAAYDR+, are first come, first served.
+RAAYDR is in pre-launch, with sign-ups open at [raaydr.com](https://raaydr.com) for all four roles. Marketing is UK-focused; signup is open worldwide. Early cohort places, the Day One price of £6.99 locked forever, and free-forever creator RAAYDR+, are first come, first served.
 
 ## FAQ
 
@@ -70,10 +70,10 @@ For most artists it is a complement, not a replacement: keep broad distribution 
 The principle is shared; the design differs. RAAYDR's per-fan artist pool is a fixed, published amount, curation is funded separately, and producers, songwriters and tastemakers have first-class roles. The full comparison is in [our attention-based payment guide](/pulse/what-is-attention-based-streaming-payment).
 
 **How do artists get paid?**
-Monthly, via Stripe, once earnings pass a £50 threshold.
+Monthly, via Stripe, once earnings pass a £25 threshold.
 
 **How do I join?**
-Join the waitlist at [raaydr.com](https://raaydr.com) and pick your role. Early cohort perks apply until each cohort fills.
+Sign up at [raaydr.com](https://raaydr.com) and pick your role. Early cohort perks apply until each cohort fills.
 
 ---
 
