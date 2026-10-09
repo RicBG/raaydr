@@ -1,9 +1,4 @@
-import {
-  DAY_ONE_NEXT_BAND,
-  PER_FAN,
-  PRICING,
-  type RatesTier,
-} from "./raaydrRates";
+import { PER_FAN, PRICING, type RatesTier } from "./raaydrRates";
 
 /**
  * Calculator UI helpers. All money rates live in raaydr-rates.ts
@@ -12,7 +7,7 @@ import {
  */
 
 /** Pricing tier used across the calculators. Steady state is standard. */
-export type PricingTier = RatesTier; // "standard" | "dayOne" | "dayOneNext"
+export type PricingTier = RatesTier; // "standard" | "dayOne"
 
 /**
  * Tier selector options, shared so every calculator offers the same two in
@@ -21,10 +16,13 @@ export type PricingTier = RatesTier; // "standard" | "dayOne" | "dayOneNext"
  * calculator spells a rate, a price or a cohort size out for itself.
  *
  * TWO, NOT THREE, since board row 1416 (24 September 2026): the Day One
- * cohort is one flat band now, so `dayOneNext` never appears in a picker.
- * `TIER_LABEL` still has to define it, since `PricingTier` still carries it
- * for the historical rate figures `dayOneNext` other than this UI reads (see
- * `raaydrRates.ts`) — that entry is unreachable here.
+ * cohort is one flat band. Until 9 October 2026 `PricingTier` still carried a
+ * third member for the retired £7.99 band, so `TIER_LABEL` had to define a
+ * label nothing could ever reach, with a comment saying so. The band is gone
+ * from `raaydrRates.ts` now, so the type has two members, the map has two
+ * entries, and `PRICING_TIERS` is exhaustive rather than a subset. An
+ * unreachable branch that the type system insisted on is the kind of thing
+ * that reads as deliberate forever.
  */
 export const PRICING_TIERS: readonly PricingTier[] = ["dayOne", "standard"];
 
@@ -32,9 +30,7 @@ export const PRICING_TIERS: readonly PricingTier[] = ["dayOne", "standard"];
 export const PRICING_TIER_DEFAULT: PricingTier = "standard";
 
 export const TIER_LABEL: Record<PricingTier, string> = {
-  dayOne: `£${PRICING.dayOne} · first ${PRICING.dayOneFirstBand}`,
-  /** UNREACHABLE: `dayOneNext` is not in PRICING_TIERS. See the note above it. */
-  dayOneNext: `£${PRICING.dayOneNext} · next ${DAY_ONE_NEXT_BAND}`,
+  dayOne: `£${PRICING.dayOne} · first ${PRICING.dayOneCap}`,
   standard: `£${PRICING.standard} · standard`,
 };
 

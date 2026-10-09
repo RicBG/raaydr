@@ -1,0 +1,62 @@
+/*
+ * The live Day One line.
+ *
+ * Deliberately quiet in the closed state and lifted in the open one: the open
+ * state is an offer and should read like one, the closed state is a fact and
+ * should not shout. `--green` is the accent because globals.css reserves it
+ * for "listeners, and nothing else", and the Day One price is a listener
+ * offer.
+ *
+ * Every colour is a token. No hex here: the palette is in globals.css and a
+ * second copy of a brand colour in a component is the drift CLAUDE.md names.
+ *
+ * Both states occupy one box of the same shape, so the answer arriving changes
+ * the words and the border rather than the height of the page under somebody's
+ * cursor.
+ */
+/*
+ * THE CLOSED STATE TINTS `currentColor`, NOT A NAMED SURFACE, AND THAT IS NOT
+ * A STYLE PREFERENCE.
+ *
+ * This line appears in two places with opposite surfaces: inside a Pulse
+ * article, on the warm light canvas, and above the FAQ accordion, which sits
+ * on `--deep`. The first version tinted `--stone`, which is a light-canvas
+ * token, and on the dark FAQ it rendered as a muddy grey slab with an
+ * invisible `--ink` border. Caught by looking at a capture rather than by
+ * reading the CSS, which is the only way that one was ever going to be found.
+ *
+ * Tinting `currentColor` makes the panel a faint lift of whatever surface it
+ * is on, in either direction, with no breakpoint and no parent-aware class.
+ * The open state keeps `--green`, which carries on both because it is a hue
+ * rather than a shade, and `--green` is the listener colour: globals.css
+ * reserves it for "listeners, and nothing else", and the Day One price is a
+ * listener offer.
+ *
+ * Every colour here is a token or `currentColor`. No hex: the palette lives in
+ * globals.css, and a second copy of a brand colour in a component is the drift
+ * CLAUDE.md names.
+ *
+ * Both states are one box of the same shape, so the platform answering changes
+ * the words and the border rather than the height of the page under somebody's
+ * cursor.
+ */
+.status {
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0;
+  padding: clamp(0.9rem, 2vw, 1.25rem) clamp(1rem, 2.4vw, 1.5rem);
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 62ch;
+}
+
+.status[data-state="open"] {
+  border-color: color-mix(in srgb, var(--green) 55%, transparent);
+  background: color-mix(in srgb, var(--green) 12%, transparent);
+}
+
+.status strong {
+  font-weight: 600;
+}

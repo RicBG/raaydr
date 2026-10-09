@@ -4,7 +4,9 @@ import {
   CANONICAL,
   DISTRIBUTABLE,
   PER_FAN,
+  PAYOUT,
   PLATFORM_PER_STREAM_ESTIMATES,
+  PRICING,
   SPLIT,
   SPOTIFY,
   artistEarnings,
@@ -36,6 +38,20 @@ export interface PostMeta {
   author: string;
   accent: Accent;
   readingTime: string;
+  /**
+   * Whether this post STATES THE DAY ONE OFFER -- the price or the size of the
+   * cohort -- and so has to carry the live open/closed line beside it.
+   *
+   * COMPUTED FROM THE POST, NOT LISTED IN A COMPONENT, and that is the point
+   * of it. A slug list would be right the day it was written and wrong the
+   * first time somebody published a post mentioning the offer, which is
+   * exactly how three posts came to carry an "Update, 24 September 2026" note
+   * arguing with their own body text: the staleness was per file and nothing
+   * was watching the set. A post that cites the offer gets the live line
+   * automatically, and one that only cites a per-fan rate does not, because a
+   * Day One status line on a post about Spotify's per-stream rate is noise.
+   */
+  citesDayOneOffer: boolean;
   heroImage: string;
   heroAlt: string;
 }
@@ -123,7 +139,32 @@ const CONTENT_TOKENS: Record<string, string> = {
   // Per-fan artist rates, per price band. Cited across four posts.
   "rates.perFan.standard": money(PER_FAN.artist.standard),
   "rates.perFan.dayOne": money(PER_FAN.artist.dayOne),
-  "rates.perFan.dayOneNext": money(PER_FAN.artist.dayOneNext),
+  // ===========================================================================
+  // THE PRICES AND THE SIZE OF THE DAY ONE COHORT, WHICH FOUR POSTS TYPED BY
+  // HAND UNTIL 9 OCTOBER 2026
+  // ===========================================================================
+  //
+  // Board rows 2962 and 2965, Ric's go on 2967: "get the site in line with
+  // whatever wording needs to be correct." Added for the same reason the split
+  // percentages above were: a price typed into prose is a copy, and copies go
+  // stale silently. These three had gone stale once already. The Day One cohort
+  // was 1,000 listeners in two bands, 250 at one price and 750 at another,
+  // until Ric replaced it with one flat band of 100 on 24 September 2026; four
+  // published posts went on describing the retired structure, and three of them
+  // then carried an "Update, 24 September 2026" note ARGUING WITH THEIR OWN
+  // BODY TEXT rather than saying the true thing once.
+  //
+  // Nothing here is a second copy: every one reads PRICING, which is the
+  // single source for the whole site.
+  "dayOne.price": money(PRICING.dayOne),
+  "dayOne.cap": count(PRICING.dayOneCap),
+  "standard.price": money(PRICING.standard),
+  // The minimum payout, which `what-is-raaydr.md` had its own copy of. It was
+  // right, and only because somebody hand-corrected it when Ric moved the
+  // figure from £50 to £25 on 3 October 2026; PAYOUT.minimumThreshold in
+  // raaydrRates was still saying £50 four days later. A token is how the prose
+  // stops depending on somebody remembering.
+  "payout.minimum": money(PAYOUT.minimumThreshold),
   // The worked scenario the posts share: 500 genuine fans at a 40% share.
   "scenario.fans": "500",
   "scenario.attention": "40%",
@@ -359,11 +400,19 @@ function structure(blocks: Block[]): { blocks: Block[]; faq: FaqItem[]; note?: s
   return { blocks: main, faq, note };
 }
 
+/**
+ * The tokens that mean "this post states the Day One offer". Read off the
+ * source BEFORE substitution, because afterwards they are just prices and a
+ * number, indistinguishable from any other figure in the prose.
+ */
+const DAY_ONE_OFFER_TOKENS = ["{{dayOne.price}}", "{{dayOne.cap}}"];
+
 function readPost(slug: string): Post {
-  const raw = substituteTokens(
-    fs.readFileSync(path.join(CONTENT_DIR, `${slug}.md`), "utf8"),
-    slug
+  const source = fs.readFileSync(path.join(CONTENT_DIR, `${slug}.md`), "utf8");
+  const citesDayOneOffer = DAY_ONE_OFFER_TOKENS.some((token) =>
+    source.includes(token)
   );
+  const raw = substituteTokens(source, slug);
   const { meta, body } = parseFrontmatter(raw);
   const { blocks, faq, note } = structure(parseBlocks(body));
   return {
@@ -375,6 +424,7 @@ function readPost(slug: string): Post {
     author: meta.author ?? "",
     accent: (meta.accent as Accent) || "green",
     readingTime: meta.readingTime ?? "",
+    citesDayOneOffer,
     heroImage: meta.heroImage ?? "",
     heroAlt: meta.heroAlt ?? "",
     blocks,

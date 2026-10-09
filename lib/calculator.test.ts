@@ -18,6 +18,7 @@ import {
   DISTRIBUTABLE_EXACT,
   PER_FAN,
   PLATFORM_PER_STREAM_ESTIMATES,
+  PRICING,
   SPLIT,
   SPOTIFY,
   SPOTIFY_COMMITTED_FAN_MULTIPLE,
@@ -83,25 +84,16 @@ describe("artistPerFan", () => {
     expect(artistPerFan("standard")).toBeCloseTo(3.56, 10);
   });
 
-  it("reads both Day One band rates", () => {
+  it("reads the Day One band rate", () => {
     expect(artistPerFan("dayOne")).toBeCloseTo(2.46, 10);
-    expect(artistPerFan("dayOneNext")).toBeCloseTo(2.83, 10);
   });
 
-  // Two bands inside the same cohort, so the ladder has to stay monotonic:
-  // the earliest band can never be worth more to an artist than a later one.
+  // The ladder has to stay monotonic: an earlier, cheaper place can never be
+  // worth more to an artist than a later one. Two assertions until 9 October
+  // 2026, when the retired £7.99 band went; the rule is unchanged and there is
+  // one step in it now.
   it("rises with the price band", () => {
-    expect(artistPerFan("dayOne")).toBeLessThan(artistPerFan("dayOneNext"));
-    expect(artistPerFan("dayOneNext")).toBeLessThan(artistPerFan("standard"));
-  });
-
-  // Was "floors the £7.99 band to £2.82, never £2.83", asserting the opposite
-  // of this. It enshrined a figure nothing derived: the waterfall gives
-  // 514.722p, whose 55% floors to 283p. The old test could not fail, because
-  // the literal it guarded was the literal it compared against.
-  it("floors the £7.99 band to £2.83, never £2.84", () => {
-    expect(artistPerFan("dayOneNext")).toBeLessThan(2.84);
-    expect(artistPerFan("dayOneNext")).toBeGreaterThanOrEqual(2.83);
+    expect(artistPerFan("dayOne")).toBeLessThan(artistPerFan("standard"));
   });
 
   it("never presents £3.57, the rate the locked economics doc forbids", () => {
@@ -130,7 +122,6 @@ describe("tastemakerPerFan", () => {
     expect(tastemakerPerFan()).toBeCloseTo(0.64, 10);
     expect(tastemakerPerFan("standard")).toBeCloseTo(0.64, 10);
     expect(tastemakerPerFan("dayOne")).toBeCloseTo(0.44, 10);
-    expect(tastemakerPerFan("dayOneNext")).toBeCloseTo(0.51, 10);
   });
 });
 
@@ -171,12 +162,6 @@ describe("raaydrMonthly (standard, default 20% attention)", () => {
     expect(raaydrMonthly(fans, attention, "dayOne")).toBeCloseTo(492, 10);
   });
 
-  // £566, not the £564 this pinned before. The economics doc has said £566 in
-  // §4 since v1.3; only the rates file disagreed, because £2.82 was typed there.
-  it("is exactly £566 on the £7.99 band at the same inputs", () => {
-    expect(raaydrMonthly(fans, attention, "dayOneNext")).toBeCloseTo(566, 10);
-  });
-
   it("multiplies fans, attention and the standard per-fan rate", () => {
     expect(raaydrMonthly(fans, attention)).toBeCloseTo(1000 * 3.56 * 0.2, 6);
   });
@@ -200,9 +185,8 @@ describe("spotifyEquivalentStreams", () => {
     expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2))).toBe(237333);
   });
 
-  it("recomputes the line for both Day One bands", () => {
+  it("recomputes the line for the Day One band", () => {
     expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2, "dayOne"))).toBe(164000);
-    expect(spotifyEquivalentStreams(raaydrMonthly(1000, 0.2, "dayOneNext"))).toBe(188667);
   });
 
   // This replaces a test that pinned a fixed 15x ratio between the streams
@@ -347,7 +331,7 @@ describe("the published distributable", () => {
 // UNROUNDED distributable — flooring first and then taking 55% loses a penny on
 // the Day One band, which is how the document's penny got in originally.
 describe("every per-fan rate derives from the waterfall", () => {
-  const TIERS = ["standard", "dayOneNext", "dayOne"] as const;
+  const TIERS = ["standard", "dayOne"] as const;
 
   it.each(TIERS)("reproduces both %s rates from the unrounded distributable", (tier) => {
     const d = DISTRIBUTABLE_EXACT[tier];
@@ -359,10 +343,37 @@ describe("every per-fan rate derives from the waterfall", () => {
     expect(floorToPence(DISTRIBUTABLE_EXACT[tier])).toBeCloseTo(DISTRIBUTABLE[tier], 10);
   });
 
-  // The correction itself, pinned. £2.82 must not come back.
-  it("carries the settled £7.99 figures, not the retired ones", () => {
-    expect(PER_FAN.artist.dayOneNext).toBeCloseTo(2.83, 10);
-    expect(PER_FAN.tastemaker.dayOneNext).toBeCloseTo(0.51, 10);
+  // ===========================================================================
+  // THE RETIRED SECOND BAND MUST NOT COME BACK, AND THIS IS WHAT REPLACED THE
+  // TEST THAT PINNED ITS FIGURES
+  // ===========================================================================
+  //
+  // Until 9 October 2026 this described the £7.99 band's settled rates (£2.83
+  // and £0.51) so that the earlier wrong pair could not return. The band itself
+  // went that day with `dayOneNext` -- Ric ruled one flat band of 100 on
+  // 24 September and nothing had read the second one since -- so pinning its
+  // figures now would guard a price nobody can pay.
+  //
+  // What is worth guarding is the SHAPE: one Day One band, named once. Each of
+  // these four objects carried its own `dayOneNext` key, and `dayOneFirstBand`
+  // was a second name for `dayOneCap`'s value. Re-adding any of them is how the
+  // retired tier would creep back, so the absence is asserted rather than
+  // trusted to a comment.
+  it("carries one Day One band and no trace of the retired second one", () => {
+    expect(Object.keys(PRICING)).not.toContain("dayOneNext");
+    expect(Object.keys(PRICING)).not.toContain("dayOneFirstBand");
+    expect(Object.keys(PER_FAN.artist)).toEqual(["standard", "dayOne"]);
+    expect(Object.keys(PER_FAN.tastemaker)).toEqual(["standard", "dayOne"]);
+    expect(Object.keys(DISTRIBUTABLE)).toEqual(["standard", "dayOne"]);
+    expect(Object.keys(DISTRIBUTABLE_EXACT)).toEqual(["standard", "dayOne"]);
+  });
+
+  // And the picker is now EXHAUSTIVE over the type rather than a subset of it.
+  // `TIER_LABEL` used to define a label no UI could reach, because the type
+  // demanded one; an unreachable branch the type system insists on is the kind
+  // of thing that reads as deliberate forever.
+  it("offers every tier the type allows, with no unreachable label", () => {
+    expect([...PRICING_TIERS].sort()).toEqual(Object.keys(TIER_LABEL).sort());
   });
 
   // THIS ASSERTION CHANGED SHAPE ON 29 SEPTEMBER 2026 AND THE REASON IS WORTH KEEPING.
@@ -380,10 +391,14 @@ describe("every per-fan rate derives from the waterfall", () => {
   // the artist rate's own implied distributable range rather than typed beside it -- so
   // that is what is asserted instead. It still fails on a hand-typed tastemaker rate,
   // which is the fault that put £0.76 on the live site for four days.
+  //
+  // RETARGETED 9 OCTOBER 2026 from the retired £7.99 band to `dayOne`, rather
+  // than deleted with it. The band was never the point: the METHOD is, and it
+  // fails on a hand-typed tastemaker rate on whichever tier it is pointed at.
   it("derives the tastemaker rate from the artist rate's own implied range", () => {
-    const low = PER_FAN.artist.dayOneNext / (SPLIT.artists / 100);
+    const low = PER_FAN.artist.dayOne / (SPLIT.artists / 100);
     expect(floorToPence(low * (SPLIT.tastemakers / 100))).toBeCloseTo(
-      PER_FAN.tastemaker.dayOneNext,
+      PER_FAN.tastemaker.dayOne,
       10,
     );
   });

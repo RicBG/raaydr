@@ -16,8 +16,6 @@ heroAlt: "A listener with headphones, eyes closed, face lit by a faint violet gl
 **The Pulse · The RAAYDR Blog**
 *By Ric, Founder of RAAYDR · Last updated July 2026*
 
-Update, 24 September 2026: Day One is now the first 100 listeners at £6.99 a month. Everyone after pays £9.99.
-
 Attention-based payment is a streaming royalty model where each listener's subscription money is divided among the artists that listener actually played, in proportion to their listening time. It replaces the industry-standard pro-rata model, where all subscriber money is pooled platform-wide and divided by total streams.
 
 The idea has gone by several names: user-centric payment (UCPS), fan-powered royalties, artist-centric models. This guide explains how each version works, what the evidence says, and how RAAYDR's implementation differs.
@@ -38,7 +36,7 @@ That last finding matters, and it is why implementation details decide everythin
 
 ## How does RAAYDR's attention-based model work?
 
-RAAYDR is built user-centric from the ground up, with the amounts published rather than buried. The first 100 listeners, our Day Ones, pay £6.99 a month, locked forever; the standard price is £9.99. After tax, publishing royalties and card fees, {{rates.split.artists}} of every subscription flows to artists based on that fan's listening share, up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and RAAYDR keeps {{rates.split.raaydr}}. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier and up to {{rates.perFan.dayOne}} on the £6.99 Day One price.
+RAAYDR is built user-centric from the ground up, with the amounts published rather than buried. The first {{dayOne.cap}} listeners, our Day Ones, pay {{dayOne.price}} a month, locked forever; the standard price is {{standard.price}}. After tax, publishing royalties and card fees, {{rates.split.artists}} of every subscription flows to artists based on that fan's listening share, up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and RAAYDR keeps {{rates.split.raaydr}}. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier and up to {{rates.perFan.dayOne}} on the {{dayOne.price}} Day One price.
 
 A worked example. A fan gives you {{scenario.attention}} of their listening this month. On the standard tier you earn {{scenario.attention}} of their per-fan share, about {{scenario.perFan}} from that one fan this month. {{scenario.fans}} fans at that attention share is roughly {{scenario.raaydrMonthly}} a month, about {{scenario.raaydrAnnual}} a year. On a pro-rata platform the same money would take around {{scenario.spotifyStreams}} plays a month, because there what you earn tracks how often people press play rather than how much they care.
 

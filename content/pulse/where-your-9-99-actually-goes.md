@@ -16,9 +16,7 @@ heroAlt: "A single coin on a dark surface, glowing Signal Green, with green flec
 **The Pulse · The RAAYDR Blog**
 *By Ric, Founder of RAAYDR · Last updated July 2026*
 
-Update, 24 September 2026: Day One is now the first 100 listeners at £6.99 a month. Everyone after pays £9.99.
-
-A standard RAAYDR subscription is £9.99 a month. Of that, {{rates.split.artists}} goes to artists, up to {{rates.split.tastemakers}} is ring fenced for tastemakers and RAAYDR keeps {{rates.split.raaydr}}, each a share of what is left after tax, publishing royalties and card fees. This page shows the full working, because no streaming service tells you what their percentage is a percentage of.
+A standard RAAYDR subscription is {{standard.price}} a month. Of that, {{rates.split.artists}} goes to artists, up to {{rates.split.tastemakers}} is ring fenced for tastemakers and RAAYDR keeps {{rates.split.raaydr}}, each a share of what is left after tax, publishing royalties and card fees. This page shows the full working, because no streaming service tells you what their percentage is a percentage of.
 
 ## The number nobody publishes
 
@@ -38,7 +36,7 @@ Three things are taken out before anyone is paid. They come off in this order, a
 
 ## What is left, and how it splits
 
-What remains after those three is the distributable amount. On a £9.99 subscription that is roughly {{rates.distributable.standard}}. It splits three ways:
+What remains after those three is the distributable amount. On a {{standard.price}} subscription that is roughly {{rates.distributable.standard}}. It splits three ways:
 
 | Share | Who | Of the distributable amount |
 |---|---|---|
@@ -52,7 +50,7 @@ The tastemaker share is a ceiling, not a fixed pot. A tastemaker earns from it i
 
 ## Why per fan beats per stream
 
-The pool model is the reason streaming pays so little. Every subscription in the country goes into one bucket, and the bucket is divided by every play in the country. Your most devoted fan and a bot farm draw from the same water. Your fan's £9.99 does not follow their listening. It is averaged across everyone, and the average is dominated by whoever has the most plays, which is almost never you.
+The pool model is the reason streaming pays so little. Every subscription in the country goes into one bucket, and the bucket is divided by every play in the country. Your most devoted fan and a bot farm draw from the same water. Your fan's {{standard.price}} does not follow their listening. It is averaged across everyone, and the average is dominated by whoever has the most plays, which is almost never you.
 
 Per fan breaks that. Your fan's money is theirs to direct, and it follows their attention to the artists they actually play. {{canonical.claim}} That is {{canonical.denominator}} The comparison holds the fan constant: the same person, listening the same amount, on both platforms. What changes is whether their money reaches you or is averaged across a platform they have nothing to do with.
 
@@ -73,7 +71,7 @@ No free tier. Playing music requires a subscription. That is deliberate. It is w
 ## FAQ
 
 **What is the denominator for the {{rates.split.artists}}?**
-It is the distributable amount: your subscription after VAT, publishing royalties and card fees. On £9.99 that is roughly {{rates.distributable.standard}}, and {{rates.split.artists}} of it goes to artists.
+It is the distributable amount: your subscription after VAT, publishing royalties and card fees. On {{standard.price}} that is roughly {{rates.distributable.standard}}, and {{rates.split.artists}} of it goes to artists.
 
 **Why is publishing taken out before the split?**
 Publishing royalties are owed to songwriters and composers by law, collected through PRS and MCPS. They are not RAAYDR's to keep or to split, so they come off the top like tax.
@@ -82,7 +80,7 @@ Publishing royalties are owed to songwriters and composers by law, collected thr
 No. Up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and whatever they do not earn goes to the artists. It never comes back to us.
 
 **Is any of this different on the Day One price?**
-The percentages are the same. Day Ones, the first 100 listeners, pay £6.99 a month locked forever, so the pound amounts are smaller, but {{rates.split.artists}} still goes to artists, up to {{rates.split.tastemakers}} to tastemakers and {{rates.split.raaydr}} to RAAYDR, each after the same costs.
+The percentages are the same. Day Ones, the first {{dayOne.cap}} listeners, pay {{dayOne.price}} a month locked forever, so the pound amounts are smaller, but {{rates.split.artists}} still goes to artists, up to {{rates.split.tastemakers}} to tastemakers and {{rates.split.raaydr}} to RAAYDR, each after the same costs.
 
 ---
 

@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/site";
 import PostBody from "@/components/pulse/PostBody";
 import Faq from "@/components/pulse/Faq";
 import PulseCta from "@/components/pulse/PulseCta";
+import DayOneStatus from "@/components/DayOneStatus";
 import PostCard from "@/components/pulse/PostCard";
 import JsonLd from "@/components/JsonLd";
 import article from "@/components/pulse/Article.module.css";
@@ -155,6 +156,19 @@ export default async function PulsePost({
         )}
 
         <div className={styles.body}>
+          {/* THE LIVE DAY ONE LINE, WHERE THE STALE ONE USED TO BE.
+              Three of these posts carried a hand-written "Update, 24 September
+              2026: Day One is now the first 100 listeners at £6.99" note here,
+              contradicting their own body text, because the body had been
+              corrected and the note had not. This reads the platform at view
+              time instead, and fails closed: on any error, or with JavaScript
+              off, it says Day One is closed rather than selling a place that
+              may already be gone. Board rows 2962 and 2965; Ric's go on 2967.
+
+              The page itself stays STATIC and is deliberately not revalidated.
+              A cached page rendered at place 99 would go on selling place 100,
+              and nothing inside this component could reach it. */}
+          {post.citesDayOneOffer && <DayOneStatus />}
           <PostBody blocks={post.blocks} />
           <Faq items={post.faq} />
           {post.note && <p className={article.note}>{post.note}</p>}
