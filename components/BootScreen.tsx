@@ -25,11 +25,38 @@
  * Decorative throughout: it covers content that is already in the document and
  * announced, and it names nothing a screen reader has not already reached.
  */
+const OPENING_BARS: readonly { x: number; y: number; height: number }[] = [
+  { x: 3, y: 8, height: 8 },
+  { x: 8, y: 4, height: 16 },
+  { x: 13, y: 6, height: 12 },
+  { x: 18, y: 9, height: 6 },
+];
+
 export default function BootScreen() {
   return (
     <div id="boot" className="boot" aria-hidden="true">
       <div className="bootInner">
         <div className="bootGlow" />
+        {/* THE OPENING'S BARS. Display none until `data-opening` is stamped, so
+            the short curtain every later load gets is exactly what it was.
+            The geometry is the platform's mark (raaydr-mark-geometry.ts in
+            RicBG/raaydr-platform): four bars on a 24 unit box, 2 wide, radius
+            1. It is a copy for the same reason the wordmark below is: this
+            markup is on screen before anything can be fetched. If the mark
+            ever changes there, change it here. */}
+        <svg className="bootBars" viewBox="0 0 24 24" focusable="false" role="presentation">
+          <defs>
+            <linearGradient id="boot-bars-gradient" x1="0" y1="4" x2="0" y2="20" gradientUnits="userSpaceOnUse">
+              <stop offset="0" className="bootStopFrom" />
+              <stop offset="1" className="bootStopTo" />
+            </linearGradient>
+          </defs>
+          <g fill="url(#boot-bars-gradient)">
+            {OPENING_BARS.map((bar, index) => (
+              <rect key={bar.x} className="bootBar" data-bar={index} x={bar.x} y={bar.y} width={2} height={bar.height} rx={1} />
+            ))}
+          </g>
+        </svg>
         <svg className="bootMark" viewBox="0 0 4743 838" role="presentation">
           <g transform="translate(67,750) scale(1,-1)">
             <path
