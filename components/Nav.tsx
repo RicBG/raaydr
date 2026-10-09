@@ -114,7 +114,7 @@ export default function Nav() {
               </a>
             ))}
           </div>
-          <a href={ctaHref} className={`btn ${styles.cta}`}>
+          <a href={ctaHref} className="btn">
             {ctaCopy().primary}
           </a>
           <button
