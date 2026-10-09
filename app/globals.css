@@ -575,11 +575,17 @@ html[data-booting="1"] {
   display: none;
 }
 
+/* THE LOCKUP'S SIZE, Ric 8 October: "the marketing site animation is good it's just too big." It was
+   112px of bars over a 276px wordmark on a phone and 190px beside 566px on a desktop, a lockup 782px
+   wide on a 1440 screen (54% of it). It is about 45% smaller now, in the same proportions (bars to
+   wordmark 0.34, the gap 0.05): 64 over 200 on a phone and 104 beside 310 on a desktop, so it sits
+   inside the viewport with clear space all round instead of filling it. Timing, motion and reduced
+   motion are untouched. */
 html[data-opening] .bootInner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   animation: boot-lock-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 340ms both;
 }
 
@@ -589,25 +595,25 @@ html[data-opening] .bootGlow {
 
 html[data-opening] .bootBars {
   display: block;
-  width: 112px;
-  height: 112px;
+  width: 64px;
+  height: 64px;
 }
 
 html[data-opening] .bootMark {
-  width: min(72vw, 276px);
+  width: min(54vw, 200px);
 }
 
 @media (min-width: 900px) {
   html[data-opening] .bootInner {
     flex-direction: row;
-    gap: 26px;
+    gap: 16px;
   }
   html[data-opening] .bootBars {
-    width: 190px;
-    height: 190px;
+    width: 104px;
+    height: 104px;
   }
   html[data-opening] .bootMark {
-    width: 566px;
+    width: 310px;
   }
 }
 

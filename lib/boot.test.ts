@@ -418,3 +418,30 @@ describe("the Opening's hand-off, in the stylesheet", () => {
     expect(Number(m![1])).toBe(OPENING_HOLD_MS + OPENING_OUT_MS);
   });
 });
+
+// Ric, 8 October: the Opening was good and "just too big". It was 782px wide on a 1440 screen
+// (190 bars, 26 gap, 566 wordmark). This pins the lockup to a size that leaves clear space, so a
+// later tweak to the curtain cannot quietly grow it back.
+describe("the Opening's size", () => {
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+
+  it("is under a third of a 1440 screen wide on a desktop, bars and wordmark together", () => {
+    const block = css.match(/@media \(min-width: 900px\) \{\s*html\[data-opening\] \.bootInner \{[\s\S]*?html\[data-opening\] \.bootMark \{[^}]*\}/);
+    expect(block).not.toBeNull();
+    const n = (re: RegExp) => Number(block![0].match(re)![1]);
+    const gap = n(/gap:\s*(\d+)px/);
+    const bars = n(/\.bootBars \{\s*width:\s*(\d+)px/);
+    const word = n(/\.bootMark \{\s*width:\s*(\d+)px/);
+    expect(bars + gap + word).toBeLessThanOrEqual(1440 / 3);
+  });
+
+  it("keeps the phone lockup under 55% of a 390 screen, and its bars small beside it", () => {
+    const m = css.match(/html\[data-opening\] \.bootMark \{\s*width:\s*min\((\d+)vw,\s*(\d+)px\)/);
+    expect(m).not.toBeNull();
+    expect(Number(m![1])).toBeLessThanOrEqual(55);
+    expect(Number(m![2])).toBeLessThanOrEqual(210);
+    const bars = css.match(/html\[data-opening\] \.bootBars \{\s*display:\s*block;\s*width:\s*(\d+)px/);
+    expect(bars).not.toBeNull();
+    expect(Number(bars![1])).toBeLessThanOrEqual(72);
+  });
+});
