@@ -28,16 +28,15 @@
 // THE KEY IN THE BUNDLE IS THE PUBLIC ONE, ON PURPOSE
 // ===========================================================================
 //
-// `NEXT_PUBLIC_PLATFORM_SUPABASE_ANON_KEY` is the platform's anonymous key.
-// It is public by design and already ships inside app.raaydr.com's own browser
-// bundle, so putting it here exposes nothing that is not already published.
-//
-// It is NOT the service role key and must never be. The one function it can
-// reach is `apply_to_raaydr`, which is insert only, returns nothing, and reads
-// no row back.
-//
-// Named `PLATFORM_` to keep it apart from this project's own `SUPABASE_URL`,
-// which points at a different database entirely and is server-only.
+// The config read moved to `lib/platformSupabase.ts` on 9 October 2026, when
+// the Day One reader needed the identical pair of variables and two copies of
+// "which URL and which key" would have been the drift `CLAUDE.md` warns
+// about. The reasoning about the key is there; what matters here is that the
+// key is the ANONYMOUS one and never the service role, and that the one
+// function it reaches from this module is `apply_to_raaydr`, which is insert
+// only, returns nothing, and reads no row back.
+
+import { platformConfig } from "./platformSupabase";
 
 export type ArtistApplication = {
   name: string;
@@ -47,12 +46,6 @@ export type ArtistApplication = {
   genre: string;
 };
 
-function platformConfig(): { url: string; key: string } | null {
-  const url = process.env.NEXT_PUBLIC_PLATFORM_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_PLATFORM_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
-  return { url: url.replace(/\/+$/, ""), key };
-}
 
 /**
  * Whether this deployment can send applications at all.

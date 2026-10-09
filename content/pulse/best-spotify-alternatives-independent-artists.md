@@ -35,11 +35,11 @@ Different alternatives fix different parts of that. Here is the honest map.
 | Apple Music | Pooled pro-rata, roughly £0.008 per stream (estimate) | Higher per-stream income at scale | Same pooled model as Spotify; no direct artist relationship |
 | Tidal | Pooled pro-rata at comparatively high rates | Audio quality, artist-friendly positioning | Smaller audience; still a pool |
 | YouTube | Ad revenue plus Music streaming | Reach, video, discovery | Among the lowest effective music rates |
-| RAAYDR | Attention-based: 55% of each fan's subscription follows their listening, up to {{rates.perFan.standard}} per fan | Artists with genuine fans; depth over reach | New platform, artists joining now; audience is growing, not established |
+| RAAYDR | Attention-based: {{rates.split.artists}} of each fan's subscription follows their listening, up to {{rates.perFan.standard}} per fan | Artists with genuine fans; depth over reach | New platform, artists joining now; audience is growing, not established |
 
 ## What makes RAAYDR different from fan-powered royalties?
 
-SoundCloud deserves real credit: its fan-powered royalties were the first mainstream move toward user-centric payment, and the principle is the same one we build on. The differences are in degree and design. On RAAYDR the artist share is a fixed, published percentage of every subscription (55%, after tax, publishing royalties and card fees, up to {{rates.perFan.dayOne}} per fan on the Day One tier and {{rates.perFan.standard}} on standard), so you can calculate your earnings ceiling rather than discover it. There is also a separate fund that pays tastemakers for curation, and role-specific tools for producers and songwriters, because artists are not the only people the industry underpays.
+SoundCloud deserves real credit: its fan-powered royalties were the first mainstream move toward user-centric payment, and the principle is the same one we build on. The differences are in degree and design. On RAAYDR the artist share is a fixed, published percentage of every subscription ({{rates.split.artists}}, after tax, publishing royalties and card fees, up to {{rates.perFan.dayOne}} per fan on the Day One tier and {{rates.perFan.standard}} on standard), so you can calculate your earnings ceiling rather than discover it. There is also a separate fund that pays tastemakers for curation, and role-specific tools for producers and songwriters, because artists are not the only people the industry underpays.
 
 The honest trade-off is stated in the table: we are new. If you need an audience of millions today, keep your music on the majors and treat RAAYDR as where your real fans convert into real income. Distribution is not either-or.
 

@@ -1,18 +1,18 @@
-import { DAY_ONE_NEXT_BAND, PRICING } from "./raaydrRates";
+import { PRICING } from "./raaydrRates";
 
 export type SiteMode = "waitlist" | "live";
 
 export const siteConfig = {
   mode: "waitlist" as SiteMode, // "waitlist" | "live"
   // Pricing reads from the single source of truth in raaydr-rates.ts.
+  // ONE Day One band. `dayOneNext`, `dayOneFirstBand` and `dayOneNextBand`
+  // were here until 9 October 2026, carried for a retired £7.99 tier that no
+  // page read; see the note above PRICING in raaydrRates.ts.
   pricing: {
     dayOne: PRICING.dayOne,
-    dayOneNext: PRICING.dayOneNext,
     standard: PRICING.standard,
     plus: PRICING.plus,
     dayOneCap: PRICING.dayOneCap,
-    dayOneFirstBand: PRICING.dayOneFirstBand,
-    dayOneNextBand: DAY_ONE_NEXT_BAND,
   },
   cta: {
     waitlist: { primary: "Claim your spot", closing: "Claim your spot" },

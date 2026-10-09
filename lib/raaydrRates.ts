@@ -38,31 +38,44 @@
  * RULED 24 SEPTEMBER 2026 (board row 1416), REPLACING TWO BANDS OF 1,000. Ric,
  * 13:37: "1st 100 get 6.99 then everyone else after that pays the 9.99." The
  * cohort was 1,000 listeners in two price bands, 250 at £6.99 and 750 at
- * £7.99, until this ruling. `dayOneNext` (£7.99) and its derived PER_FAN /
- * DISTRIBUTABLE figures stay below, UNUSED BY ANY LIVE PRICE OR COPY: three
- * published Pulse posts cite the retired two-band structure and its £7.99
- * figures as history, and rewriting them is editorial work outside this
- * ruling's scope (flagged on the board rather than done here). Do not read
- * `dayOneNext` for anything new.
+ * £7.99, until this ruling.
+ *
+ * THE SECOND BAND IS GONE FROM THIS FILE AS OF 9 OCTOBER 2026, and why it
+ * survived the ruling for sixteen days is worth recording, because it is the
+ * whole shape of this change. `dayOneNext` (£7.99) and its derived PER_FAN and
+ * DISTRIBUTABLE figures were kept here under a docblock saying they were
+ * "UNUSED BY ANY LIVE PRICE OR COPY", retained because "three published Pulse
+ * posts cite the retired two-band structure and its £7.99 figures as history,
+ * and rewriting them is editorial work outside this ruling's scope".
+ *
+ * **That was true when it was written and it stopped being true without
+ * anybody noticing.** PR #77 rewrote the body prose. What it left behind was
+ * three "Update, 24 September 2026" notes in which each post ARGUED WITH ITS
+ * OWN BODY TEXT, and a rates file still carrying a retired band to serve copy
+ * that no longer cited it. So a constant was kept alive by a reason that had
+ * quietly expired -- the same failure as a stale comment, except the comment
+ * was load-bearing: it is what stopped the next person deleting the band.
+ *
+ * Board rows 2962 and 2965; Ric's go on 2967, in his words: "Yes, get the site
+ * in line with whatever wording needs to be correct." No post cites £7.99 now,
+ * no price or copy reads the second band, and there is one Day One band.
  */
 export const PRICING = {
   /** The Day One price. Locked forever, surviving a cancellation. */
   dayOne: 6.99,
-  /** RETAINED FOR HISTORICAL PULSE COPY ONLY. See the note above PRICING. */
-  dayOneNext: 7.99,
   standard: 9.99,
   plus: 3.99,
-  /** The Day One cohort closes after this many listeners. */
+  /**
+   * The Day One cohort closes after this many listeners. ONE band, so this is
+   * both the first place and the last. `dayOneFirstBand` was its twin while
+   * there were two bands, held the same value, and went on 9 October 2026 for
+   * exactly that reason: two names for one number is a drift waiting for
+   * somebody to change one of them.
+   */
   dayOneCap: 100,
-  /** RETAINED FOR HISTORICAL PULSE COPY ONLY. See the note above PRICING. */
-  dayOneFirstBand: 100,
   /** RAAYDR+ is included for Day Ones and for the founding creator cohorts. */
   plusIncludedForDayOnes: true,
 } as const;
-
-/** RETAINED FOR HISTORICAL PULSE COPY ONLY: the cohort has one band now, so
- *  this is 0. See the note above PRICING. */
-export const DAY_ONE_NEXT_BAND = PRICING.dayOneCap - PRICING.dayOneFirstBand;
 
 /**
  * Share of distributable revenue. Distributable is net of VAT, publishing and payment costs.
@@ -116,7 +129,6 @@ type PerTierRate = Record<RatesTier, number>;
 const flooredPerTier = (rate: PerTierRate): PerTierRate => ({
   standard: floorToPence(rate.standard),
   dayOne: floorToPence(rate.dayOne),
-  dayOneNext: floorToPence(rate.dayOneNext),
 });
 
 /**
@@ -128,13 +140,14 @@ const flooredPerTier = (rate: PerTierRate): PerTierRate => ({
  * penny would be magnified a thousand times over before anyone saw it.
  */
 export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
-  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46, dayOneNext: 2.83 }),
+  artist: flooredPerTier({ standard: 3.56, dayOne: 2.46 }),
   /**
-   * MOVED 29 SEPTEMBER 2026 with the split above, from 0.97 / 0.67 / 0.77.
+   * MOVED 29 SEPTEMBER 2026 with the split above, from 0.97 / 0.67 (and 0.77 on
+   * the second Day One band, retired 9 October 2026).
    *
    * These are not copy. They are the fund's size expressed per fan, so the 15 to 10 ruling
    * moves them by arithmetic rather than by choice: `floorToPence(DISTRIBUTABLE_EXACT * 10%)`
-   * on each tier gives 0.64, 0.44 and 0.51, and `calculator.test.ts` derives all three from
+   * on each tier gives 0.64 and 0.44, and `calculator.test.ts` derives both from
    * DISTRIBUTABLE_EXACT rather than reading these, so a typed figure cannot drift from the
    * waterfall that produced it.
    *
@@ -142,10 +155,16 @@ export const PER_FAN: { artist: PerTierRate; tastemaker: PerTierRate } = {
    * is not the one the ruling names: the tastemaker calculator's own example, 1,000 followers
    * at a 20% driven share, falls from £194 a month to £128.
    */
-  tastemaker: flooredPerTier({ standard: 0.64, dayOne: 0.44, dayOneNext: 0.51 }),
+  tastemaker: flooredPerTier({ standard: 0.64, dayOne: 0.44 }),
 };
 
 /*
+ * THE £7.99 BAND THIS PARAGRAPH IS ABOUT WAS RETIRED ON 9 OCTOBER 2026, with
+ * `dayOneNext`. The record stays, because it is the only account of a real
+ * defect with two separate causes, and the method it describes -- settle a
+ * figure by running the executable source rather than by argument -- is the
+ * one to reuse. Nothing below is a live rate.
+ *
  * dayOneNext corrected from £2.82 / £0.76 to £2.83 / £0.77 on 3 August 2026,
  * closing the open discrepancy in raaydr-economics-locked.md §3a.
  *
@@ -378,7 +397,6 @@ export const PLATFORM_PER_STREAM_ESTIMATES = {
  */
 export const DISTRIBUTABLE = {
   standard: 6.48,
-  dayOneNext: 5.14,
   dayOne: 4.47,
 } as const;
 
@@ -386,10 +404,11 @@ export const DISTRIBUTABLE = {
  * The same waterfall, unrounded. This is what the split is actually taken of.
  *
  * Reproduced by running distributableExact() from the platform repo, the
- * executable source of truth, on 3 August 2026. The £9.99 and £6.99 values are
- * that function's own output for the two tiers it defines; £7.99 is the
- * identical function applied to a 799p gross with the floor-in-pence Connect
- * allocation of 7p, because the platform repo has no £7.99 band to call.
+ * executable source of truth, on 3 August 2026. Both values are that
+ * function's own output for the two tiers it defines. A third entry for the
+ * retired £7.99 band sat here until 9 October 2026, derived by applying the
+ * identical function to a 799p gross because the platform repo had no such
+ * band to call; it went with the band.
  *
  * Its purpose is to make PER_FAN checkable rather than merely typed.
  * calculator.test.ts derives every artist and tastemaker rate from these, so a
@@ -399,7 +418,6 @@ export const DISTRIBUTABLE = {
  */
 export const DISTRIBUTABLE_EXACT = {
   standard: 6.48322,
-  dayOneNext: 5.14722,
   dayOne: 4.47922,
 } as const;
 
@@ -499,12 +517,35 @@ export const FOUNDING_COHORTS = {
   tastemakers: 25,
 } as const;
 
+/**
+ * The minimum payout.
+ *
+ * **£50 UNTIL 9 OCTOBER 2026, AND IT WAS WRONG FROM 3 OCTOBER.** Ric ruled £25
+ * on 3 October 2026 (`work_items` 291); the platform's own
+ * `packages/rates/src/raaydr-rates.ts` moved to 2500 minor units on 9 October,
+ * and this file was still saying £50.
+ *
+ * **Nothing rendered it, which is why nobody caught it and is not a reason to
+ * relax.** The constant was unimported, so the figure a reader actually sees --
+ * in `content/pulse/what-is-raaydr.md` and in the terms -- had been hand
+ * corrected to £25 separately. A dead constant holding a superseded published
+ * number is a trap set for whoever wires it up next: it would have shipped the
+ * old figure silently, with a plausible-looking source behind it.
+ *
+ * The prose now reads this through the `payout.minimum` token rather than
+ * carrying its own copy, so the two cannot disagree again.
+ *
+ * CROSS-REPO: `packages/rates` in raaydr-platform is the authority and carries
+ * `lagDays` and `firstPayoutHoldDays` as well. This object has neither, and
+ * nothing here needs them yet. The drift between the two files is filed on the
+ * backlog rather than solved by copying more numbers across.
+ */
 export const PAYOUT = {
-  minimumThreshold: 50,
+  minimumThreshold: 25,
   currency: "GBP",
 } as const;
 
-export type RatesTier = "standard" | "dayOne" | "dayOneNext";
+export type RatesTier = "standard" | "dayOne";
 
 /** Artist monthly earnings from a given fan count and attention share. */
 export function artistEarnings(fans: number, attentionPct: number): number {
