@@ -210,3 +210,21 @@ declare global {
     globalPrivacyControl?: boolean;
   }
 }
+
+/**
+ * Re-ask: the footer's "Cookie settings" link. The cookie policy promises a
+ * visitor can change their choice at any time from the footer, so this has to
+ * exist. It holds both tags closed again first (an earlier yes must not keep
+ * running while they decide), then forgets the stored answer so the banner,
+ * which reads the same store, comes back.
+ */
+export function reopenConsent(): void {
+  if (typeof window === "undefined") return;
+  setConsent("denied");
+  try {
+    window.localStorage.removeItem(CONSENT_STORAGE_KEY);
+  } catch {
+    /* storage unavailable: the banner cannot reappear, and denied stands */
+  }
+  window.dispatchEvent(new Event(CONSENT_CHANGE_EVENT));
+}

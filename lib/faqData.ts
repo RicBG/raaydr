@@ -43,7 +43,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     },
     {
       question: "Is RAAYDR live yet?",
-      answer: `Not yet, we're in waitlist mode right now while we finish building the platform. Join the waitlist for early access and a shot at one of the ${PRICING.dayOneCap} Day One places.`,
+      answer: "Artists are joining now. Listening opens in waves, starting with our Day One listeners. Claim your spot and we'll tell you the moment yours opens.",
     },
     {
       question: "What's the Day One offer?",
@@ -52,12 +52,12 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "Where is RAAYDR available?",
       answer:
-        "RAAYDR is open worldwide for the waitlist, though our active marketing right now is focused on the UK.",
+        "Anyone can sign up from anywhere. Music plays in the UK now, with the US and Europe next as our licences land.",
     },
     {
       question: "How do artists get paid on RAAYDR?",
       answer:
-        "55% of every subscription, after tax, publishing royalties and card fees, goes to artists, split by how much of each fan's listening they hold. Payouts run monthly once an artist passes £50, straight to their bank through Stripe. You can see what your own audience would look like on the calculator.",
+        "55% of every subscription, after tax, publishing royalties and card fees, goes to artists, split by how much of each fan's listening they hold. Payouts run monthly once an artist passes £25, straight to their bank through Stripe. You can see what your own audience would look like on the calculator.",
     },
     {
       question: "Does RAAYDR own my music?",
@@ -110,7 +110,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "When do I get paid?",
       answer:
-        "Monthly, once your balance passes £50, straight to your bank through Stripe. There's no manual invoicing, it's automatic once you cross the threshold.",
+        "Monthly, once your balance passes £25, straight to your bank through Stripe. There's no manual invoicing, it's automatic once you cross the threshold.",
     },
     {
       question: "What is RAAYDR+?",
@@ -158,7 +158,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     },
     {
       question: "When do I get paid?",
-      answer: "Monthly, once your balance passes £50, straight to your bank through Stripe, same as artists.",
+      answer: "Monthly, once your balance passes £25, straight to your bank through Stripe, same as artists.",
     },
   ],
 
@@ -192,7 +192,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "When do I get paid?",
       answer:
-        "Monthly, once your balance passes £50, straight to your bank through Stripe, same as every other creator role.",
+        "Monthly, once your balance passes £25, straight to your bank through Stripe, same as every other creator role.",
     },
   ],
 
@@ -204,7 +204,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     },
     {
       question: "What's the Day One offer?",
-      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at £${PRICING.dayOne} a month, locked for as long as they stay subscribed, against the standard £${PRICING.standard}. There is no lock in beyond keeping your price.`,
+      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at £${PRICING.dayOne} a month, locked forever, even if they cancel and come back, against the standard £${PRICING.standard}.`,
     },
     {
       question:
@@ -225,7 +225,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "Can I cancel any time?",
       answer:
-        "Yes, it's a standard monthly subscription with no lock in beyond keeping your Day One price for as long as you stay subscribed.",
+        "Yes, it's a standard monthly subscription with no lock in. If you are a Day One, your price stays yours even if you cancel and come back.",
     },
   ],
 

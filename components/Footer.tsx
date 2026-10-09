@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FooterWordmark from "./FooterWordmark";
+import CookieSettingsLink from "./CookieSettingsLink";
 import { InstagramIcon, TikTokIcon } from "./SocialIcons";
 import styles from "./Footer.module.css";
 
@@ -35,8 +36,10 @@ const columns = [
   {
     title: "Legal",
     links: [
-      { href: "/terms", label: "Terms" },
-      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms of service" },
+      { href: "/website-terms", label: "Website terms" },
+      { href: "/privacy", label: "Privacy policy" },
+      { href: "/cookies", label: "Cookie policy" },
     ],
   },
 ];
@@ -84,6 +87,11 @@ export default function Footer() {
                     )}
                   </li>
                 ))}
+                {col.title === "Legal" && (
+                  <li>
+                    <CookieSettingsLink className={`link-sweep ${styles.textButton}`} />
+                  </li>
+                )}
               </ul>
             </nav>
           ))}
