@@ -21,3 +21,8 @@ export const siteConfig = {
 };
 
 export const ctaCopy = () => siteConfig.cta[siteConfig.mode];
+
+// The platform's sign in page. app.raaydr.com is the production domain of the
+// raaydr-platform-web Vercel project, read from that project's domain list.
+// There is no sign up link beside it on purpose: platform signup is invite only.
+export const platformLoginUrl = "https://app.raaydr.com/login";
