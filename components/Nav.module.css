@@ -130,8 +130,8 @@
   color: color-mix(in srgb, var(--ink) 62%, transparent);
   /* 44px tall to tap, pulled up by the padding so it still sits close under
      the button. */
-  padding-block: 8px;
-  margin-top: -16px;
+  padding-block: 9px;
+  margin-top: -18px;
 }
 
 .navSocial {
