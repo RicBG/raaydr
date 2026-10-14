@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
+import { isHomePath } from "@/lib/trackingPaths";
 import { InstagramIcon, TikTokIcon } from "./SocialIcons";
 import styles from "./Nav.module.css";
 
@@ -42,7 +43,7 @@ export default function Nav() {
   // The waitlist CTAs point at the mid page form (#waitlist), not the closing
   // one (#join): it sits right after How It Works, so it catches people at the
   // moment they have understood the model rather than after the whole page.
-  const ctaHref = pathname === "/" ? "#waitlist" : "/#waitlist";
+  const ctaHref = isHomePath(pathname) ? "#waitlist" : "/#waitlist";
 
   // Hide on scroll down, reveal on scroll up; blurred canvas background once
   // past the hero.
