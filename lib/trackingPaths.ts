@@ -14,6 +14,8 @@ export const TRACKING_PATHS = {
   "/th": "Threads",
   "/fb": "Facebook",
   "/dm": "Reel comment for link DMs",
+  "/li": "LinkedIn, Ric's posts and the RAAYDR page",
+  "/em": "Email sends",
 } as const;
 
 export type TrackingPath = keyof typeof TRACKING_PATHS;
@@ -26,7 +28,7 @@ export function isHomePath(pathname: string | null): boolean {
 /**
  * Inherits everything else from the root layout, whose canonical and og:url
  * already point at "/". Kept out of search so the homepage never competes with
- * five copies of itself; links are still followed.
+ * copies of itself; links are still followed.
  */
 export const trackingPathMetadata: Metadata = {
   alternates: { canonical: "/" },
