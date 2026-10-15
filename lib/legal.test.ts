@@ -28,11 +28,62 @@ describe("legal pages", () => {
     expect(text("privacy")).toContain('"show my name"');
   });
 
-  it("keeps internal notes off the public pages", () => {
-    const terms = text("terms");
-    expect(terms).not.toContain("How we compare");
-    expect(terms).not.toContain("Decisions made");
-    expect(terms).not.toContain("APPROVED by Ric");
+  /*
+   * Nothing internal appears in forward-facing copy: no approver names, approval
+   * dates, rulings, board rows, agent names or "decided" notes. Those live in code
+   * comments, docs/decisions/ and the board. Ric, 15 October 2026, after an
+   * approval note shipped at the top of Terms section 9 and sat on the live page
+   * for twelve days. The guard before this one checked terms alone, and only for
+   * "APPROVED by Ric" in that exact case, which is exactly why it let that through.
+   *
+   * Short words are matched whole so "authorise" or "deciding" cannot false fire;
+   * phrases are matched as substrings. Everything is compared lowercased.
+   */
+  const INTERNAL_WORDS = [
+    "ruled",
+    "ruling",
+    "riz",
+    "codey",
+    "deuce",
+    "claude",
+    "decided",
+    "todo",
+    "tbd",
+    "internal",
+    "interim",
+    "founding",
+  ];
+  const INTERNAL_PHRASES = [
+    "approved by",
+    "signed off",
+    "board row",
+    "row 2",
+    "ops.handoff",
+    "decisions made",
+    "how we compare",
+    "lawyer",
+  ];
+
+  const internalHits = (copy: string): string[] => {
+    const lower = copy.toLowerCase();
+    return [
+      ...INTERNAL_WORDS.filter((w) => new RegExp(`\\b${w}\\b`).test(lower)),
+      ...INTERNAL_PHRASES.filter((p) => lower.includes(p)),
+    ];
+  };
+
+  it.each(SLUGS)("%s carries nothing internal", (slug) => {
+    expect(internalHits(text(slug))).toEqual([]);
+  });
+
+  it("the guard catches the sentence that shipped", () => {
+    expect(
+      internalHits(
+        "Approved by Ric on 3 October 2026. You agree to this once, before your first clip.",
+      ),
+    ).toEqual(["approved by"]);
+    expect(internalHits("There are 25 founding places.")).toEqual(["founding"]);
+    expect(internalHits("You authorise us to decide, and we are deciding.")).toEqual([]);
   });
 
   it("parses tables, lists and inline marks", () => {
