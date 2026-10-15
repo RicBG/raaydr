@@ -7,6 +7,10 @@ dateUpdated: "2026-10-15"
 author: "Ric, Founder of RAAYDR"
 accent: "amber"
 readingTime: "5 min read"
+heroImage: "https://images.unsplash.com/photo-1610716632424-4d45990bcd48?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&q=80&w=2048&h=1152"
+heroAlt: "A music producer working late at a computer in a home studio"
+heroCredit: "Rezli"
+heroCreditUrl: "https://unsplash.com/photos/OhTbOJH4w-w?utm_source=raaydr&utm_medium=referral"
 ---
 
 # Spotify's 1,000 Stream Rule: Why Your Small Tracks Earn Nothing

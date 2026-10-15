@@ -38,6 +38,10 @@ export interface PostMeta {
   readingTime: string;
   heroImage: string;
   heroAlt: string;
+  // Who took the hero, for a hotlinked stock photo that asks for a credit
+  // (Unsplash). Empty on our own artwork, which carries no credit line.
+  heroCredit: string;
+  heroCreditUrl: string;
 }
 
 export type Block =
@@ -377,6 +381,8 @@ function readPost(slug: string): Post {
     readingTime: meta.readingTime ?? "",
     heroImage: meta.heroImage ?? "",
     heroAlt: meta.heroAlt ?? "",
+    heroCredit: meta.heroCredit ?? "",
+    heroCreditUrl: meta.heroCreditUrl ?? "",
     blocks,
     faq,
     note,
@@ -446,4 +452,16 @@ export const DEFAULT_SHARE_IMAGE = "/og.png";
 
 export function shareImage(heroImage: string): string {
   return heroImage || DEFAULT_SHARE_IMAGE;
+}
+
+// A hero can be a hotlinked photo on another host (Unsplash asks for its
+// images to be served from images.unsplash.com, row 3347). Those are drawn
+// unoptimised so the browser loads them from Unsplash rather than through our
+// image proxy, and they are never prefixed with the site's own origin.
+export function isRemoteImage(src: string): boolean {
+  return /^https?:\/\//.test(src);
+}
+
+export function absoluteImageUrl(src: string, siteUrl: string): string {
+  return isRemoteImage(src) ? src : `${siteUrl}${src}`;
 }

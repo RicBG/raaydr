@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { formatDate, type PostMeta } from "@/lib/pulse";
+import { formatDate, isRemoteImage, type PostMeta } from "@/lib/pulse";
 import styles from "./PostCard.module.css";
 
 export default function PostCard({
@@ -28,6 +28,7 @@ export default function PostCard({
             width={2048}
             height={1152}
             loading="lazy"
+            unoptimized={isRemoteImage(post.heroImage)}
             sizes={
               feature
                 ? "(max-width: 767px) 100vw, 1180px"
