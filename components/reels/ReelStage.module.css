@@ -1,0 +1,256 @@
+/* The stage is 1080x1920 at its real size. The page scales it; nothing in here
+   uses a viewport unit. Margins 80, the top 200 and bottom 250 left clear for
+   Instagram's own chrome (visual language v1.6 §8), so every line of copy sits
+   between y 300 and y 1000 and the figure holds the lower half. */
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas);
+  color: var(--ink);
+  isolation: isolate;
+  will-change: opacity, filter;
+}
+
+/* One ambient glow, violet as light, drifting about 80px on a slow sine. */
+.glow {
+  position: absolute;
+  left: -420px;
+  top: -260px;
+  width: 1400px;
+  height: 1400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 77, 255, 0.14), rgba(124, 77, 255, 0) 62%);
+  pointer-events: none;
+}
+
+/* The hero object: the artists' halo loop, the real file from /media. It is
+   720x1280, so at 1080 wide it is exactly 1920 tall; the box shows its top
+   1360 so the head and halo sit in the lower half with the shoulders out of
+   frame, and the copy above it lands on clean canvas. The top edge is masked
+   so the loop's own paper meets the canvas without a seam. */
+.figure {
+  position: absolute;
+  left: 0;
+  top: 560px;
+  width: 1080px;
+  height: 1360px;
+  transform-origin: 50% 65%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 240px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 240px);
+  will-change: transform;
+}
+
+.media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0%;
+}
+
+video.media {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+video.mediaReady {
+  opacity: 1;
+}
+
+.copy {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  top: 300px;
+  height: 760px;
+}
+
+/* Every card occupies the same block, so a card leaving and the next arriving
+   share one place on the screen: the eye never travels. */
+.card {
+  position: absolute;
+  inset: 0;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 0 0 44px;
+  font-family: var(--font-mono);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  will-change: transform, opacity, filter;
+}
+
+/* The blip from the wordmark, in its own colour, at the head of every eyebrow. */
+.blip {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #7c4dff;
+  box-shadow: 0 0 24px rgba(124, 77, 255, 0.55);
+  flex: none;
+}
+
+.line {
+  margin: 0;
+  max-width: 920px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 112px;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: var(--ink);
+  will-change: transform, opacity, filter;
+}
+
+/* ---------- The end card ---------- */
+
+/* Everything on the end card stays above y 1080, where the figure's hair
+   begins: lock-up at 380, line, sub and URL stacked tight beneath it. */
+.end {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  top: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 72px;
+  will-change: transform, opacity;
+}
+
+.markBox {
+  display: block;
+  width: 118px;
+  height: 118px;
+  transform-origin: 50% 50%;
+  will-change: transform, filter;
+}
+
+.mark {
+  display: block;
+}
+
+.wordmark {
+  display: block;
+  height: 70px;
+  width: auto;
+}
+
+.endEyebrow {
+  justify-content: center;
+  margin-bottom: 36px;
+}
+
+.endLine {
+  max-width: none;
+  font-size: 128px;
+  letter-spacing: -0.035em;
+}
+
+.sub {
+  margin: 36px 0 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 42px;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  will-change: transform, opacity, filter;
+}
+
+.url {
+  margin: 44px 0 0;
+  font-family: var(--font-mono);
+  font-size: 30px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 50%, transparent);
+  will-change: transform, opacity, filter;
+}
+
+/* ---------- Light on top of everything ---------- */
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 72% at 50% 46%, rgba(21, 21, 26, 0) 60%, rgba(21, 21, 26, 0.14) 100%);
+}
+
+/* The site's own grain tile at the site's own opacity, so the loop's baked-in
+   grain and the canvas around it read as one surface. */
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("/textures/grain-tile-alpha.png");
+  background-repeat: repeat;
+  opacity: 0.05;
+}
+
+/* ---------- Safe zones, a review aid only ---------- */
+
+.safe {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.safeTop,
+.safeBottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(239, 99, 81, 0.12) 0 14px,
+    rgba(239, 99, 81, 0.04) 14px 28px
+  );
+  border-color: rgba(239, 99, 81, 0.6);
+  font-family: var(--font-mono);
+  font-size: 26px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--danger);
+}
+
+.safeTop {
+  top: 0;
+  height: 200px;
+  border-bottom: 2px dashed;
+}
+
+.safeBottom {
+  bottom: 0;
+  height: 250px;
+  border-top: 2px dashed;
+}
+
+/* The poster sits under the video in the same box. */
+.poster {
+  position: absolute;
+  inset: 0;
+}
+
+video.media {
+  position: relative;
+}

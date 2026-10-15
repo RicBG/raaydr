@@ -268,6 +268,15 @@ h3 {
   opacity: 0.05;
 }
 
+/* A reel preview under /preview/reels is a stage, not a page of the site: no
+   nav, no footer, and no site grain over the stage (the stage carries its own,
+   at the real dimensions, so a render matches it). The root layout mounts
+   those for every route, so the page marks itself and this rule takes them
+   off from first paint, with no flash of the nav before hydration. */
+body:has([data-reel-preview]) > :is(header, footer, .grain-overlay) {
+  display: none;
+}
+
 /* This project has no Tailwind (see AGENTS.md) — everything else styles via
    CSS Modules. These three exist only because components/ui/animated-
    gradient.tsx (a dropped-in component, kept as given) hardcodes these
