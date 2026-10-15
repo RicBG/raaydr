@@ -118,7 +118,7 @@ Bring a listener to RAAYDR through your own referral link and **we pay you £1 e
 
 ## 8. Tastemakers
 
-Tastemakers are invited curators: DJs, A&Rs, producers, journalists and playlisters. There are 25 founding places.
+Tastemakers are invited curators: DJs, A&Rs, producers, journalists and playlisters. There are 25 places.
 
 - You get catalogue access as part of the role, so you can do the work without paying a subscription.
 - Your listening is work, so it never counts towards any artist's earnings. If you also want to listen as a fan, you subscribe separately like anyone else.
@@ -127,7 +127,7 @@ Tastemakers are invited curators: DJs, A&Rs, producers, journalists and playlist
 
 ## 9. Signal clips
 
-Approved by Ric on 3 October 2026. You agree to this once, before your first clip. When you post, you also say whether the clip was made with AI.
+You agree to this once, before your first clip. When you post, you also say whether the clip was made with AI.
 
 When you post a clip to Signal, you confirm that:
 
