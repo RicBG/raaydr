@@ -5,6 +5,7 @@ import {
   ARTIST_NAME_MAX_LENGTH,
   isWaitlistGenreCode,
 } from "@/lib/waitlistGenres";
+import { isCreatorKindSlug } from "@/lib/creatorKind";
 import { sendMetaLead } from "@/lib/metaCapi";
 import { looksLikeEmail, normaliseEmail } from "@/lib/email";
 import { NAME_MAX_LENGTH } from "@/lib/waitlistName";
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
     name?: unknown;
     artist_name?: unknown;
     genre?: unknown;
+    creator_kind?: unknown;
     applied?: unknown;
     musicLink?: unknown;
     eventId?: unknown;
@@ -238,13 +240,43 @@ export async function POST(request: Request) {
   const country = countryFromHeaders(request.headers);
   const geo = country ? { p_country: country } : {};
 
+  /*
+   * PRODUCER, SONGWRITER OR BOTH. Board rows 3376 and 3383. Only meaningful for the
+   * `songwriter_producer` role, so it is dropped for every other role and for a value
+   * we do not recognise: a stale or forged answer is no answer, never a refusal.
+   *
+   * The function parameter `p_creator_kind` needs a migration on the waitlist project
+   * (Codey, Ric present). Until it is applied PostgREST answers PGRST202 and the step
+   * back below saves the signup without it, so shipping this first loses nobody.
+   */
+  const creatorKind =
+    role === "songwriter_producer" &&
+    typeof body.creator_kind === "string" &&
+    isCreatorKindSlug(body.creator_kind.trim())
+      ? body.creator_kind.trim()
+      : null;
+  const kind = creatorKind ? { p_creator_kind: creatorKind } : {};
+
   let { error } = await supabase.rpc("upsert_waitlist_signup", {
     ...core,
     ...attribution,
     ...profile,
     ...person,
     ...geo,
+    ...kind,
   });
+
+  // Newest first: the creator kind is the latest argument, so step back from it first.
+  if (creatorKind && error?.code === "PGRST202") {
+    console.error("[waitlist] creator kind migration not applied; saved without it");
+    ({ error } = await supabase.rpc("upsert_waitlist_signup", {
+      ...core,
+      ...attribution,
+      ...profile,
+      ...person,
+      ...geo,
+    }));
+  }
 
   // Newest first, like the two steps below: the function that takes `p_country` is a later
   // migration than the one that takes `p_name`, and shipping this code before that migration
