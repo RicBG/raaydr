@@ -1,5 +1,6 @@
 ---
 title: "Can You Buy Spotify Streams? Why Play Counts Are the Easiest Thing in Music to Fake"
+seoTitle: "Can You Buy Spotify Streams? What Really Happens"
 slug: "can-you-buy-spotify-streams"
 description: "Streams are for sale, bot farms run on them, and Spotify now fines tracks that get caught. Here is what buying plays really costs you, and why RAAYDR shows no public play counts at all."
 datePublished: "2026-09-23"
@@ -63,6 +64,10 @@ None of that makes RAAYDR fraud proof, and I'd be lying if I said it did. People
 Your own numbers, privately, and preferably the ones that describe people. How many listeners came back after the first week. Who played the whole record and who bailed after track two. Whether the same forty people are doing most of your listening, which is a better sign than it sounds, because forty people playing you every day is how a fanbase starts, even if I know full well a big total on a playlist is still what gets you the meeting.
 
 On RAAYDR those numbers are yours to see and nobody else's to judge. Whether that's enough to get artists to stop chasing the big public figure, I honestly don't know yet. We'll find out when the doors open.
+
+## Keep reading
+
+Fake plays also sit on top of a real problem: [what Spotify actually pays per stream](/pulse/how-much-does-spotify-pay-per-stream) and [why tracks under 1,000 streams earn nothing](/pulse/spotify-1000-stream-rule). If you want to see how RAAYDR pays instead, start with [the artist page](/artists).
 
 ## FAQ
 

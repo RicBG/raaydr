@@ -14,6 +14,11 @@ const SLUG_KIND: Record<string, CtaKind> = {
   "what-is-attention-based-streaming-payment": "artist",
   "how-producers-and-songwriters-get-paid": "producer",
   "what-is-raaydr": "artist",
+  "spotify-1000-stream-rule": "artist",
+  "streaming-royalty-calculator-uk": "artist",
+  "how-much-does-apple-music-pay-per-stream-uk": "artist",
+  "prs-vs-ppl-uk-royalties": "producer",
+  "split-sheet-template": "producer",
 };
 
 const CTA: Record<

@@ -1,5 +1,6 @@
 ---
 title: "How Many Streams Do You Need to Earn £1,000 a Month From Music?"
+seoTitle: "How Many Streams to Earn £1,000 a Month?"
 slug: "how-many-streams-for-1000-a-month"
 description: "At Spotify's roughly £0.003 per stream you need about 333,000 streams a month to earn £1,000. Here is the working, and a different way to get there."
 datePublished: "2026-06-21"
@@ -57,6 +58,10 @@ On RAAYDR, 55% of each fan's subscription flows to artists every month, after ta
 | 25% | ~1,124 fans |
 
 Seven hundred people who genuinely rate you, versus fifty thousand people who vaguely encountered you. Those are different jobs. One of them is achievable for a working independent artist; you can sanity check the numbers yourself with the calculator at [raaydr.com](https://raaydr.com).
+
+## Keep reading
+
+The rate behind this sum is explained in [how much Spotify pays per stream](/pulse/how-much-does-spotify-pay-per-stream). You can try your own streams on the [streaming royalty calculator](/tools/streaming-royalty-calculator), and see what Apple Music pays in [the Apple Music per stream guide](/pulse/how-much-does-apple-music-pay-per-stream-uk).
 
 ## FAQ
 

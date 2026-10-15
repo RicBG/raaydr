@@ -1,5 +1,6 @@
 ---
 title: "Where Your £9.99 Actually Goes on RAAYDR"
+seoTitle: "Where Your £9.99 Goes on RAAYDR"
 slug: "where-your-9-99-actually-goes"
 description: "A full breakdown of a £9.99 RAAYDR subscription: what comes off the top for VAT, publishing and card fees, and how the rest splits between artists, tastemakers and the platform."
 datePublished: "2026-07-22"
@@ -69,6 +70,10 @@ No advertising. There is no ad inventory, so nobody's attention is being sold on
 No paid placement. You cannot buy your way onto a list or into a recommendation. Tastemakers rise because people act on their picks, not because anyone paid.
 
 No free tier. Playing music requires a subscription. That is deliberate. It is what makes fake accounts pointless, because a subscription costs more than any account could ever extract.
+
+## Keep reading
+
+If you want the other side of the sum, read [how much Spotify pays per stream](/pulse/how-much-does-spotify-pay-per-stream), run your own numbers on [the artist calculator](/tools/streaming-royalty-calculator), or see [how attention based payment works](/pulse/what-is-attention-based-streaming-payment).
 
 ## FAQ
 

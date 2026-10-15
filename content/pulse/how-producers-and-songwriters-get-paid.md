@@ -1,5 +1,6 @@
 ---
 title: "How Do Music Producers and Songwriters Get Paid? (And How to Know If You're Owed Money)"
+seoTitle: "How Producers and Songwriters Get Paid"
 slug: "how-producers-and-songwriters-get-paid"
 description: "Producers and songwriters are paid through upfront fees, royalty splits and publishing royalties. Here is where the money leaks, and how to claim it."
 datePublished: "2026-03-21"
@@ -53,6 +54,10 @@ It is tedious, which is exactly why the money leaks. The industry's quiet assump
 We treat producers and songwriters as first-class users, not a rounding error on the artist's statement. RAAYDR+ gives both roles their own dashboards, and splits are structural: an agreed percentage on a song is applied to the artist's earnings automatically, visible to everyone on the track. The earnings calculator at [raaydr.com](https://raaydr.com) models it directly: take the artist's gross figure, apply your agreed cut, see your number.
 
 And the platform's promise to these roles is the one the wider industry has never made: we tell you when you're owed something.
+
+## Keep reading
+
+To get the paperwork right, use our [split sheet template](/pulse/split-sheet-template) and read [PRS vs PPL](/pulse/prs-vs-ppl-uk-royalties). For the per stream numbers, see [how much Spotify pays per stream](/pulse/how-much-does-spotify-pay-per-stream), and for how RAAYDR splits work, see [the producers and songwriters page](/producers-songwriters).
 
 ## FAQ
 

@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   CANONICAL,
   DISTRIBUTABLE,
+  PAYOUT,
   PER_FAN,
   PLATFORM_PER_STREAM_ESTIMATES,
   SPLIT,
@@ -29,6 +30,8 @@ export type Accent = "green" | "amber" | "cyan" | "orchid";
 
 export interface PostMeta {
   title: string;
+  /** The <title> tag text, kept short enough for a results page. Falls back to title. */
+  seoTitle: string;
   slug: string;
   description: string;
   datePublished: string;
@@ -85,7 +88,34 @@ const CONTENT_DIR = path.join(process.cwd(), "content", "pulse");
 const SCENARIO_FANS = 500;
 const SCENARIO_ATTENTION = 40;
 
+/**
+ * Worked streaming examples for the calculator and Apple Music posts (row 3263).
+ * Computed from the same per stream rates the older posts print, so a rate
+ * change rewrites every table instead of stranding one. The rates themselves
+ * are estimates (see PLATFORM_PER_STREAM_ESTIMATES); the sums are not.
+ */
+const CALC_STREAM_COUNTS = [1000, 10000, 100000] as const;
+const CALC_RATES = {
+  spotify: SPOTIFY.perStream,
+  apple: PLATFORM_PER_STREAM_ESTIMATES.appleMusic,
+  youtube: PLATFORM_PER_STREAM_ESTIMATES.youtubeMusic,
+} as const;
+const TARGET_POUNDS = 100;
+
+const CALC_TOKENS: Record<string, string> = {};
+for (const streams of CALC_STREAM_COUNTS) {
+  for (const [platform, perStream] of Object.entries(CALC_RATES)) {
+    CALC_TOKENS[`calc.${streams}.${platform}`] = money(streams * perStream);
+  }
+}
+for (const [platform, perStream] of Object.entries(CALC_RATES)) {
+  CALC_TOKENS[`needs100.${platform}`] = count(Math.round(TARGET_POUNDS / perStream));
+}
+
 const CONTENT_TOKENS: Record<string, string> = {
+  ...CALC_TOKENS,
+  /** The payout minimum, from PAYOUT (which mirrors packages/rates, £25). */
+  "rates.payout.threshold": money(PAYOUT.minimumThreshold),
   "canonical.claim": CANONICAL.claim,
   "canonical.denominator": CANONICAL.denominator,
   "canonical.typicalPair": CANONICAL.typicalPair,
@@ -192,6 +222,11 @@ function substituteTokens(raw: string, slug: string): string {
 // This is the intended editorial order (cornerstone per-stream piece first),
 // used only to break that tie deterministically.
 const EDITORIAL_ORDER = [
+  "spotify-1000-stream-rule",
+  "streaming-royalty-calculator-uk",
+  "how-much-does-apple-music-pay-per-stream-uk",
+  "prs-vs-ppl-uk-royalties",
+  "split-sheet-template",
   "how-much-does-spotify-pay-per-stream",
   "how-many-streams-for-1000-a-month",
   "best-spotify-alternatives-independent-artists",
@@ -372,6 +407,7 @@ function readPost(slug: string): Post {
   const { blocks, faq, note } = structure(parseBlocks(body));
   return {
     title: meta.title ?? "",
+    seoTitle: meta.seoTitle ?? "",
     slug: meta.slug || slug,
     description: meta.description ?? "",
     datePublished: meta.datePublished ?? "",

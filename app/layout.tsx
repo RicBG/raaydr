@@ -21,10 +21,25 @@ import "./globals.css";
 
 // metadataBase belongs here and nowhere else: every page's canonical and
 // og:url is a relative path resolved against it.
+// Search Console and Bing Webmaster Tools ownership. Each tool hands over a
+// short token; set it as an environment variable in Vercel and redeploy, and
+// the tag appears. Nothing is emitted while the variable is unset, so this
+// ships safely before anyone has the token. Row 3263, technical win 7.
+const googleVerification = process.env.GOOGLE_SITE_VERIFICATION;
+const bingVerification = process.env.BING_SITE_VERIFICATION;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  ...(googleVerification || bingVerification
+    ? {
+        verification: {
+          ...(googleVerification ? { google: googleVerification } : {}),
+          ...(bingVerification ? { other: { "msvalidate.01": bingVerification } } : {}),
+        },
+      }
+    : {}),
   ...pageMetadata({
-    title: "RAAYDR: Music streaming is broken. We fixed it. Now everyone wins.",
+    title: "RAAYDR: Music Streaming That Pays the Artists You Play",
     path: "/",
   }),
 };
@@ -44,7 +59,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en-GB">
       <head>
         {preloadFonts.map((href) => (
           <link

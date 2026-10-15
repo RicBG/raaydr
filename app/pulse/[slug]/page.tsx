@@ -38,7 +38,7 @@ export async function generateMetadata({
   if (!post) return {};
 
   const url = `${SITE_URL}/pulse/${post.slug}`;
-  const title = `${post.title} · The Pulse · RAAYDR`;
+  const title = `${post.seoTitle || post.title} | RAAYDR`;
   const image = shareImage(post.heroImage);
 
   return {

@@ -1,5 +1,6 @@
 ---
 title: "What Is Attention-Based Streaming Payment? User-Centric Royalties Explained"
+seoTitle: "What Is Attention Based Streaming Payment?"
 slug: "what-is-attention-based-streaming-payment"
 description: "Attention-based payment divides each listener's subscription among the artists they actually played, in proportion to listening time. Explained."
 datePublished: "2026-04-21"

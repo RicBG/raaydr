@@ -1,5 +1,6 @@
 ---
 title: "What Is RAAYDR? The Attention-Based Music Streaming Platform, Explained"
+seoTitle: "What Is RAAYDR? Attention Based Streaming"
 slug: "what-is-raaydr"
 description: "RAAYDR is a music streaming platform where subscriber money flows to artists by each listener's actual listening share, not a global per-stream pool."
 datePublished: "2026-02-21"
