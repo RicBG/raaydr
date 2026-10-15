@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate, getAllPosts, getAllSlugs, getPost } from "@/lib/pulse";
+import { formatDate, getAllPosts, getAllSlugs, getPost, shareImage } from "@/lib/pulse";
 import { SITE_URL } from "@/lib/site";
 import PostBody from "@/components/pulse/PostBody";
 import Faq from "@/components/pulse/Faq";
@@ -31,6 +31,7 @@ export async function generateMetadata({
 
   const url = `${SITE_URL}/pulse/${post.slug}`;
   const title = `${post.title} · The Pulse · RAAYDR`;
+  const image = shareImage(post.heroImage);
 
   return {
     title,
@@ -45,13 +46,13 @@ export async function generateMetadata({
       publishedTime: post.datePublished,
       modifiedTime: post.dateUpdated,
       authors: [post.author],
-      images: [{ url: post.heroImage, alt: post.title }],
+      images: [{ url: image, alt: post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description: post.description,
-      images: [post.heroImage],
+      images: [image],
     },
   };
 }
@@ -91,7 +92,7 @@ export default async function PulsePost({
       },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    image: `${SITE_URL}${post.heroImage}`,
+    image: `${SITE_URL}${shareImage(post.heroImage)}`,
     url,
   };
 
