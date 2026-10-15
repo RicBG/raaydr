@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ctaCopy } from "@/lib/siteConfig";
+import { ctaCopy, platformLoginUrl } from "@/lib/siteConfig";
 import { isHomePath } from "@/lib/trackingPaths";
 import { InstagramIcon, TikTokIcon } from "./SocialIcons";
 import styles from "./Nav.module.css";
@@ -115,6 +115,11 @@ export default function Nav() {
               </a>
             ))}
           </div>
+          {/* For artists who already have an account. Plain text so it never
+              competes with the waitlist button beside it. */}
+          <a href={platformLoginUrl} className={styles.loginLink}>
+            Log in
+          </a>
           <a href={ctaHref} className={`btn ${styles.cta}`}>
             {ctaCopy().primary}
           </a>
@@ -143,6 +148,13 @@ export default function Nav() {
           ))}
           <a href={ctaHref} className="btn" onClick={() => setOpen(false)}>
             {ctaCopy().primary}
+          </a>
+          <a
+            href={platformLoginUrl}
+            className={styles.mobileLoginLink}
+            onClick={() => setOpen(false)}
+          >
+            Log in
           </a>
           <div className={styles.mobileSocial}>
             {socials.map(({ label, href, Icon }) => (

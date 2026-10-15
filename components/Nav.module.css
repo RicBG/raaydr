@@ -105,6 +105,35 @@
   padding: 0.85em 1.5em;
 }
 
+/* Log in: the same quiet ink as the secondary routes, no pill, no button, so
+   "Claim your spot" stays the only call to action in the row. */
+.loginLink {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.65em 0.25em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  transition: color 0.2s ease;
+}
+
+.loginLink:hover {
+  color: var(--ink);
+}
+
+/* In the open menu it sits under the waitlist button, a size down and in the
+   body face, so it reads as a way in for existing artists rather than a peer
+   of the menu's pages. */
+.mobileLoginLink {
+  font-family: var(--font-body);
+  font-size: 17px;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  /* 44px tall to tap, pulled up by the padding so it still sits close under
+     the button. */
+  padding-block: 9px;
+  margin-top: -18px;
+}
+
 .navSocial {
   display: flex;
   align-items: center;
@@ -198,12 +227,14 @@
   display: none;
 }
 
-/* The desktop row needs ~1140px to lay out without the pills wrapping and the
-   CTA spilling past the 76px header. Below that it goes to the burger, which
-   carries the same links. */
-@media (max-width: 1140px) {
+/* The desktop row needs ~1190px to lay out without the pills wrapping and the
+   CTA spilling past the 76px header. Measured since "Log in" joined the row:
+   it fits at 1190 and wraps at 1180 (it was ~1140 before). Below that it goes
+   to the burger, which carries the same links. */
+@media (max-width: 1200px) {
   .links,
   .actions .cta,
+  .loginLink,
   .navSocial {
     display: none;
   }
