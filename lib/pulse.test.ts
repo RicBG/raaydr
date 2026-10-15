@@ -1,6 +1,8 @@
+import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_SHARE_IMAGE,
+  getAllSlugs,
   absoluteImageUrl,
   getPost,
   isRemoteImage,
@@ -109,5 +111,33 @@ describe("worked streaming tokens", () => {
       "£80",
       "£15",
     ]);
+  });
+});
+
+// Technical win 1 (row 3263): a results page cuts a title at about 60
+// characters, and the old suffix pushed most Pulse titles past 90.
+describe("Pulse search titles", () => {
+  it("every post has an seoTitle that fits with the brand suffix", () => {
+    for (const slug of getAllSlugs()) {
+      const post = getPost(slug);
+      expect(post?.seoTitle, slug).toBeTruthy();
+      expect(`${post?.seoTitle} | RAAYDR`.length, slug).toBeLessThanOrEqual(60);
+      expect(post?.seoTitle, slug).not.toMatch(/[–—]/);
+    }
+  });
+
+  it("the money posts link to the per stream post and a tool or role page", () => {
+    const moneyPosts = [
+      "where-your-9-99-actually-goes",
+      "does-ai-music-affect-streaming-royalties",
+      "can-you-buy-spotify-streams",
+      "how-many-streams-for-1000-a-month",
+      "how-producers-and-songwriters-get-paid",
+    ];
+    for (const slug of moneyPosts) {
+      const raw = fs.readFileSync(`content/pulse/${slug}.md`, "utf8");
+      expect(raw, slug).toMatch(/\]\(\/pulse\/how-much-does-spotify-pay-per-stream\)/);
+      expect(raw, slug).toMatch(/\]\(\/(artists|producers-songwriters|tools\/streaming-royalty-calculator)/);
+    }
   });
 });

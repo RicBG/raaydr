@@ -1,5 +1,6 @@
 ---
 title: "How Much Does Apple Music Pay Per Stream in the UK?"
+seoTitle: "How Much Does Apple Music Pay Per Stream UK?"
 slug: "how-much-does-apple-music-pay-per-stream-uk"
 description: "Apple Music pays more per stream than Spotify, but it does not publish a rate. The best estimate in pounds, how it compares, and why per stream is the wrong number to watch."
 datePublished: "2026-10-15"

@@ -1,5 +1,6 @@
 ---
 title: "PRS vs PPL: How to Register Your Songs and Collect Every UK Royalty"
+seoTitle: "PRS vs PPL: How to Collect Every UK Royalty"
 slug: "prs-vs-ppl-uk-royalties"
 description: "PRS pays the songwriter and PPL pays the recording. Who joins which, what each one collects in the UK, and the checklist to make sure you are not leaving money behind."
 datePublished: "2026-10-15"

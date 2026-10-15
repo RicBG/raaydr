@@ -1,0 +1,63 @@
+/* /tools/streaming-royalty-calculator. Clears the fixed Nav like the other
+   subpages, then a header, the shared calculator on the cream canvas (the
+   same ground it has on /artists) and a short reading list. The calculator is
+   already a two column layout at desktop widths, so the page uses the width. */
+
+.page {
+  padding-top: 76px;
+  min-height: 100svh;
+}
+
+.header {
+  padding: clamp(48px, 8vw, 96px) var(--gutter) clamp(20px, 3vw, 32px);
+  display: grid;
+  gap: 14px;
+}
+
+.title {
+  margin-top: 4px;
+}
+
+.lead {
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  max-width: 56ch;
+  color: color-mix(in srgb, var(--ink) 75%, transparent);
+}
+
+.links {
+  max-width: 56ch;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.links a,
+.moreList a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.calc {
+  --calc-accent: var(--brand-deep);
+
+  padding: clamp(24px, 4vw, 48px) 0 clamp(40px, 6vw, 80px);
+  border-top: 1px solid var(--stone);
+}
+
+.more {
+  display: grid;
+  gap: 16px;
+  padding-block: clamp(32px, 5vw, 56px) clamp(80px, 12vw, 140px);
+}
+
+.moreHeading {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+.moreList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: 12px 32px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

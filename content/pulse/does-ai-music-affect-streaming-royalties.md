@@ -1,5 +1,6 @@
 ---
 title: "AI Music Is Over Half of New Uploads. What That Does to Your Royalties"
+seoTitle: "AI Music and Your Royalties: What Changes"
 slug: "does-ai-music-affect-streaming-royalties"
 description: "Deezer now receives around 90,000 fully AI-generated tracks a day, more than half of all new uploads. Here is how that reaches your royalty statement, and how much of it depends on the way you get paid."
 datePublished: "2026-08-24"
@@ -69,6 +70,10 @@ RAAYDR has four written pledges on the [artists page](/artists#pledges). Your mu
 Our terms page currently says full terms of service arrive before Day One memberships open, which is true and also means the pledges are not yet load-bearing in a contract. When those terms land, all four have to be in them, in language no looser than what you just read. That is the test to hold us to, and it is a fair one to hold any platform to.
 
 The listener side of this is simpler than the industry makes it sound. When Deezer ran a blind test through Ipsos with 9,000 people across eight countries, 97% could not tell an AI track from a human one. Four out of five wanted them labelled anyway. People are not asking to be able to hear the difference. They are asking to know, which is a different thing, and it is roughly what artists are asking for too.
+
+## Keep reading
+
+For the money side, see [how much Spotify pays per stream](/pulse/how-much-does-spotify-pay-per-stream), what [the 1,000 stream rule](/pulse/spotify-1000-stream-rule) does to small artists, and [who RAAYDR is built for](/artists).
 
 ## FAQ
 

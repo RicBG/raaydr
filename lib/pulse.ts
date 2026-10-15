@@ -30,6 +30,8 @@ export type Accent = "green" | "amber" | "cyan" | "orchid";
 
 export interface PostMeta {
   title: string;
+  /** The <title> tag text, kept short enough for a results page. Falls back to title. */
+  seoTitle: string;
   slug: string;
   description: string;
   datePublished: string;
@@ -405,6 +407,7 @@ function readPost(slug: string): Post {
   const { blocks, faq, note } = structure(parseBlocks(body));
   return {
     title: meta.title ?? "",
+    seoTitle: meta.seoTitle ?? "",
     slug: meta.slug || slug,
     description: meta.description ?? "",
     datePublished: meta.datePublished ?? "",

@@ -16,14 +16,21 @@ const STATIC_ROUTES = [
   "/website-terms",
   "/cookies",
   "/pulse",
+  "/tools/streaming-royalty-calculator",
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+// Fixed on purpose. A sitemap that stamps every page with the build time tells
+// search engines everything changed on every deploy, and they learn to ignore
+// the field (row 3263, technical win 5). This date moves only when someone
+// edits it. The checkout this was written in has no git history to read a real
+// per page date from, so one honest date stands for the static pages; split it
+// per route when there is a source for each.
+const STATIC_LAST_MODIFIED = "2026-10-15";
 
+export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
     url: `${SITE_URL}${route}`,
-    lastModified: now,
+    lastModified: STATIC_LAST_MODIFIED,
     changeFrequency: route === "/pulse" ? "weekly" : "monthly",
     priority: route === "/" ? 1 : 0.7,
   }));

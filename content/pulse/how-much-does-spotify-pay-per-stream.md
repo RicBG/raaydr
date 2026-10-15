@@ -1,5 +1,6 @@
 ---
 title: "How Much Does Spotify Actually Pay Per Stream? (2026, With Real Numbers)"
+seoTitle: "How Much Does Spotify Pay Per Stream? (2026)"
 slug: "how-much-does-spotify-pay-per-stream"
 description: "Spotify pays artists roughly £0.003 per stream. We prove it with a real distributor dashboard: $24.6K earned from 6.92 million streams."
 datePublished: "2026-07-21"
@@ -93,6 +94,10 @@ That is the model RAAYDR is built on. On a standard subscription, up to {{rates.
 At that rate the maths changes shape entirely: {{scenario.fans}} fans giving you {{scenario.attention}} of their listening time is about {{scenario.raaydrMonthly}} a month. To match that on Spotify you would need roughly {{scenario.spotifyStreams}} streams a month.
 
 We wrote a full breakdown of how attention-based payment works, and you can run your own numbers with the earnings calculator on [raaydr.com](https://raaydr.com).
+
+## Keep reading
+
+Put your own numbers through the [streaming royalty calculator](/tools/streaming-royalty-calculator) or the [calculator guide](/pulse/streaming-royalty-calculator-uk). Compare with [what Apple Music pays](/pulse/how-much-does-apple-music-pay-per-stream-uk), and see why small tracks can earn nothing in [the 1,000 stream rule](/pulse/spotify-1000-stream-rule).
 
 ## FAQ
 

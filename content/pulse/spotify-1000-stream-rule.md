@@ -1,5 +1,6 @@
 ---
 title: "Spotify's 1,000 Stream Rule: Why Your Small Tracks Earn Nothing"
+seoTitle: "Spotify's 1,000 Stream Rule Explained"
 slug: "spotify-1000-stream-rule"
 description: "Since April 2024, Spotify tracks with fewer than 1,000 streams a year earn no royalties. Here is how the rule works, where the money goes, and the 2026 lawsuit challenging it."
 datePublished: "2026-10-15"

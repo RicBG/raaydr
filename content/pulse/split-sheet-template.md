@@ -1,5 +1,6 @@
 ---
 title: "Split Sheet Template: A Free Music Split Sheet You Can Copy"
+seoTitle: "Split Sheet Template: Free Music Split Sheet"
 slug: "split-sheet-template"
 description: "A plain split sheet you can copy today. What to put on it, who signs, and the mistakes that hold up your royalties."
 datePublished: "2026-10-15"

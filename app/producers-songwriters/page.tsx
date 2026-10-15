@@ -5,8 +5,7 @@ import { faqData } from "@/lib/faqData";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title:
-    "RAAYDR for Producers & Songwriters: Credited, found, and paid the moment your work plays.",
+  title: "Royalty Splits for Producers and Songwriters | RAAYDR",
   description:
     "The split is built in, not begged for. When a record you helped make earns, your share arrives automatically.",
   path: "/producers-songwriters",

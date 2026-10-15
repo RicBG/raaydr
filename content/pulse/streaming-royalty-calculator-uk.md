@@ -1,5 +1,6 @@
 ---
 title: "Streaming Royalty Calculator UK: What Spotify, Apple Music and YouTube Music Pay"
+seoTitle: "Streaming Royalty Calculator UK, in Pounds"
 slug: "streaming-royalty-calculator-uk"
 description: "Work out what your streams earn in pounds. Per stream rates for Spotify, Apple Music and YouTube Music, a worked table, and the sum to do yourself."
 datePublished: "2026-10-15"
@@ -62,7 +63,7 @@ RAAYDR pays another way. Each fan's subscription is shared between the artists t
 
 {{canonical.denominator}}
 
-For a worked example, {{scenario.fans}} fans giving you a {{scenario.attention}} share of their listening comes to roughly {{scenario.raaydrMonthly}} a month. You can change those numbers on [the artist calculator](/artists#calculator).
+For a worked example, {{scenario.fans}} fans giving you a {{scenario.attention}} share of their listening comes to roughly {{scenario.raaydrMonthly}} a month. You can change those numbers on [the streaming royalty calculator](/tools/streaming-royalty-calculator).
 
 ## What about publishing money?
 
@@ -70,7 +71,7 @@ Streams also earn the songwriter a separate payment, collected through a society
 
 ## Try it with your own numbers
 
-[Run your numbers on the RAAYDR calculator](/artists#calculator) or [join the waitlist](https://raaydr.com/?utm_source=pulse&utm_medium=blog&utm_campaign=streaming-royalty-calculator-uk&utm_content=body) and we will tell you when listeners can join.
+[Run your numbers on the RAAYDR calculator](/tools/streaming-royalty-calculator) or [join the waitlist](https://raaydr.com/?utm_source=pulse&utm_medium=blog&utm_campaign=streaming-royalty-calculator-uk&utm_content=body) and we will tell you when listeners can join.
 
 ## FAQ
 
