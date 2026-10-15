@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate, getAllPosts, getAllSlugs, getPost } from "@/lib/pulse";
+import {
+  absoluteImageUrl,
+  formatDate,
+  getAllPosts,
+  getAllSlugs,
+  getPost,
+  isRemoteImage,
+  shareImage,
+} from "@/lib/pulse";
 import { SITE_URL } from "@/lib/site";
 import PostBody from "@/components/pulse/PostBody";
 import Faq from "@/components/pulse/Faq";
@@ -31,6 +39,7 @@ export async function generateMetadata({
 
   const url = `${SITE_URL}/pulse/${post.slug}`;
   const title = `${post.title} · The Pulse · RAAYDR`;
+  const image = shareImage(post.heroImage);
 
   return {
     title,
@@ -45,13 +54,13 @@ export async function generateMetadata({
       publishedTime: post.datePublished,
       modifiedTime: post.dateUpdated,
       authors: [post.author],
-      images: [{ url: post.heroImage, alt: post.title }],
+      images: [{ url: image, alt: post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description: post.description,
-      images: [post.heroImage],
+      images: [image],
     },
   };
 }
@@ -91,7 +100,7 @@ export default async function PulsePost({
       },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    image: `${SITE_URL}${post.heroImage}`,
+    image: absoluteImageUrl(shareImage(post.heroImage), SITE_URL),
     url,
   };
 
@@ -143,15 +152,33 @@ export default async function PulsePost({
             Intrinsic dimensions (not `fill`) reserve the 16:9 box, so there
             is no layout shift and no iOS sizing bug (see Silhouette.tsx). */}
         {post.heroImage && (
-          <Image
-            src={post.heroImage}
-            alt={post.heroAlt}
-            width={2048}
-            height={1152}
-            priority
-            sizes="(max-width: 900px) 100vw, 760px"
-            className={styles.hero}
-          />
+          <figure className={styles.heroFigure}>
+            <Image
+              src={post.heroImage}
+              alt={post.heroAlt}
+              width={2048}
+              height={1152}
+              priority
+              unoptimized={isRemoteImage(post.heroImage)}
+              sizes="(max-width: 900px) 100vw, 760px"
+              className={styles.hero}
+            />
+            {post.heroCredit && (
+              <figcaption className={styles.heroCredit}>
+                Photo by{" "}
+                <a href={post.heroCreditUrl} rel="noopener">
+                  {post.heroCredit}
+                </a>{" "}
+                on{" "}
+                <a
+                  href="https://unsplash.com/?utm_source=raaydr&utm_medium=referral"
+                  rel="noopener"
+                >
+                  Unsplash
+                </a>
+              </figcaption>
+            )}
+          </figure>
         )}
 
         <div className={styles.body}>

@@ -38,6 +38,10 @@ export interface PostMeta {
   readingTime: string;
   heroImage: string;
   heroAlt: string;
+  // Who took the hero, for a hotlinked stock photo that asks for a credit
+  // (Unsplash). Empty on our own artwork, which carries no credit line.
+  heroCredit: string;
+  heroCreditUrl: string;
 }
 
 export type Block =
@@ -377,6 +381,8 @@ function readPost(slug: string): Post {
     readingTime: meta.readingTime ?? "",
     heroImage: meta.heroImage ?? "",
     heroAlt: meta.heroAlt ?? "",
+    heroCredit: meta.heroCredit ?? "",
+    heroCreditUrl: meta.heroCreditUrl ?? "",
     blocks,
     faq,
     note,
@@ -436,4 +442,26 @@ export function getPost(slug: string): Post | null {
   } catch {
     return null;
   }
+}
+
+// The image a share card and the BlogPosting schema point at. A post can go
+// out before its hero image exists (the first was the 1,000 stream rule post,
+// row 3263), and an empty heroImage would hand Google and every social card a
+// URL of the site root. The site's own OG card stands in until a hero lands.
+export const DEFAULT_SHARE_IMAGE = "/og.png";
+
+export function shareImage(heroImage: string): string {
+  return heroImage || DEFAULT_SHARE_IMAGE;
+}
+
+// A hero can be a hotlinked photo on another host (Unsplash asks for its
+// images to be served from images.unsplash.com, row 3347). Those are drawn
+// unoptimised so the browser loads them from Unsplash rather than through our
+// image proxy, and they are never prefixed with the site's own origin.
+export function isRemoteImage(src: string): boolean {
+  return /^https?:\/\//.test(src);
+}
+
+export function absoluteImageUrl(src: string, siteUrl: string): string {
+  return isRemoteImage(src) ? src : `${siteUrl}${src}`;
 }
