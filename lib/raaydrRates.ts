@@ -500,7 +500,13 @@ export const FOUNDING_COHORTS = {
 } as const;
 
 export const PAYOUT = {
-  minimumThreshold: 50,
+  /**
+   * £25, ruled by Ric on 3 October 2026 and confirmed 9 October (board rows 2535, 2925,
+   * 2927, 2928). Mirrors `PAYOUT.thresholdMinor` (2500) in raaydr-platform's
+   * packages/rates. This said 50 until 15 October; nothing read it, and every published
+   * page already says £25, so no live number moved.
+   */
+  minimumThreshold: 25,
   currency: "GBP",
 } as const;
 
