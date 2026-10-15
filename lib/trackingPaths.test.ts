@@ -7,8 +7,8 @@ const APP = join(__dirname, "..", "app");
 const paths = Object.keys(TRACKING_PATHS);
 
 describe("tracking paths", () => {
-  it("are the five the brief asked for", () => {
-    expect(paths.sort()).toEqual(["/dm", "/fb", "/ig", "/th", "/tt"]);
+  it("are the seven Ric approved (rows 3212 and 3377)", () => {
+    expect(paths.sort()).toEqual(["/dm", "/em", "/fb", "/ig", "/li", "/th", "/tt"]);
   });
 
   it.each(paths)("%s has a route that renders the homepage", (p) => {
