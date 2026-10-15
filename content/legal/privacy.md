@@ -20,7 +20,7 @@
 
 **Who sees it.** Artists see how their music is played. They only see your name among their top listeners if you switch on "show my name" in your settings; otherwise you appear without a name. If you follow an artist, they can see your handle and photo. Other people only see your name where you choose to show it, for example on your profile or a public playlist. We never sell your data.
 
-**Who helps us run RAAYDR.** Supabase (our databases, in London), Vercel (website and app hosting, and cookieless visit counts), Cloudflare (storing music, artwork and profile images), GitHub (where our code runs its scheduled jobs), Railway (processing uploads), Stripe (payments and payouts), Resend (emails), Google (email and analytics) and Meta (ad measurement). Some of them handle data outside the UK; where they do, they use the safeguards UK law requires.
+**Who helps us run RAAYDR.** We use a small number of companies to run the service for us: hosting and databases (based in London), storage for music, artwork and profile images, processing uploads, payments and payouts (Stripe), sending emails, and, only if you say yes in the cookie banner, analytics and ad measurement (Google and Meta). Each one only gets what it needs to do its part. Some of them handle data outside the UK; where they do, they use the safeguards UK law requires. If you'd like the full list of companies, email help@raaydr.com and we'll send it.
 
 **How long we keep it.** Your account data while your account is open. Payment and payout records for six years, because the law requires it. Listening records as long as we need them to calculate and evidence payments. Sign-up details from raaydr.com until you have an account or ask us to remove them.
 
