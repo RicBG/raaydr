@@ -20,20 +20,20 @@
  */
 
 /**
- * The Day One cohort is 100 listeners, one flat band. `dayOne` is its price,
- * locked FOREVER, surviving a cancellation; anyone past the 100th listener is
+ * The Day One cohort is 100 listeners, one flat band. `dayOne` is its price, held
+ * for as long as the listener stays subscribed; anyone past the 100th listener is
  * standard.
  *
- * FOREVER RULED 24 SEPTEMBER 2026 (board rows 1469 and 1470). Ric, asked
- * whether an honoured price should survive a cancellation: "I think forever
- * means forever. So if they do cancel whenever they come back, they do get the
- * grandfather plan." And on whether a Day One place works the same way: "Yes
- * for ever for both." This docblock said "for as long as a Day One stays
- * subscribed" until that ruling, which is its opposite. The platform records
- * the entitlement on the ACCOUNT rather than on a subscription so that there
- * is nothing for a cancellation to take away; see
- * `supabase/migrations/20260924210000_forever_means_forever.sql` in
- * raaydr-platform.
+ * LAPSE RULED 21 OCTOBER 2026 (board rows 3657 and 3658), REPLACING "FOREVER". Ric: the
+ * price holds while the subscription is active, including the normal payment grace
+ * period. A Day One who lapses for good and returns pays the standard price. The PLACE
+ * is permanent and is never released or reopened: they keep the Day One number, the tape
+ * and the status whatever the subscription does. Only the price follows the subscription.
+ * The 24 September ruling (rows 1469 and 1470, "forever means forever") said the price
+ * itself survived a cancellation, and this docblock said so until now. Support can
+ * reinstate the price for one person at RAAYDR's discretion; that is internal and is
+ * deliberately not published anywhere on this site. The public wording is written once in
+ * `lib/dayOneTerms.ts`.
  *
  * RULED 24 SEPTEMBER 2026 (board row 1416), REPLACING TWO BANDS OF 1,000. Ric,
  * 13:37: "1st 100 get 6.99 then everyone else after that pays the 9.99." The
@@ -46,7 +46,7 @@
  * `dayOneNext` for anything new.
  */
 export const PRICING = {
-  /** The Day One price. Locked forever, surviving a cancellation. */
+  /** The Day One price. Held while the subscription is active; see the note above. */
   dayOne: 6.99,
   /** RETAINED FOR HISTORICAL PULSE COPY ONLY. See the note above PRICING. */
   dayOneNext: 7.99,

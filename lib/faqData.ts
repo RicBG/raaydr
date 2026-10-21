@@ -14,6 +14,7 @@
 // so anything asserted here is eligible for rich results and AI citation and
 // has to reproduce from the rate model.
 
+import { DAY_ONE_TERMS } from "./dayOneTerms";
 import { CANONICAL, PRICING, SPLIT } from "./raaydrRates";
 
 export type FaqItem = {
@@ -47,7 +48,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     },
     {
       question: "What's the Day One offer?",
-      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at £${PRICING.dayOne} a month, locked forever, even if they cancel and come back, against the standard £${PRICING.standard}. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.`,
+      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at ${DAY_ONE_TERMS.they}, against the standard £${PRICING.standard}. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.`,
     },
     {
       question: "Where is RAAYDR available?",
@@ -204,7 +205,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     },
     {
       question: "What's the Day One offer?",
-      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at £${PRICING.dayOne} a month, locked forever, even if they cancel and come back, against the standard £${PRICING.standard}.`,
+      answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at ${DAY_ONE_TERMS.they}, against the standard £${PRICING.standard}.`,
     },
     {
       question:
@@ -225,7 +226,7 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "Can I cancel any time?",
       answer:
-        "Yes, it's a standard monthly subscription with no lock in. If you are a Day One, your price stays yours even if you cancel and come back.",
+        `Yes, it's a standard monthly subscription with no lock in. If you are a Day One, you pay ${DAY_ONE_TERMS.you}.`,
     },
   ],
 

@@ -9,6 +9,7 @@
 //
 // Copy rules: plain, UK spelling, no em dashes or en dashes, one short line.
 
+import { DAY_ONE_TERMS } from "./dayOneTerms";
 import { FOUNDING_COHORTS, PRICING } from "./raaydrRates";
 import type { WaitlistRoleLabel } from "./waitlistRoles";
 
@@ -19,7 +20,7 @@ import type { WaitlistRoleLabel } from "./waitlistRoles";
  * most visitors are listeners, and an empty slot that fills in on selection
  * reads as a layout jump.
  */
-export const DEFAULT_OFFER = `The first ${PRICING.dayOneCap} listeners lock £${PRICING.dayOne} a month forever, even if they cancel and come back. After that, RAAYDR is £${PRICING.standard}.`;
+export const DEFAULT_OFFER = `The first ${PRICING.dayOneCap} listeners get ${DAY_ONE_TERMS.they}. After that, RAAYDR is £${PRICING.standard}.`;
 
 export const ROLE_OFFER: Record<WaitlistRoleLabel, string> = {
   Listener: DEFAULT_OFFER,

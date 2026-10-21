@@ -31,7 +31,7 @@ RAAYDR was founded by Ric, a former session vocalist with 16 years in marketing.
 
 Through attention-based payment. Each listener's subscription creates their own artist pool, divided among the artists they actually played that month, proportional to listening time.
 
-The numbers are published, not hidden. The Day Ones are the first 100 listeners, and they pay £6.99 a month, locked forever, even if they cancel and come back. The standard price is £9.99. After tax, publishing royalties and card fees, {{rates.split.artists}} of every subscription goes to artists, up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and RAAYDR keeps {{rates.split.raaydr}}. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier and up to {{rates.perFan.dayOne}} on the £6.99 Day One price. A fan who gives you {{scenario.attention}} of their listening sends you about {{scenario.perFan}} that month; {{scenario.fans}} such fans is roughly {{scenario.raaydrMonthly}} a month. To match that on Spotify, where you are paid per play rather than per fan, you would need around {{scenario.spotifyStreams}} plays a month. The full working is in [our per-stream analysis](/pulse/how-much-does-spotify-pay-per-stream), backed by real distributor data.
+The numbers are published, not hidden. The Day Ones are the first 100 listeners, and they get {{rates.dayOne.terms}}. The standard price is £9.99. After tax, publishing royalties and card fees, {{rates.split.artists}} of every subscription goes to artists, up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and RAAYDR keeps {{rates.split.raaydr}}. That is up to {{rates.perFan.standard}} per fan a month to artists on the standard tier and up to {{rates.perFan.dayOne}} on the £6.99 Day One price. A fan who gives you {{scenario.attention}} of their listening sends you about {{scenario.perFan}} that month; {{scenario.fans}} such fans is roughly {{scenario.raaydrMonthly}} a month. To match that on Spotify, where you are paid per play rather than per fan, you would need around {{scenario.spotifyStreams}} plays a month. The full working is in [our per-stream analysis](/pulse/how-much-does-spotify-pay-per-stream), backed by real distributor data.
 
 Artists are paid monthly via Stripe, with a £25 minimum payout threshold.
 
@@ -49,14 +49,14 @@ Artists are paid monthly via Stripe, with a £25 minimum payout threshold.
 
 | Tier | Price | Notes |
 | --- | --- | --- |
-| Day One listener, first 100 | £6.99/month | Price locked forever, even if they cancel and come back |
+| Day One listener, first 100 | £6.99/month | Price holds while they stay subscribed; the Day One tape and number are theirs for good |
 | Standard listener | £9.99/month | After the Day One cohort fills |
 | RAAYDR+ (creator roles) | £3.99/month | Role-specific dashboards and tools |
 | Day One creators | Free RAAYDR+ forever | First 100 artists, 100 producers/songwriters, 25 tastemakers |
 
 ## Is RAAYDR live?
 
-RAAYDR is in pre-launch, with sign-ups open at [raaydr.com](https://raaydr.com) for all four roles. Marketing is UK-focused; signup is open worldwide. Early cohort places, the Day One price of £6.99 locked forever, and free-forever creator RAAYDR+, are first come, first served.
+RAAYDR is in pre-launch, with sign-ups open at [raaydr.com](https://raaydr.com) for all four roles. Marketing is UK-focused; signup is open worldwide. Early cohort places, the Day One price of £6.99 while you stay subscribed, and free-forever creator RAAYDR+, are first come, first served.
 
 ## FAQ
 
