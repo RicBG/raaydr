@@ -5,6 +5,7 @@ import Link from "next/link";
 import HeroCallout from "@/components/HeroCallout";
 import FaqAccordion from "@/components/FaqAccordion";
 import { InstagramIcon, TikTokIcon } from "@/components/SocialIcons";
+import { DAY_ONE_TERMS } from "@/lib/dayOneTerms";
 import { faqData } from "@/lib/faqData";
 import { SPLIT } from "@/lib/raaydrRates";
 import { siteConfig } from "@/lib/siteConfig";
@@ -107,9 +108,8 @@ export default function AboutContent() {
             <p data-reveal>
               We&rsquo;re launching in waves. The first{" "}
               {siteConfig.pricing.dayOneCap} Day Ones back the first cohort of
-              independent artists on the platform: £{siteConfig.pricing.dayOne}{" "}
-              a month, locked forever, even if they cancel and come back. After that,
-              RAAYDR is £{siteConfig.pricing.standard}. Early counts here.
+              independent artists on the platform, at {DAY_ONE_TERMS.they}. After
+              that, RAAYDR is £{siteConfig.pricing.standard}. Early counts here.
             </p>
           </div>
 

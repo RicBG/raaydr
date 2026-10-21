@@ -105,9 +105,14 @@
      --deduction is money leaving the system: tax, publishing royalties and
      card fees, in the listeners' breakdown bar. It should read as absence
      rather than as a colour with an opinion, so it is ink at low alpha, not a
-     hue. Ink and not bone because that bar sits on --canvas, not on --deep. */
+     hue. Ink and not bone because that bar sits on --canvas, not on --deep.
+
+     --remainder is the other half of that same first step: what is left to share once
+     the deduction is off. It is the same ink at a lower alpha, so the two read as
+     "taken" and "left" without either being an audience colour. */
   --danger: #ef6351;
   --deduction: color-mix(in srgb, var(--ink) 18%, transparent);
+  --remainder: color-mix(in srgb, var(--ink) 6%, transparent);
 
   --font-display: "Clash Display", "General Sans", sans-serif;
   --font-body: "General Sans", -apple-system, sans-serif;

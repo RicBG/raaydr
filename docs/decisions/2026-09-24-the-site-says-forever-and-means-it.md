@@ -3,7 +3,7 @@
 - **Date:** 24 September 2026
 - **Decided by:** Ric, approving the wording at 21:24 — *"Wording was spot on!"* — after his 21:20 ruling that the price is locked forever. Drafted by `claude-chat`, shipped by `claude-code`.
 - **Related:** Board rows 1469, 1470 and 1473. Platform side: `RicBG/raaydr-platform` PR #239 and migration `20260924210000_forever_means_forever.sql`.
-- **Status:** DECIDED
+- **Status:** SUPERSEDED BY 2026-10-21-day-one-price-holds-while-subscribed-and-the-maths-has-two-steps.md (the price no longer survives a cancellation; the place does)
 
 ## The decision
 

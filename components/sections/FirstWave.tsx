@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { DAY_ONE_TERMS } from "@/lib/dayOneTerms";
 import { siteConfig } from "@/lib/siteConfig";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
@@ -20,7 +21,7 @@ const copy = {
   waitlist: {
     eyebrow: "Join the first wave",
     headline: `Be one of the first ${siteConfig.pricing.dayOneCap.toLocaleString("en-GB")}.`,
-    body: `The first ${siteConfig.pricing.dayOneCap} listeners lock £${siteConfig.pricing.dayOne} a month forever, even if they cancel and come back. After that, RAAYDR is £${siteConfig.pricing.standard}. You were early. On RAAYDR, that counts.`,
+    body: `The first ${siteConfig.pricing.dayOneCap} listeners get ${DAY_ONE_TERMS.they}. After that, RAAYDR is £${siteConfig.pricing.standard}. You were early. On RAAYDR, that counts.`,
     micro:
       "No payment needed to sign up. We'll be in touch to get you set up.",
   },

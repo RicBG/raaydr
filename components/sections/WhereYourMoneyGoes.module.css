@@ -55,6 +55,26 @@
   transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* One step of the maths: a line saying which step it is, its bar, its legend. */
+.step {
+  display: grid;
+  gap: 14px;
+}
+
+.stepLabel {
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.stepNumber {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-right: 0.6em;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
 .legend {
   display: grid;
   gap: 12px;

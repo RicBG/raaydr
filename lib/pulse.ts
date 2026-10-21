@@ -12,6 +12,7 @@ import {
   equivalentStreams,
   spotifyEquivalentStreams,
 } from "./raaydrRates";
+import { DAY_ONE_TERMS } from "./dayOneTerms";
 
 // The Pulse (RAAYDR blog) content loader. Reads content/pulse/*.md at build
 // time, parses the frontmatter and a small, controlled subset of Markdown
@@ -148,6 +149,9 @@ const CONTENT_TOKENS: Record<string, string> = {
   // and RAAYDR's from 30 to 35 (board rows 2009, 2010). Four posts each carrying
   // their own copy of a ruled percentage is the same failure this token map was
   // built for: a rate typed into prose is a copy, and copies go stale silently.
+  // What a Day One price and place mean after a lapse (21 October 2026, rows 3657 and 3658).
+  // Written once in dayOneTerms, because three posts carried their own "locked forever".
+  "rates.dayOne.terms": DAY_ONE_TERMS.they,
   "rates.split.artists": `${SPLIT.artists}%`,
   "rates.split.tastemakers": `${SPLIT.tastemakers}%`,
   "rates.split.raaydr": `${SPLIT.raaydr}%`,

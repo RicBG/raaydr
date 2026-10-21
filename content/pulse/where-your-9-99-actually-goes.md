@@ -87,7 +87,7 @@ Publishing royalties are owed to songwriters and composers by law, collected thr
 No. Up to {{rates.split.tastemakers}} is ring fenced for tastemakers, and whatever they do not earn goes to the artists. It never comes back to us.
 
 **Is any of this different on the Day One price?**
-The percentages are the same. Day Ones, the first 100 listeners, pay £6.99 a month locked forever, so the pound amounts are smaller, but {{rates.split.artists}} still goes to artists, up to {{rates.split.tastemakers}} to tastemakers and {{rates.split.raaydr}} to RAAYDR, each after the same costs.
+The percentages are the same. Day Ones, the first 100 listeners, pay £6.99 a month for as long as they stay subscribed, so the pound amounts are smaller, but {{rates.split.artists}} still goes to artists, up to {{rates.split.tastemakers}} to tastemakers and {{rates.split.raaydr}} to RAAYDR, each after the same costs.
 
 ---
 
