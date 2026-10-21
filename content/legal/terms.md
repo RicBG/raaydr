@@ -1,6 +1,6 @@
 # Terms of service
 
-*Version 1.1. Last updated 3 October 2026.*
+*Version 1.2. Last updated 21 October 2026.*
 
 ## 1. Who we are and how these terms work
 
@@ -23,10 +23,10 @@ We have written them in plain English on purpose. If anything is unclear, ask us
 
 | Plan | Price a month | Who gets it |
 | --- | --- | --- |
-| Day One | £6.99 | The first 100 paying listeners, plus everyone on our honour list. Yours forever, even if you cancel and come back. |
+| Day One | £6.99 | The first 100 paying listeners, plus everyone on our honour list. £6.99 a month for as long as you stay subscribed. Your Day One tape, number and status are yours for good. If you cancel and come back, you return at £9.99. |
 | Standard | £9.99 | Everyone else. |
 
-Prices include VAT once we are VAT registered. We will give you at least 30 days' notice of any price change, and you can cancel before it applies. Day One prices never go up.
+Prices include VAT once we are VAT registered. We will give you at least 30 days' notice of any price change, and you can cancel before it applies. While you stay subscribed, a Day One price never goes up.
 
 **Billing.** You pay monthly in advance by card through Stripe. Your subscription renews each month until you cancel.
 
@@ -174,7 +174,7 @@ These are part of the agreement, so you can hold us to them.
 - **Money you are owed is still paid to you**, on the next payout day after your last listener month closes, even if it is under £25, as long as Stripe can send it.
 - When you close your account, your music and clips come down and our licence to use them ends (section 4).
 - We can close an account that seriously or repeatedly breaks these terms. We'll give you notice and reasons unless the law stops us, or the account is fake or fraudulent. Money from genuine listening is still paid; money from faked activity is not.
-- Your Day One place and price stay yours if you come back, as section 3 says.
+- Your Day One tape, number and status stay yours if you come back, as section 3 says. If you cancel and come back, you return at £9.99 a month.
 
 ## 14. The legal bits
 

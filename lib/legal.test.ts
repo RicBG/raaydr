@@ -28,6 +28,18 @@ describe("legal pages", () => {
     expect(text("privacy")).toContain('"show my name"');
   });
 
+  it("carries the 21 October Day One rule and never the wording it replaced", () => {
+    const terms = text("terms");
+    expect(readLegal("terms").blocks.length).toBeGreaterThan(0);
+    expect(terms).toContain("for as long as you stay subscribed");
+    expect(terms).toContain("tape, number and status are yours for good");
+    expect(terms).toContain("you return at £9.99");
+    expect(terms).not.toMatch(/yours forever/i);
+    expect(terms).not.toMatch(/Day One place and price stay yours/i);
+    /* Support can reinstate the price for one person. That is private and is never published. */
+    expect(terms).not.toMatch(/reinstat|discretion|win.?back/i);
+  });
+
   /*
    * Nothing internal appears in forward-facing copy: no approver names, approval
    * dates, rulings, board rows, agent names or "decided" notes. Those live in code
