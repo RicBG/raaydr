@@ -185,3 +185,14 @@ export function readLegal(slug: LegalSlug): LegalDoc {
   const file = path.join(process.cwd(), "content", "legal", `${slug}.md`);
   return parseLegal(fs.readFileSync(file, "utf8"));
 }
+
+/**
+ * The help page's text, `content/help.md`. Parsed by the same reader as the policies so it is one
+ * layout and one set of rules, but it is NOT a legal document and `readLegal` does not list it:
+ * the policies are approved wording and are published verbatim, the help page is support copy.
+ * Board rows 3902 (Ric: Help is a page on raaydr.com), 3920 and 3922.
+ */
+export function readHelp(): LegalDoc {
+  const file = path.join(process.cwd(), "content", "help.md");
+  return parseLegal(fs.readFileSync(file, "utf8"));
+}
