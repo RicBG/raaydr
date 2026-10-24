@@ -22,6 +22,7 @@ const columns = [
       { href: "/#numbers", label: "The numbers" },
       { href: "/#join", label: "Pricing" },
       { href: "/pulse", label: "Blog" },
+      { href: "/help", label: "Help" },
     ],
   },
   {

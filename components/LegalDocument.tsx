@@ -61,10 +61,16 @@ export default function LegalDocument({
   doc,
   current,
   audience = "producers",
+  eyebrow = "Legal",
+  showLegalLinks = true,
 }: {
   doc: LegalDoc;
   current: string;
   audience?: "artists" | "listeners" | "producers" | "tastemakers";
+  /** The small word above the title. "Legal" for the four policies; the help page says "Help". */
+  eyebrow?: string;
+  /** The help page lists its own policies in the text, so it does not repeat them beside it. */
+  showLegalLinks?: boolean;
 }) {
   return (
     <main className={styles.page}>
@@ -73,7 +79,7 @@ export default function LegalDocument({
       </div>
 
       <div className={`container ${styles.content}`}>
-        <p className="eyebrow">Legal</p>
+        <p className="eyebrow">{eyebrow}</p>
         <h1 className={`display-section ${styles.title}`}>{doc.title}</h1>
 
         <div className={styles.layout}>
@@ -90,6 +96,7 @@ export default function LegalDocument({
                 </ol>
               </nav>
             )}
+            {showLegalLinks ? (
             <nav className={styles.others} aria-label="Legal pages">
               <p className={styles.asideLabel}>Legal</p>
               <ul>
@@ -104,6 +111,7 @@ export default function LegalDocument({
                 ))}
               </ul>
             </nav>
+            ) : null}
           </aside>
 
           <article className={styles.body}>

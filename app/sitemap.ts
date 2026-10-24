@@ -15,6 +15,7 @@ const STATIC_ROUTES = [
   "/terms",
   "/website-terms",
   "/cookies",
+  "/help",
   "/pulse",
   "/tools/streaming-royalty-calculator",
 ];
