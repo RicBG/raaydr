@@ -2,6 +2,10 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
+import {
+  CREATOR_KIND_OPTIONS,
+  type CreatorKindSlug,
+} from "@/lib/creatorKind";
 import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
 import {
   ARTIST_NAME_MAX_LENGTH,
@@ -72,6 +76,8 @@ export default function WaitlistForm({
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
   const [artistName, setArtistName] = useState("");
   const [genre, setGenre] = useState("");
+  /* Producer, songwriter or both. Asked only of "Songwriter or Producer", optional. */
+  const [creatorKind, setCreatorKind] = useState<CreatorKindSlug | null>(null);
   /*
    * WHAT THIS PERSON IS CALLED. ASKED OF EVERY ROLE SINCE 18 SEPTEMBER 2026.
    *
@@ -114,6 +120,8 @@ export default function WaitlistForm({
   const analyticsSource = source ?? "unknown";
   // The name and genre questions are for artists and nobody else. Asking a
   // listener what they release would be a question with no right answer.
+  const isCreator =
+    role !== null && ROLE_LABEL_TO_SLUG[role] === "songwriter_producer";
   const isArtist = role !== null && ROLE_LABEL_TO_SLUG[role] === "artist";
 
   /*
@@ -385,6 +393,11 @@ export default function WaitlistForm({
           // else rather than carrying a stale answer from a switched role.
           ...(slug === "artist" && name ? { artist_name: name } : {}),
           ...(slug === "artist" && genre ? { genre } : {}),
+          // Only for the songwriter or producer role, so it never carries a stale answer
+          // from a switched role.
+          ...(slug === "songwriter_producer" && creatorKind
+            ? { creator_kind: creatorKind }
+            : {}),
           /*
             Only when an application really landed, and only then is the link
             sent. Neither is stored by the route: they decide whether Ric gets
@@ -685,6 +698,34 @@ export default function WaitlistForm({
           </div>
         )}
       </div>
+
+      {isCreator && (
+        <fieldset className={styles.roles}>
+          <legend className={styles.fieldLabel}>Which are you?</legend>
+          <div
+            className={styles.segments}
+            role="radiogroup"
+            aria-label="Which are you?"
+          >
+            {CREATOR_KIND_OPTIONS.map((o) => (
+              <label
+                key={o.slug}
+                className={`${styles.segment} ${creatorKind === o.slug ? styles.segmentOn : ""}`}
+              >
+                <input
+                  type="radio"
+                  name={`${id}-creator-kind`}
+                  value={o.slug}
+                  checked={creatorKind === o.slug}
+                  onChange={() => setCreatorKind(o.slug)}
+                  className="sr-only"
+                />
+                {o.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
 
       {showOffer && (
         <p className={styles.offer} aria-live="polite">
