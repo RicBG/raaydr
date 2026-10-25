@@ -20,6 +20,29 @@
   overflow: hidden;
 }
 
+/* The slot at the foot of the pinned hero, for a row that has to be visible with it
+   (the society logos, work_items 256). Above the orb and the recede layer, below the nav. */
+.footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
+/* When the hero carries a footer row, the orb gives it room. Ric (19:28, 30 Sep): "more space top
+   and bottom between the sphere and the logo banner, and also under the logo banner... just to
+   make it breathe". The orb's visible circle is about 0.81 of its box, so its size is capped by
+   the height left above the row (the viewport less the nav, the row and a breathing gap), and
+   its top follows the size so the circle always starts just below the nav. The text stack
+   shares both variables, so the heading stays centred in the sphere. */
+@media (min-width: 641px) {
+  .hero[data-footer="true"] .middle {
+    --orb-size: min(52vw, calc((100svh - 261px) / 0.81));
+    --orb-top: calc(-16px - var(--orb-size) * 0.095);
+  }
+}
+
 /* Everything visible in the hero, as one group, so the recede animation can
    scale/dim/blur it as a single unit while the section itself stays put. */
 .content {
@@ -226,5 +249,10 @@
 
   .heroCta {
     font-size: 16px;
+  }
+
+  /* Room for the footer row: the orb's centre moves up by half of the 72px it gives back. */
+  .hero[data-footer="true"] .middle {
+    min-height: calc(100svh - 96px - 72px);
   }
 }
