@@ -79,3 +79,25 @@ describe("the ladder Ric signs off", () => {
     for (const n of ladder) expect(Number.isInteger(n)).toBe(true);
   });
 });
+
+import { referralLinkLine } from "./referralCalculator";
+import fs from "node:fs";
+import path from "node:path";
+
+describe("the footnote says only what is true for the reader", () => {
+  it("tells an artist they have a link", () => {
+    expect(referralLinkLine("artist")).toContain("Every artist on RAAYDR has a referral link");
+  });
+
+  it("does not promise a tastemaker a link they cannot get yet", () => {
+    const line = referralLinkLine("tastemaker");
+    expect(line).toContain("not switched on for tastemakers yet");
+    expect(line).not.toMatch(/your referral link|you have a|you get a|every tastemaker/i);
+  });
+
+  it("is on the artists page and the tastemaker page, each with its own audience", () => {
+    const read = (p: string) => fs.readFileSync(path.join(process.cwd(), p), "utf8");
+    expect(read("app/artists/page.tsx")).toContain("<ReferralCalculator />");
+    expect(read("app/tastemakers/page.tsx")).toContain('<ReferralCalculator audience="tastemaker" />');
+  });
+});

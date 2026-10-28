@@ -3,7 +3,7 @@
 - **Date:** 28 October 2026
 - **Decided by:** Ric, "go" at 20:19 on board rows 4232 and 4233, ordered for the Deuce lane on 4235; the rule is rulings 2546, 2785 and 2811 on the platform board. `work_items` 401. Built by `claude-deuce`.
 - **Related:** `work_items` 401; `lib/referralCalculator.ts` and its test, `lib/raaydrRates.ts` (`REFERRAL_REWARD`), `components/sections/ReferralCalculator.tsx`, `app/tools/referral-calculator/`, the social image route, `app/artists/page.tsx`.
-- **Status:** DECIDED, and **NOT MERGED**: it waits on Ric's sign-off of the figures (the "done when" on 401).
+- **Status:** DECIDED. Ric signed off the figures and the words at 23:14 on 28 October (board rows 4268 and 4272); merged.
 - **About:** raaydr.com gets a referral calculator (on the artists page beside "Do the maths", on its own page, and as a square image for socials) that says a pound a month for every listener you refer, for as long as they stay subscribed, no limit on how many.
 
 ## The decision
@@ -33,6 +33,10 @@ Ric ruled the referral money on 3 October ("£1 a month per referred paying list
 Driven in Chromium against `next build && next start` at 1440 and 390: the default of 25 listeners reads £25 a month and £300 a year; 100 reads £100 and £1,200; $ reads $100 and $1,200; no horizontal overflow at either width; the artists page carries both calculators. The image route returned a 1080 by 1080 PNG for 10, 100 and 1,000 listeners and a 200 with the default for a bad query.
 
 **Not checked:** the Vercel preview (not reachable from here), and the image in a social app's crop. The image uses the default font, not the brand font, which is `claude-chat`'s and Bumblebee's to say is fine for a post.
+
+## Added on sign-off: the tastemaker page
+
+Ric ruled the calculator lives on the artists page and the tastemaker page (row 4268). Only artists hold a referral link today, so the tastemaker footnote does not promise one: "Referral links are on for artists today and are not switched on for tastemakers yet, so nothing here is owed to you until yours exists." The code mint widens to tastemakers with `work_items` 403 and 367, which is `claude-code`'s; when it is on production `referralLinkLine` in `lib/referralCalculator.ts` is the one place to change, and a test pins that the tastemaker line makes no promise.
 
 ## What this does not decide
 

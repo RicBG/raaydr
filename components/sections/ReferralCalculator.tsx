@@ -10,8 +10,10 @@ import {
   listeners,
   money,
   referralFigures,
+  referralLinkLine,
   referralRule,
   rewardLabel,
+  type ReferralAudience,
   type ReferralCurrency,
 } from "@/lib/referralCalculator";
 import styles from "./Calculator.module.css";
@@ -25,7 +27,14 @@ import styles from "./Calculator.module.css";
  * number field that is not capped at the slider's end, because "no limit on how many" is part of
  * the rule and a control that stopped at 1,000 would read as a limit.
  */
-export default function ReferralCalculator({ defaultReferred = 25 }: { defaultReferred?: number }) {
+export default function ReferralCalculator({
+  defaultReferred = 25,
+  audience = "artist",
+}: {
+  defaultReferred?: number;
+  /** Who is reading: the footnote says only what is true for them. See `referralLinkLine`. */
+  audience?: ReferralAudience;
+}) {
   const id = useId();
   const [referred, setReferred] = useState(clampReferred(defaultReferred));
   const [currency, setCurrency] = useState<ReferralCurrency>("gbp");
@@ -120,8 +129,8 @@ export default function ReferralCalculator({ defaultReferred = 25 }: { defaultRe
       </div>
 
       <p className={styles.footnote}>
-        Every artist on RAAYDR has a referral link. A listener counts once they join through it and
-        subscribe, and keeps counting for as long as they stay subscribed. If a listener later joins
+        {referralLinkLine(audience)}{" "}
+        A listener counts once they join through a referral link and subscribe, and keeps counting for as long as they stay subscribed. If a listener later joins
         again through another artist&rsquo;s link they count for that artist from then on. Referral
         money starts when the first listener subscribes. These are the rules, not a forecast: nothing
         here predicts how many listeners anyone will refer.

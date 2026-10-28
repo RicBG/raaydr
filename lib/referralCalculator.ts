@@ -65,3 +65,21 @@ export const SIGN_OFF_LADDER = [1, 5, 10, 25, 50, 100, 250, 500, 1000] as const;
 export function listeners(n: number): string {
   return `${n.toLocaleString("en-GB")} ${n === 1 ? "listener" : "listeners"}`;
 }
+
+/**
+ * WHO IS READING, because the footnote has to say different true things to each.
+ *
+ * Only artists hold a referral link today (codes are minted for the artist role alone,
+ * `referral_code_on_role_granted`). Ric ruled on 28 October (board rows 4268 and 4272) that
+ * tastemakers are to get one too, and that the mint widens with the studio signup (`work_items` 403
+ * and 367), which is `claude-code`'s. UNTIL THAT IS ON PRODUCTION the tastemaker wording must not
+ * promise a link they cannot get, so it says what a referral is worth and that the link is not on
+ * for them yet. When the mint widens, this is the one place to change.
+ */
+export type ReferralAudience = "artist" | "tastemaker";
+
+export function referralLinkLine(audience: ReferralAudience): string {
+  return audience === "artist"
+    ? "Every artist on RAAYDR has a referral link."
+    : "Referral links are on for artists today and are not switched on for tastemakers yet, so nothing here is owed to you until yours exists.";
+}
