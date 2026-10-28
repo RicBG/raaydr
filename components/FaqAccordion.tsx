@@ -2,6 +2,8 @@
 
 import { useId, useState } from "react";
 import type { FaqItem } from "@/lib/faqData";
+import DayOneOffer from "./DayOneOffer";
+import DayOneStatus from "./DayOneStatus";
 import styles from "./FaqAccordion.module.css";
 
 type FaqAccordionProps = {
@@ -14,6 +16,17 @@ type FaqAccordionProps = {
  * Height is animated with the grid-template-rows 0fr -> 1fr trick (no library,
  * no dependency on the site's GSAP/ScrollTrigger/Lenis systems — it is inert
  * with respect to them). Ships FAQPage JSON-LD built from the same items.
+ *
+ * WHERE A FAQ STATES THE DAY ONE OFFER it carries the live open/closed line
+ * above the list. The offer is the one answer here that can stop being true
+ * between a build and a reader, and the line fails closed, so a FAQ that
+ * cannot reach the platform says Day One has closed rather than selling a
+ * place that may be gone. Which FAQ that is comes off the items
+ * (`statesDayOneOffer`) rather than a list of pages in here. Board rows 2962
+ * and 2965; Ric's go on 2967.
+ *
+ * It sits ABOVE the accordion on purpose: the rows are collapsed on load, so a
+ * live status inside one would be invisible to everybody who does not open it.
  */
 export default function FaqAccordion({
   items,
@@ -30,7 +43,8 @@ export default function FaqAccordion({
       name: item.question,
       acceptedAnswer: {
         "@type": "Answer",
-        text: item.answer,
+        // The closed wording where there is one: crawlers read this without running the live check.
+        text: item.closedAnswer ?? item.answer,
       },
     })),
   };
@@ -46,6 +60,8 @@ export default function FaqAccordion({
         <h2 id={`${baseId}-heading`} className={styles.heading}>
           {heading}
         </h2>
+
+        {items.some((item) => item.statesDayOneOffer) && <DayOneStatus />}
 
         <ul className={styles.list}>
           {items.map((item, i) => {
@@ -76,7 +92,13 @@ export default function FaqAccordion({
                   data-open={open}
                 >
                   <div className={styles.panelInner}>
-                    <p className={styles.answer}>{item.answer}</p>
+                    <p className={styles.answer}>
+                      {item.closedAnswer ? (
+                        <DayOneOffer open={item.answer} closed={item.closedAnswer} />
+                      ) : (
+                        item.answer
+                      )}
+                    </p>
                   </div>
                 </div>
               </li>

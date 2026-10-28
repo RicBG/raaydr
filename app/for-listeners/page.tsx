@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import WhereYourMoneyGoes from "@/components/sections/WhereYourMoneyGoes";
-import { DAY_ONE_TERMS } from "@/lib/dayOneTerms";
+import DayOneOffer from "@/components/DayOneOffer";
+import { dayOneOfferLine } from "@/lib/dayOneOffer";
 import { faqData } from "@/lib/faqData";
 import { pageMetadata } from "@/lib/seo";
-import { siteConfig } from "@/lib/siteConfig";
 
 export const metadata: Metadata = pageMetadata({
   title: "RAAYDR for Listeners: Your money follows your ears.",
@@ -33,7 +33,18 @@ export default function ForListenersPage() {
         },
         {
           title: "Loyalty can unlock things.",
-          body: `Artists can choose to open things up to the listeners who show up most. Some will, some won't, and that is theirs to decide. What is certain is that being early counts, and being earliest counts most. The first ${siteConfig.pricing.dayOneCap} listeners get ${DAY_ONE_TERMS.they}. After that, RAAYDR is £${siteConfig.pricing.standard}.`,
+          body: (
+            <>
+              Artists can choose to open things up to the listeners who show up
+              most. Some will, some won&rsquo;t, and that is theirs to decide.
+              What is certain is that being early counts, and being earliest
+              counts most.{" "}
+              <DayOneOffer
+                open={dayOneOfferLine(true)}
+                closed={dayOneOfferLine(false)}
+              />
+            </>
+          ),
         },
       ]}
       heroCallout={{

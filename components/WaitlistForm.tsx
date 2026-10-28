@@ -9,6 +9,7 @@ import {
 } from "@/lib/waitlistGenres";
 import { ANALYTICS_FLUSH_MS, joinedDestination } from "@/lib/joined";
 import { offerFor } from "@/lib/waitlistOffers";
+import { useDayOnePlacesRemain } from "@/components/useDayOnePlacesRemain";
 import { readAttribution } from "@/lib/attribution";
 import {
   applicationsConfigured,
@@ -70,6 +71,8 @@ export default function WaitlistForm({
 }: WaitlistFormProps) {
   const id = useId();
   const [role, setRole] = useState<Role | null>(defaultRole ?? null);
+  // Fails closed: the listener offer line says places have gone until the platform says otherwise.
+  const listenerPlacesOpen = useDayOnePlacesRemain();
   const [artistName, setArtistName] = useState("");
   const [genre, setGenre] = useState("");
   /*
@@ -688,7 +691,7 @@ export default function WaitlistForm({
 
       {showOffer && (
         <p className={styles.offer} aria-live="polite">
-          {offerFor(role)}
+          {offerFor(role, listenerPlacesOpen)}
         </p>
       )}
 

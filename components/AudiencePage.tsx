@@ -28,7 +28,7 @@ import type { FaqItem } from "@/lib/faqData";
 import WaitlistForm, { type ROLES } from "@/components/WaitlistForm";
 import styles from "./AudiencePage.module.css";
 
-type Point = { title: string; body: string };
+type Point = { title: string; body: React.ReactNode };
 
 type AudiencePageProps = {
   eyebrow: string;

@@ -8,7 +8,7 @@ import {
   sliderToFans,
   PRICING_TIERS,
   PRICING_TIER_DEFAULT,
-  TIER_LABEL,
+  tierLabel,
   type PricingTier,
   formatGbp as gbp,
 } from "@/lib/calculator";
@@ -25,6 +25,7 @@ import {
 } from "@/lib/raaydrRates";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 import Glyph from "@/components/Glyph";
+import { useDayOnePlacesRemain } from "@/components/useDayOnePlacesRemain";
 import styles from "./Calculator.module.css";
 
 const count = (v: number) =>
@@ -55,6 +56,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
   const [fanPos, setFanPos] = useState(0.5); // log position → 1,000 fans
   const [attention, setAttention] = useState(ATTENTION_DEFAULT); // percent
   const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
+  const dayOneOpen = useDayOnePlacesRemain();
 
   const fans = sliderToFans(fanPos);
   // Two models, two inputs, and they are deliberately not the same input.
@@ -153,7 +155,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
                   checked={tier === t}
                   onChange={() => setTier(t)}
                 />
-                {TIER_LABEL[t]}
+                {tierLabel(t, dayOneOpen)}
               </label>
             ))}
           </div>

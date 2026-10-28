@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { DAY_ONE_TERMS } from "./dayOneTerms";
 import { faqData } from "./faqData";
 import { DEFAULT_OFFER } from "./waitlistOffers";
+import { renderLlmsTxt } from "./llmsTxt";
 import { PRICING, SPLIT } from "./raaydrRates";
 
 /**
@@ -23,7 +24,9 @@ const PUBLISHED = [
   "components/sections/Calculator.tsx",
   "lib/faqData.ts",
   "lib/waitlistOffers.ts",
-  "public/llms.txt",
+  "content/llms.txt",
+  "lib/llmsTxt.ts",
+  "lib/dayOneOffer.ts",
   ...readdirSync(join(ROOT, "content/pulse")).map((f) => `content/pulse/${f}`),
 ];
 
@@ -50,7 +53,7 @@ describe("Day One terms", () => {
     expect(all).toContain(DAY_ONE_TERMS.they);
     expect(all).toContain(DAY_ONE_TERMS.you);
     expect(DEFAULT_OFFER).toContain(DAY_ONE_TERMS.they);
-    expect(read("public/llms.txt").replace(/\s+/g, " ")).toContain(
+    expect(renderLlmsTxt(read("content/llms.txt"), true).replace(/\s+/g, " ")).toContain(
       `£${PRICING.dayOne} a month for as long as they stay subscribed, and their Day One tape and number are theirs for good`,
     );
   });

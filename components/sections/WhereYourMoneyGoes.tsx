@@ -4,10 +4,11 @@ import { useMemo, useState } from "react";
 import {
   PRICING_TIERS,
   PRICING_TIER_DEFAULT,
-  TIER_LABEL,
+  tierLabel,
   type PricingTier,
 } from "@/lib/calculator";
 import { PER_FAN, PRICING, SPLIT } from "@/lib/raaydrRates";
+import { useDayOnePlacesRemain } from "@/components/useDayOnePlacesRemain";
 import styles from "./WhereYourMoneyGoes.module.css";
 
 // Where a listener's subscription goes, in two steps. Percentages only, no pound figures.
@@ -19,6 +20,7 @@ import styles from "./WhereYourMoneyGoes.module.css";
 
 export default function WhereYourMoneyGoes() {
   const [tier, setTier] = useState<PricingTier>(PRICING_TIER_DEFAULT);
+  const dayOneOpen = useDayOnePlacesRemain();
 
   // Two steps, because the shares are not shares of the subscription. Costs come off
   // first; the 55 / 10 / 35 split is a split of what is left. One bar of all four read as
@@ -78,7 +80,7 @@ export default function WhereYourMoneyGoes() {
               onChange={() => setTier(t)}
               style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}
             />
-            {TIER_LABEL[t]}
+            {tierLabel(t, dayOneOpen)}
           </label>
         ))}
       </div>
