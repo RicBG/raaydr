@@ -14,12 +14,35 @@
 // so anything asserted here is eligible for rich results and AI citation and
 // has to reproduce from the rate model.
 
+import { DAY_ONE_CLOSED_LINE } from "./dayOneOffer";
 import { DAY_ONE_TERMS } from "./dayOneTerms";
 import { CANONICAL, PRICING, SPLIT } from "./raaydrRates";
 
 export type FaqItem = {
   question: string;
   answer: string;
+  /**
+   * Set on the answer that STATES THE DAY ONE OFFER, so that `FaqAccordion`
+   * puts the live open/closed line above a FAQ that sells a place.
+   *
+   * It is a flag on the answer rather than a list of pages in the component,
+   * for the reason `citesDayOneOffer` in `lib/pulse.ts` is computed rather
+   * than listed: the thing that goes stale is the SET, and the set belongs
+   * beside the copy it describes. Move this answer to another page and the
+   * live line follows it.
+   *
+   * `FaqAccordion`'s JSON-LD mapper reads `question` and `answer` by name, so
+   * this never reaches the structured data.
+   */
+  statesDayOneOffer?: true;
+  /**
+   * What the answer says when places have gone, or when the platform could not be asked. Required
+   * on every answer that quotes the Day One price (a test fails if it is missing or still quotes
+   * it). The accordion shows it until the platform says places remain, and the FAQPage JSON-LD
+   * carries it, because structured data is read by crawlers that never run the live check and so
+   * must hold the wording that is true when nothing can be asked.
+   */
+  closedAnswer?: string;
 };
 
 export type FaqPageKey =
@@ -49,6 +72,8 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "What's the Day One offer?",
       answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at ${DAY_ONE_TERMS.they}, against the standard £${PRICING.standard}. The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.`,
+      statesDayOneOffer: true,
+      closedAnswer: `${DAY_ONE_CLOSED_LINE} The first 100 artists, 100 producers and songwriters, and 25 tastemakers get RAAYDR+ free forever.`,
     },
     {
       question: "Where is RAAYDR available?",
@@ -206,6 +231,8 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
     {
       question: "What's the Day One offer?",
       answer: `The first ${PRICING.dayOneCap} listeners are the Day Ones. They get RAAYDR at ${DAY_ONE_TERMS.they}, against the standard £${PRICING.standard}.`,
+      statesDayOneOffer: true,
+      closedAnswer: DAY_ONE_CLOSED_LINE,
     },
     {
       question:
@@ -227,6 +254,8 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
       question: "Can I cancel any time?",
       answer:
         `Yes, it's a standard monthly subscription with no lock in. If you are a Day One, you pay ${DAY_ONE_TERMS.you}.`,
+      statesDayOneOffer: true,
+      closedAnswer: "Yes, it's a standard monthly subscription with no lock in, and you can cancel at any time.",
     },
   ],
 

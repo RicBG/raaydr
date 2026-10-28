@@ -9,8 +9,8 @@
 //
 // Copy rules: plain, UK spelling, no em dashes or en dashes, one short line.
 
-import { DAY_ONE_TERMS } from "./dayOneTerms";
-import { FOUNDING_COHORTS, PRICING } from "./raaydrRates";
+import { DAY_ONE_CLOSED_LINE, DAY_ONE_OPEN_LINE } from "./dayOneOffer";
+import { FOUNDING_COHORTS } from "./raaydrRates";
 import type { WaitlistRoleLabel } from "./waitlistRoles";
 
 /**
@@ -20,7 +20,7 @@ import type { WaitlistRoleLabel } from "./waitlistRoles";
  * most visitors are listeners, and an empty slot that fills in on selection
  * reads as a layout jump.
  */
-export const DEFAULT_OFFER = `The first ${PRICING.dayOneCap} listeners get ${DAY_ONE_TERMS.they}. After that, RAAYDR is £${PRICING.standard}.`;
+export const DEFAULT_OFFER = DAY_ONE_OPEN_LINE;
 
 export const ROLE_OFFER: Record<WaitlistRoleLabel, string> = {
   Listener: DEFAULT_OFFER,
@@ -29,7 +29,16 @@ export const ROLE_OFFER: Record<WaitlistRoleLabel, string> = {
   Tastemaker: `The first ${FOUNDING_COHORTS.tastemakers} tastemakers get RAAYDR+ free forever.`,
 };
 
-/** The offer line for the currently selected role, or the default if none. */
-export function offerFor(role: WaitlistRoleLabel | null): string {
-  return role ? ROLE_OFFER[role] : DEFAULT_OFFER;
+/**
+ * The offer line for the currently selected role, or the listener line if none.
+ *
+ * `listenerPlacesOpen` is the live answer from the platform and defaults to `false`, so a caller
+ * that forgets to pass it shows the CLOSED wording rather than selling a place. Only the
+ * listener line has a closed state: the creator cohorts are a different offer and are not what
+ * `day_one_listener_places_remain()` counts.
+ */
+export function offerFor(role: WaitlistRoleLabel | null, listenerPlacesOpen = false): string {
+  const listener = listenerPlacesOpen ? DEFAULT_OFFER : DAY_ONE_CLOSED_LINE;
+  if (!role || role === "Listener") return listener;
+  return ROLE_OFFER[role];
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { DAY_ONE_TERMS } from "@/lib/dayOneTerms";
+import { dayOneOfferLine } from "@/lib/dayOneOffer";
+import { useDayOnePlacesRemain } from "@/components/useDayOnePlacesRemain";
 import { siteConfig } from "@/lib/siteConfig";
 import { useMaskedReveal } from "@/lib/useMaskedReveal";
 import { useReveal } from "@/lib/useReveal";
@@ -20,8 +21,11 @@ import styles from "./FirstWave.module.css";
 const copy = {
   waitlist: {
     eyebrow: "Join the first wave",
-    headline: `Be one of the first ${siteConfig.pricing.dayOneCap.toLocaleString("en-GB")}.`,
-    body: `The first ${siteConfig.pricing.dayOneCap} listeners get ${DAY_ONE_TERMS.they}. After that, RAAYDR is £${siteConfig.pricing.standard}. You were early. On RAAYDR, that counts.`,
+    // The headline is the same in both states ON PURPOSE. The masked reveal splits it into lines
+    // once, and swapping the text under a split breaks the reveal. It used to read "Be one of the
+    // first 100.", which sold a place; the live sentence below is what states the offer now.
+    headline: "Early counts here.",
+    body: "",
     micro:
       "No payment needed to sign up. We'll be in touch to get you set up.",
   },
@@ -34,6 +38,7 @@ const copy = {
 }[siteConfig.mode];
 
 export default function FirstWave() {
+  const placesOpen = useDayOnePlacesRemain();
   const innerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useMaskedReveal(headingRef);
@@ -114,8 +119,8 @@ export default function FirstWave() {
         >
           {copy.headline}
         </h2>
-        <p className={styles.body} data-reveal>
-          {copy.body}
+        <p className={styles.body} data-reveal data-state={placesOpen ? "open" : "closed"}>
+          {siteConfig.mode === "waitlist" ? dayOneOfferLine(placesOpen) : copy.body}
         </p>
         <div className={styles.form} data-reveal>
           <WaitlistForm variant="closing" source="homepage-bottom" showOffer />
