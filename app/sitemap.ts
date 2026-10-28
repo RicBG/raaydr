@@ -18,6 +18,7 @@ const STATIC_ROUTES = [
   "/help",
   "/pulse",
   "/tools/streaming-royalty-calculator",
+  "/tools/referral-calculator",
 ];
 
 // Fixed on purpose. A sitemap that stamps every page with the build time tells

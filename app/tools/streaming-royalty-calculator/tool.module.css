@@ -61,3 +61,29 @@
   padding: 0;
   margin: 0;
 }
+
+/* The at-a-glance table on /tools/referral-calculator (work_items 401). A table of figures that
+   reads on a phone: three columns of short text, so it never needs to scroll. */
+.table {
+  width: 100%;
+  max-width: 44rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.table th,
+.table td {
+  padding: 0.75em 1em 0.75em 0;
+  text-align: left;
+  border-bottom: 1px solid var(--stone);
+}
+
+.table thead th {
+  font-size: 13px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.table tbody th {
+  font-weight: 500;
+}

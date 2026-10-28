@@ -342,3 +342,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* The referral calculator's number box (`ReferralCalculator.tsx`, work_items 401): the same pill
+   as the tier segments, wide enough for a seven digit count, and the browser's own spinner left
+   alone so a keyboard or a phone's number pad can type any whole number. */
+.numberField {
+  font: inherit;
+  font-size: 18px;
+  color: inherit;
+  width: 100%;
+  max-width: 16rem;
+  padding: 0.6em 1em;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 999px;
+}
+
+.numberField:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
+import ReferralCalculator from "@/components/sections/ReferralCalculator";
 import TastemakerCalculator from "@/components/sections/TastemakerCalculator";
 import { faqData } from "@/lib/faqData";
 import { SPLIT } from "@/lib/raaydrRates";
@@ -23,7 +24,18 @@ export default function TastemakersPage() {
       role="Tastemaker"
       waitlistSource="tastemakers-page"
       faqItems={faqData.tastemakers}
-      calculator={<TastemakerCalculator />}
+      calculator={
+        <>
+          <TastemakerCalculator />
+          {/* Ric, 28 October 23:14 (board rows 4268, 4272): the referral calculator lives on the
+              artists page and the tastemaker page. The footnote does not promise a link until the
+              code mint widens to tastemakers (work_items 403). */}
+          <h2 className="display-section" style={{ marginTop: "clamp(24px, 4vw, 48px)" }}>
+            And what a referral is worth.
+          </h2>
+          <ReferralCalculator audience="tastemaker" />
+        </>
+      }
       tintMarquee={{
         top: "Real influence",
         middle: "Attention pays",

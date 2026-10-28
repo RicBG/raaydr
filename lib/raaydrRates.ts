@@ -76,6 +76,25 @@ export const DAY_ONE_NEXT_BAND = PRICING.dayOneCap - PRICING.dayOneFirstBand;
  * did not move. RAAYDR's did, 30 to 35, because the three must sum to 100 and the five points
  * had to come from somewhere.
  */
+/**
+ * The referral reward, per referred listener per month, flat in each currency. RULED by Ric
+ * (platform board rows 2546, 2785 and 2811; `work_items` 265 and 401): a pound a month for every
+ * listener an artist refers, for as long as that listener stays subscribed, with NO limit on how many
+ * listeners can be referred. "Unlimited" means no cap on referrals; it never means one pound once.
+ * It is paid from RAAYDR's own share, never from another artist's or a tastemaker's.
+ *
+ * THIS IS A COPY OF THE PLATFORM'S `REFERRAL_REWARD_MINOR` (`packages/rates/src/raaydr-rates.ts` in
+ * `RicBG/raaydr-platform`), which is the executable source and is read by the code that pays. The
+ * two repositories cannot import each other, so this is the same drift risk the Day One price has:
+ * `lib/referralCalculator.test.ts` pins the figures here, and a change to the platform's constant
+ * has to change this one in the same breath. Whole units, because the site only ever prints them.
+ */
+export const REFERRAL_REWARD = {
+  gbp: 1,
+  usd: 1,
+  eur: 1,
+} as const;
+
 export const SPLIT = {
   artists: 55,
   tastemakers: 10,
