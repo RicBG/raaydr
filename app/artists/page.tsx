@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AudiencePage from "@/components/AudiencePage";
 import Calculator from "@/components/sections/Calculator";
+import ReferralCalculator from "@/components/sections/ReferralCalculator";
 import Pledges from "@/components/sections/Pledges";
 import { faqData } from "@/lib/faqData";
 import { pageMetadata } from "@/lib/seo";
@@ -23,7 +24,16 @@ export default function ArtistsPage() {
       role="Artist"
       waitlistSource="artists-page"
       faqItems={faqData.artists}
-      calculator={<Calculator disclaimer />}
+      calculator={
+        <>
+          <Calculator disclaimer />
+          {/* Beside "Do the maths" (work_items 401): what referrals add on top of listening. */}
+          <h2 className="display-section" style={{ marginTop: "clamp(24px, 4vw, 48px)" }}>
+            And what your referrals are worth.
+          </h2>
+          <ReferralCalculator />
+        </>
+      }
       /* Board row 1075. Its own source, so `waitlist_signups.source` says which of the
          two positions on this page an applicant actually used. */
       calculatorCapture={{ source: "artists-page-calc" }}
