@@ -49,14 +49,14 @@ Artists are paid monthly via Stripe, with a £25 minimum payout threshold.
 
 | Tier | Price | Notes |
 | --- | --- | --- |
-| Day One listener, first 100 | £6.99/month | Price holds while they stay subscribed; the Day One tape and number are theirs for good |
+| Day One listener, first 100 | £6.99/month | The price is theirs for good, and so are the Day One tape and number |
 | Standard listener | £9.99/month | After the Day One cohort fills |
 | RAAYDR+ (creator roles) | £3.99/month | Role-specific dashboards and tools |
 | Day One creators | Free RAAYDR+ forever | First 100 artists, 100 producers/songwriters, 25 tastemakers |
 
 ## Is RAAYDR live?
 
-RAAYDR is in pre-launch, with sign-ups open at [raaydr.com](https://raaydr.com) for all four roles. Marketing is UK-focused; signup is open worldwide. Early cohort places, the Day One price of £6.99 while you stay subscribed, and free-forever creator RAAYDR+, are first come, first served.
+RAAYDR is in pre-launch, with sign-ups open at [raaydr.com](https://raaydr.com) for all four roles. Marketing is UK-focused; signup is open worldwide. Early cohort places, the Day One price of £6.99 for good, and free-forever creator RAAYDR+, are first come, first served.
 
 ## FAQ
 

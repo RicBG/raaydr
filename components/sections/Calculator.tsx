@@ -158,7 +158,7 @@ export default function Calculator({ disclaimer = false }: CalculatorProps) {
             ))}
           </div>
           <p className={styles.helper}>
-            Day Ones pay a lower price while they stay subscribed, so a Day One
+            Day Ones pay a lower price, so a Day One
             fan sends less your way than a standard subscriber does. Standard is the steady
             state, which is why it&rsquo;s the default here.
           </p>
