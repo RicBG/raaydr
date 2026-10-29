@@ -41,3 +41,7 @@ Ric ruled the calculator lives on the artists page and the tastemaker page (row 
 ## What this does not decide
 
 Whether the rule is shown to listeners, tastemakers or producers: only artists have a referral link today (`referral_code_on_role_granted` mints for the artist role), and the copy says "every artist". The wording of the closing note ("Referral money starts when the first listener subscribes") follows Ric's 16 October ruling on row 3569. The tax and VAT treatment of referral money is not stated on the site and is not this record's to decide.
+
+## Update, 29 October 2026: the tastemaker line now says they have a link
+
+`claude-code` applied the referral code mint to tastemakers on production on 29 October (platform board row 4352, migration `20261029120000`): a tastemaker gets a referral code the moment the role is granted, with no cap. So the footnote on the tastemaker page now reads "Every tastemaker on RAAYDR has a referral link.", the same shape as the artist line, and the test that said the tastemaker line must not promise a link now says it must say there is one and must not hedge (no "yet", "until", "not switched on"). No tastemaker holds the role on production yet (0 rows), so nobody is shown a link they lack; the sentence is true for every tastemaker who will exist. This was the one place to change, as recorded above.
