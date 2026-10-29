@@ -89,10 +89,14 @@ describe("the footnote says only what is true for the reader", () => {
     expect(referralLinkLine("artist")).toContain("Every artist on RAAYDR has a referral link");
   });
 
-  it("does not promise a tastemaker a link they cannot get yet", () => {
+  it("tells a tastemaker they have a link, now that the platform mints one when the role is granted", () => {
+    /* Applied to production 29 October 2026 (platform board row 4352, migration 20261029120000): a
+       tastemaker gets a referral code at the moment the role is granted, with no cap. Before that
+       this line said links were not switched on for tastemakers, and the test below it said it
+       must not promise one; both were true until that apply and are not now. */
     const line = referralLinkLine("tastemaker");
-    expect(line).toContain("not switched on for tastemakers yet");
-    expect(line).not.toMatch(/your referral link|you have a|you get a|every tastemaker/i);
+    expect(line).toContain("Every tastemaker on RAAYDR has a referral link");
+    expect(line).not.toMatch(/not switched on|yet|until/i);
   });
 
   it("is on the artists page and the tastemaker page, each with its own audience", () => {

@@ -81,5 +81,5 @@ export type ReferralAudience = "artist" | "tastemaker";
 export function referralLinkLine(audience: ReferralAudience): string {
   return audience === "artist"
     ? "Every artist on RAAYDR has a referral link."
-    : "Referral links are on for artists today and are not switched on for tastemakers yet, so nothing here is owed to you until yours exists.";
+    : "Every tastemaker on RAAYDR has a referral link.";
 }
