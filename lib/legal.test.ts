@@ -28,13 +28,17 @@ describe("legal pages", () => {
     expect(text("privacy")).toContain('"show my name"');
   });
 
-  it("carries the 21 October Day One rule and never the wording it replaced", () => {
+  it("carries the 29 October Day One rule and never the wording it replaced", () => {
     const terms = text("terms");
     expect(readLegal("terms").blocks.length).toBeGreaterThan(0);
-    expect(terms).toContain("for as long as you stay subscribed");
-    expect(terms).toContain("tape, number and status are yours for good");
-    expect(terms).toContain("you return at £9.99");
-    expect(terms).not.toMatch(/yours forever/i);
+    /* Ric, 29 October 2026: a Day One price is kept for good, through a cancel and a return. This
+       restores the 24 September rule and supersedes the 21 October one, which said a return was at
+       the standard price. */
+    expect(terms).toContain("£6.99 a month, for good");
+    expect(terms).toContain("price, tape, number and status are yours for good");
+    expect(terms).toContain("If you cancel and come back, you come back at £6.99");
+    expect(terms).not.toContain("you return at £9.99");
+    expect(terms).not.toContain("for as long as you stay subscribed");
     expect(terms).not.toMatch(/Day One place and price stay yours/i);
     /* Support can reinstate the price for one person. That is private and is never published. */
     expect(terms).not.toMatch(/reinstat|discretion|win.?back/i);
