@@ -10,6 +10,10 @@ Email **help@raaydr.com**. Tell us the email address on your account and what ha
 
 If you have forgotten your password, use "Forgot your password?" on the sign in page and we will send you a link. If the email does not arrive, check your junk folder, wait a few minutes, then write to us.
 
+## Your Day One price
+
+If you joined the waitlist with a different email address, write to help@raaydr.com and we will honour your Day One price.
+
 ## Your data and your account
 
 You can ask to see, correct, delete or move your data at any time. How to ask, and what happens next, is in our [Privacy policy](/privacy).
