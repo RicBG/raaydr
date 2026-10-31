@@ -2,8 +2,8 @@
 # The noticeboard, as four commands any agent can run in a terminal.
 #
 # Board row 4601, Ric 31 October 2026 09:40. It exists because agents now run in two tools:
-# Claude, where the board is reachable through the Supabase connector, and Cursor, where it is
-# not. A Cursor agent has a psql connection string and nothing else, so the protocol in
+# Claude, where the board is reachable through the Supabase connector, and Codex, where it is
+# not. A Codex agent has a psql connection string and nothing else, so the protocol in
 # `CLAUDE.md` has to be runnable as commands rather than as SQL somebody retypes.
 #
 #   board read <label>      unread rows, plus the last 5 by BOTH twins of your role
@@ -22,7 +22,7 @@
 # `read_by` is per agent, which is the whole point of it. `CLAUDE.md` says plainly: do not
 # filter on `read_at`.
 #
-# Built as briefed, every Cursor agent's stamp would have done nothing and the unread filter
+# Built as briefed, every Codex agent's stamp would have done nothing and the unread filter
 # would have returned the same rows for ever. So `read_by` is what moves here. `read_at` is set
 # alongside it only as history, exactly as the migration left it.
 #
@@ -30,9 +30,9 @@
 # THE TWINS SHARE A LANE, SO THEY SHARE A FILTER
 # ============================================================================
 #
-# `claude-donny` and `cursor-donny` are one person in two tools. They never run at the same
+# `claude-donny` and `codex-donny` are one person in two tools. They never run at the same
 # time, so whichever starts next has to see what the other was doing. `read` therefore filters
-# out rows written by EITHER twin, and shows the last 5 by either, so a Cursor session opens on
+# out rows written by EITHER twin, and shows the last 5 by either, so a Codex session opens on
 # the Claude session's last report rather than on a board that looks untouched.
 #
 # `stamp` writes YOUR OWN label only. It does not stamp for the twin, for the same reason
@@ -44,10 +44,10 @@
 # CREDENTIALS
 # ============================================================================
 #
-# `.env.cursor` at the repository root, gitignored, never committed and never on the board:
+# `.env.codex` at the repository root, gitignored, never committed and never on the board:
 #
-#   RAAYDR_BOARD_URL=postgresql://cursor_board.<ref>:<password>@<pooler-host>:6543/postgres
-#   RAAYDR_TRACKER_URL=postgresql://cursor_tracker.<ref>:<password>@<pooler-host>:6543/postgres
+#   RAAYDR_BOARD_URL=postgresql://codex_board.<ref>:<password>@<pooler-host>:6543/postgres
+#   RAAYDR_TRACKER_URL=postgresql://codex_tracker.<ref>:<password>@<pooler-host>:6543/postgres
 #
 # Both logins reach one table each and nothing else on their project, proven by refusal tests
 # on board row 4603 rather than by reading the grant table.
@@ -57,7 +57,7 @@ set -euo pipefail
 SUBJECT_MAX=140
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-envfile="$here/.env.cursor"
+envfile="$here/.env.codex"
 
 die() { printf '%s\n' "board: $*" >&2; exit 1; }
 
@@ -80,20 +80,20 @@ tracker_url() {
   printf '%s' "$RAAYDR_TRACKER_URL"
 }
 
-# claude-donny and cursor-donny are one lane. Given either, this prints both, so the filter and
+# claude-donny and codex-donny are one lane. Given either, this prints both, so the filter and
 # the recent list are about the ROLE rather than about which tool happens to be running.
 #
 # THE PAIRS ARE LISTED RATHER THAN DERIVED, because one of them is not derivable. The Claude
-# label is `claude-code` and the Cursor label row 4601 asks for is `cursor-codey`, after what Ric
-# calls that agent. Prefix arithmetic turns `cursor-codey` into `claude-codey`, which is not a
+# label is `claude-code` and the Codex label row 4601 asks for is `codex-codey`, after what Ric
+# calls that agent. Prefix arithmetic turns `codex-codey` into `claude-codey`, which is not a
 # label anybody posts under, so the lane's whole history would read as somebody else's.
-PAIRS="claude-code:cursor-codey
-claude-donny:cursor-donny
-claude-deuce:cursor-deuce
-claude-sonic:cursor-sonic
-claude-emma:cursor-emma
-claude-raph:cursor-raph
-claude-dez:cursor-dez"
+PAIRS="claude-code:codex-codey
+claude-donny:codex-donny
+claude-deuce:codex-deuce
+claude-sonic:codex-sonic
+claude-emma:codex-emma
+claude-raph:codex-raph
+claude-dez:codex-dez"
 
 twins() {
   local label="$1" pair
@@ -112,7 +112,7 @@ board post  <label> "<subject>" <file>   subject is capped, checked before anyth
 board stamp <label> <id> [id ...]        append your label to read_by, on its own
 board backlog [label]                    open work_items, highest priority first
 
-  label is claude-<name> or cursor-<name>, e.g. cursor-donny
+  label is claude-<name> or codex-<name>, e.g. codex-donny
 USAGE
 }
 

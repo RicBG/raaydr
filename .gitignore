@@ -44,5 +44,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Cursor-side agent credentials. Board row 4601. The example carries no password.
-!.env.cursor.example
+# Codex-side agent credentials. Board row 4601. The example carries no password.
+!.env.codex.example
