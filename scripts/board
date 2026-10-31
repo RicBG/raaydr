@@ -44,7 +44,22 @@
 # CREDENTIALS
 # ============================================================================
 #
-# `.env.codex` at the repository root, gitignored, never committed and never on the board:
+# HTTPS, which is what a Codex agent uses. Plain environment variables, not Codex "secrets":
+# Codex strips secrets before the agent phase, so a secret would not be there to read.
+#
+#   RAAYDR_BOARD_ENDPOINT=https://<ref>.supabase.co/functions/v1/board
+#   RAAYDR_BOARD_TOKEN=<token>        # OPTIONAL, see below
+#
+# `RAAYDR_BOARD_TOKEN` is optional on purpose. Codex can inject an `Authorization` header at
+# its own proxy for an allowlisted host, so the agent never holds the token; with the variable
+# unset this sends NO header and leaves that to the proxy. Measured both ways against a local
+# stand-in: unset sends no header at all, set sends `Bearer <token>`.
+#
+# **In HTTPS mode nothing reads `.env.codex`, and neither database login is needed.** One
+# allowlisted host is enough: the function reaches the backlog project from inside Supabase.
+#
+# Postgres, which is what a Claude side agent with a terminal uses. `.env.codex` at the
+# repository root, gitignored, never committed and never on the board:
 #
 #   RAAYDR_BOARD_URL=postgresql://codex_board.<ref>:<password>@<pooler-host>:6543/postgres
 #   RAAYDR_TRACKER_URL=postgresql://codex_tracker.<ref>:<password>@<pooler-host>:6543/postgres
@@ -68,14 +83,65 @@ if [ -f "$envfile" ]; then
   set +a
 fi
 
-command -v psql >/dev/null 2>&1 || die "psql is not installed. On a Mac: brew install libpq"
+# ============================================================================
+# TWO TRANSPORTS, AND HTTPS IS THE ONE A CODEX AGENT CAN ACTUALLY USE
+# ============================================================================
+#
+# Board rows 4614 and 4634. Codex agents run in OpenAI's cloud, where outbound traffic goes
+# through an HTTP proxy, so a Postgres connection on 6543 does not survive. Claude side agents
+# have a terminal and psql, and nothing about that needed changing.
+#
+# So: **set `RAAYDR_BOARD_ENDPOINT` and the script talks HTTPS to the `board` edge function.
+# Leave it unset and it talks Postgres exactly as before.** Same five commands either way.
+#
+# THE ENDPOINT VARIABLE IS NOT `RAAYDR_BOARD_URL`, deliberately. That one is the Postgres
+# connection string and the two would be a sentence apart in the same file, which is how
+# somebody pastes one into the other. The names are different because the values are.
+#
+# `RAAYDR_BOARD_TOKEN` is optional even in HTTPS mode. Codex can inject an `Authorization`
+# header at its proxy for an allowlisted host, so the agent never holds the token at all; with
+# the variable unset this sends no header and lets that happen. With it set, it sends the
+# header itself. Both work, and the second needs no feature anybody has to confirm first.
+using_http() { [ -n "${RAAYDR_BOARD_ENDPOINT:-}" ]; }
+
+need_psql() {
+  command -v psql >/dev/null 2>&1 || die "psql is not installed. On a Mac: brew install libpq"
+}
+
+need_jq() {
+  command -v jq >/dev/null 2>&1 || die "jq is not installed. On a Mac: brew install jq"
+}
+
+# The endpoint answers JSON and says what went wrong in `error`. A curl that cannot reach the
+# host at all is a different failure from one the function refused, and they are told apart
+# here so a reader is not left guessing which.
+http_call() {
+  local payload="$1" raw code body
+  need_jq
+  local -a auth=()
+  [ -n "${RAAYDR_BOARD_TOKEN:-}" ] && auth=(-H "authorization: Bearer ${RAAYDR_BOARD_TOKEN}")
+  raw="$(curl -sS --max-time 30 -X POST "$RAAYDR_BOARD_ENDPOINT" \
+          -H 'content-type: application/json' "${auth[@]}" \
+          --data "$payload" -w $'\n%{http_code}' 2>&1)" \
+    || die "could not reach $RAAYDR_BOARD_ENDPOINT: $raw"
+  code="${raw##*$'\n'}"
+  body="${raw%$'\n'*}"
+  case "$code" in
+    200) printf '%s' "$body" ;;
+    403) die "the endpoint refused the token (403). Check RAAYDR_BOARD_TOKEN, or let Codex inject the header." ;;
+    503) die "the endpoint is not configured (503). Its BOARD_TOKEN secret is not set." ;;
+    *)   die "the endpoint answered $code: $(printf '%s' "$body" | jq -r '.error // .' 2>/dev/null || printf '%s' "$body")" ;;
+  esac
+}
 
 board_url() {
+  need_psql
   [ -n "${RAAYDR_BOARD_URL:-}" ] || die "RAAYDR_BOARD_URL is not set. Put it in $envfile"
   printf '%s' "$RAAYDR_BOARD_URL"
 }
 
 tracker_url() {
+  need_psql
   [ -n "${RAAYDR_TRACKER_URL:-}" ] || die "RAAYDR_TRACKER_URL is not set. Put it in $envfile"
   printf '%s' "$RAAYDR_TRACKER_URL"
 }
@@ -120,6 +186,17 @@ cmd_read() {
   local label="${1:-}"; [ -n "$label" ] || die "board read <label>"
   read -r mine twin <<<"$(twins "$label")"
 
+  if using_http; then
+    local res
+    res="$(http_call "$(jq -nc --arg l "$label" '{command:"read",label:$l}')")"
+    printf '== unread, not written by %s or %s ==\n' "$mine" "$twin"
+    printf '%s' "$res" | jq -r '.unread[] | "\(.id)  \(.created_at[5:16])  \(.author)  \(.subject)"'
+    printf '\n== your lane last, both tools (read the body before you start) ==\n'
+    printf '%s' "$res" | jq -r '.recent[] | "\(.id)  \(.created_at[5:16])  \(.author)  \(.subject)"'
+    printf '\nFull body of a row:  board show <id>\n'
+    return
+  fi
+
   printf '== unread, not written by %s or %s ==\n' "$mine" "$twin"
   psql "$(board_url)" -v ON_ERROR_STOP=1 -v mine="$mine" -v twin="$twin" <<'SQL'
 \pset format wrapped
@@ -154,6 +231,11 @@ SQL
 
 cmd_show() {
   local id="${1:-}"; [ -n "$id" ] || die "board show <id>"
+  if using_http; then
+    http_call "$(jq -nc --argjson i "$id" '{command:"show",id:$i}')" \
+      | jq -r '.row | "#\(.id)  \(.author)  \(.created_at)\n\(.subject)\n\(if .related_ref then "ref: " + .related_ref else "" end)\n\n\(.body)"'
+    return
+  fi
   psql "$(board_url)" -v ON_ERROR_STOP=1 -v id="$id" -tA <<'SQL'
 select format(E'#%s  %s  %s\n%s\n%s\n\n%s',
               id, author, to_char(created_at at time zone 'UTC', 'DD Mon YYYY HH24:MI')||' UTC',
@@ -176,6 +258,12 @@ cmd_post() {
   [ -s "$file" ] || die "body file is empty: $file"
 
   local body; body="$(cat "$file")"
+  if using_http; then
+    http_call "$(jq -nc --arg l "$label" --arg s "$subject" --arg b "$body" --arg r "${4:-}" \
+                   '{command:"post",label:$l,subject:$s,body:$b,related_ref:(if $r == "" then null else $r end)}')" \
+      | jq -r '"posted row \(.posted.id)"'
+    return
+  fi
   psql "$(board_url)" -v ON_ERROR_STOP=1 -tA \
        -v label="$label" -v subject="$subject" -v body="$body" -v ref="${4:-}" <<'SQL'
 insert into ops.handoff (author, subject, body, related_ref)
@@ -204,6 +292,12 @@ cmd_stamp() {
   local ids; ids="$(printf '%s,' "$@")"; ids="${ids%,}"
   printf '%s' "$ids" | grep -Eq '^[0-9]+(,[0-9]+)*$' || die "ids must be numbers, got: $ids"
 
+  if using_http; then
+    http_call "$(jq -nc --arg l "$label" --argjson ids "[$ids]" '{command:"stamp",label:$l,ids:$ids}')" \
+      | jq -r 'if (.stamped | length) == 0 then "nothing to stamp; already read" else (.stamped[] | "stamped \(.)") end'
+    return
+  fi
+
   psql "$(board_url)" -v ON_ERROR_STOP=1 -tA -v mine="$mine" -v twin="$twin" -v ids="$ids" <<'SQL'
 update ops.handoff
    set read_by = (select array_agg(distinct l)
@@ -216,6 +310,11 @@ SQL
 }
 
 cmd_backlog() {
+  if using_http; then
+    http_call '{"command":"backlog"}' \
+      | jq -r '.rows[] | "\(.id)  p\(.priority)  \(.stream)  \(.owner // "-")  \(.status)  \(.title)"'
+    return
+  fi
   psql "$(tracker_url)" -v ON_ERROR_STOP=1 <<'SQL'
 \pset format wrapped
 \pset columns 110
