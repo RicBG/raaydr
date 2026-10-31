@@ -1,0 +1,237 @@
+#!/usr/bin/env bash
+# The noticeboard, as four commands any agent can run in a terminal.
+#
+# Board row 4601, Ric 31 October 2026 09:40. It exists because agents now run in two tools:
+# Claude, where the board is reachable through the Supabase connector, and Cursor, where it is
+# not. A Cursor agent has a psql connection string and nothing else, so the protocol in
+# `CLAUDE.md` has to be runnable as commands rather than as SQL somebody retypes.
+#
+#   board read <label>      unread rows, plus the last 5 by BOTH twins of your role
+#   board post <label> "<subject>" <body-file>
+#   board stamp <label> <id> [id ...]
+#   board backlog [label]
+#
+# ============================================================================
+# IT STAMPS `read_by`, NOT `read_at`, AND THAT IS A CORRECTION TO THE BRIEF
+# ============================================================================
+#
+# Row 4601 asked for `read_at`. `read_at` was retired on 7 October 2026, rows 2761 and 2762,
+# migration `20261008070000_the_board_remembers_who_has_read_a_row.sql`, because it was ONE
+# timestamp shared by every agent: whichever agent stamped a row first HID IT from everybody
+# else, and the rows most likely to be lost were the ones addressed to somebody else.
+# `read_by` is per agent, which is the whole point of it. `CLAUDE.md` says plainly: do not
+# filter on `read_at`.
+#
+# Built as briefed, every Cursor agent's stamp would have done nothing and the unread filter
+# would have returned the same rows for ever. So `read_by` is what moves here. `read_at` is set
+# alongside it only as history, exactly as the migration left it.
+#
+# ============================================================================
+# THE TWINS SHARE A LANE, SO THEY SHARE A FILTER
+# ============================================================================
+#
+# `claude-donny` and `cursor-donny` are one person in two tools. They never run at the same
+# time, so whichever starts next has to see what the other was doing. `read` therefore filters
+# out rows written by EITHER twin, and shows the last 5 by either, so a Cursor session opens on
+# the Claude session's last report rather than on a board that looks untouched.
+#
+# `stamp` writes YOUR OWN label only. It does not stamp for the twin, for the same reason
+# `CLAUDE.md` says never to stamp on another agent's behalf: an unread row is the only signal
+# that something is waiting, and a stamp nobody earned is the one thing that can make `read_by`
+# lie.
+#
+# ============================================================================
+# CREDENTIALS
+# ============================================================================
+#
+# `.env.cursor` at the repository root, gitignored, never committed and never on the board:
+#
+#   RAAYDR_BOARD_URL=postgresql://cursor_board.<ref>:<password>@<pooler-host>:6543/postgres
+#   RAAYDR_TRACKER_URL=postgresql://cursor_tracker.<ref>:<password>@<pooler-host>:6543/postgres
+#
+# Both logins reach one table each and nothing else on their project, proven by refusal tests
+# on board row 4603 rather than by reading the grant table.
+
+set -euo pipefail
+
+SUBJECT_MAX=140
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+envfile="$here/.env.cursor"
+
+die() { printf '%s\n' "board: $*" >&2; exit 1; }
+
+if [ -f "$envfile" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  . "$envfile"
+  set +a
+fi
+
+command -v psql >/dev/null 2>&1 || die "psql is not installed. On a Mac: brew install libpq"
+
+board_url() {
+  [ -n "${RAAYDR_BOARD_URL:-}" ] || die "RAAYDR_BOARD_URL is not set. Put it in $envfile"
+  printf '%s' "$RAAYDR_BOARD_URL"
+}
+
+tracker_url() {
+  [ -n "${RAAYDR_TRACKER_URL:-}" ] || die "RAAYDR_TRACKER_URL is not set. Put it in $envfile"
+  printf '%s' "$RAAYDR_TRACKER_URL"
+}
+
+# claude-donny and cursor-donny are one lane. Given either, this prints both, so the filter and
+# the recent list are about the ROLE rather than about which tool happens to be running.
+#
+# THE PAIRS ARE LISTED RATHER THAN DERIVED, because one of them is not derivable. The Claude
+# label is `claude-code` and the Cursor label row 4601 asks for is `cursor-codey`, after what Ric
+# calls that agent. Prefix arithmetic turns `cursor-codey` into `claude-codey`, which is not a
+# label anybody posts under, so the lane's whole history would read as somebody else's.
+PAIRS="claude-code:cursor-codey
+claude-donny:cursor-donny
+claude-deuce:cursor-deuce
+claude-sonic:cursor-sonic
+claude-emma:cursor-emma
+claude-raph:cursor-raph
+claude-dez:cursor-dez"
+
+twins() {
+  local label="$1" pair
+  while IFS= read -r pair; do
+    case "$label" in
+      "${pair%%:*}"|"${pair##*:}") printf '%s %s' "${pair%%:*}" "${pair##*:}"; return 0 ;;
+    esac
+  done <<<"$PAIRS"
+  die "unknown label '$label'. Known: $(printf '%s' "$PAIRS" | tr '\n' ' ' | tr ':' '/')"
+}
+
+usage() {
+  cat <<'USAGE'
+board read  <label>                      unread rows, then the last 5 by both twins
+board post  <label> "<subject>" <file>   subject is capped, checked before anything is sent
+board stamp <label> <id> [id ...]        append your label to read_by, on its own
+board backlog [label]                    open work_items, highest priority first
+
+  label is claude-<name> or cursor-<name>, e.g. cursor-donny
+USAGE
+}
+
+cmd_read() {
+  local label="${1:-}"; [ -n "$label" ] || die "board read <label>"
+  read -r mine twin <<<"$(twins "$label")"
+
+  printf '== unread, not written by %s or %s ==\n' "$mine" "$twin"
+  psql "$(board_url)" -v ON_ERROR_STOP=1 -v mine="$mine" -v twin="$twin" <<'SQL'
+\pset format wrapped
+\pset columns 110
+select id,
+       to_char(created_at at time zone 'UTC', 'DD Mon HH24:MI') as utc,
+       author,
+       subject,
+       coalesce(related_ref, '') as ref
+  from ops.handoff
+ where author not in (:'mine', :'twin')
+   and not (:'mine' = any (read_by))
+ order by id;
+SQL
+
+  printf '\n== your lane last, both tools (read the body before you start) ==\n'
+  psql "$(board_url)" -v ON_ERROR_STOP=1 -v mine="$mine" -v twin="$twin" <<'SQL'
+\pset format wrapped
+\pset columns 110
+select id,
+       to_char(created_at at time zone 'UTC', 'DD Mon HH24:MI') as utc,
+       author,
+       subject
+  from (select * from ops.handoff
+         where author in (:'mine', :'twin')
+         order by id desc limit 5) recent
+ order by id;
+SQL
+
+  printf '\nFull body of a row:  board show <id>\n'
+}
+
+cmd_show() {
+  local id="${1:-}"; [ -n "$id" ] || die "board show <id>"
+  psql "$(board_url)" -v ON_ERROR_STOP=1 -v id="$id" -tA <<'SQL'
+select format(E'#%s  %s  %s\n%s\n%s\n\n%s',
+              id, author, to_char(created_at at time zone 'UTC', 'DD Mon YYYY HH24:MI')||' UTC',
+              subject, coalesce('ref: '||related_ref, ''), body)
+  from ops.handoff where id = (:'id')::bigint;
+SQL
+}
+
+# The subject is checked HERE, before a connection is opened. The table's own constraint rejects
+# a long subject outright rather than truncating it, so the whole report would have to be re-sent;
+# 4601 asked for 140 to leave room under that 200.
+cmd_post() {
+  local label="${1:-}" subject="${2:-}" file="${3:-}"
+  [ -n "$label" ] && [ -n "$subject" ] && [ -n "$file" ] || die 'board post <label> "<subject>" <body-file>'
+  twins "$label" >/dev/null
+  [ -f "$file" ] || die "body file not found: $file"
+
+  local len; len=${#subject}
+  [ "$len" -le "$SUBJECT_MAX" ] || die "subject is $len characters, the cap is $SUBJECT_MAX. Nothing was sent. Write one line somebody can act on."
+  [ -s "$file" ] || die "body file is empty: $file"
+
+  local body; body="$(cat "$file")"
+  psql "$(board_url)" -v ON_ERROR_STOP=1 -tA \
+       -v label="$label" -v subject="$subject" -v body="$body" -v ref="${4:-}" <<'SQL'
+insert into ops.handoff (author, subject, body, related_ref)
+values (:'label', :'subject', :'body', nullif(:'ref', ''))
+returning 'posted row '||id;
+SQL
+}
+
+# Its own statement, never bundled with the insert. A write that rolls back takes everything in
+# its transaction with it, and a stamp lost beside a successful post is a row that reads as
+# waiting for somebody who has already answered it.
+#
+# IT STAMPS BOTH OF THE LANE'S LABELS, which is a deliberate exception to `CLAUDE.md`'s "never
+# stamp a row on another agent's behalf", and Ric ruled it on 31 October.
+#
+# That rule exists so one agent cannot hide a row from a DIFFERENT agent: "a row addressed to two
+# of you is read by two of you". The twins are not two agents. They are one lane in two tools,
+# they never run at the same time, and row 4601 asks that whichever starts picks up where the
+# other stopped. Stamping one label only would mean a lane re-reading its own finished work every
+# time it changed tool, and the unread backlog regrowing from the day it was cleared.
+cmd_stamp() {
+  local label="${1:-}"; shift || true
+  [ -n "$label" ] && [ "$#" -gt 0 ] || die "board stamp <label> <id> [id ...]"
+  local mine twin; read -r mine twin <<<"$(twins "$label")"
+
+  local ids; ids="$(printf '%s,' "$@")"; ids="${ids%,}"
+  printf '%s' "$ids" | grep -Eq '^[0-9]+(,[0-9]+)*$' || die "ids must be numbers, got: $ids"
+
+  psql "$(board_url)" -v ON_ERROR_STOP=1 -tA -v mine="$mine" -v twin="$twin" -v ids="$ids" <<'SQL'
+update ops.handoff
+   set read_by = (select array_agg(distinct l)
+                    from unnest(read_by || (:'mine')::text || (:'twin')::text) as l),
+       read_at = coalesce(read_at, now())
+ where id = any (string_to_array(:'ids', ',')::bigint[])
+   and not ((:'mine') = any (read_by) and (:'twin') = any (read_by))
+returning 'stamped '||id;
+SQL
+}
+
+cmd_backlog() {
+  psql "$(tracker_url)" -v ON_ERROR_STOP=1 <<'SQL'
+\pset format wrapped
+\pset columns 110
+select id, priority as p, stream, owner, status, title
+  from public.work_items
+ where status in ('open', 'progress', 'blocked')
+ order by priority, id;
+SQL
+}
+
+case "${1:-}" in
+  read)    shift; cmd_read "$@" ;;
+  show)    shift; cmd_show "$@" ;;
+  post)    shift; cmd_post "$@" ;;
+  stamp)   shift; cmd_stamp "$@" ;;
+  backlog) shift; cmd_backlog "$@" ;;
+  ""|-h|--help|help) usage ;;
+  *) usage; exit 1 ;;
+esac

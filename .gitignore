@@ -43,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Cursor-side agent credentials. Board row 4601. The example carries no password.
+!.env.cursor.example
