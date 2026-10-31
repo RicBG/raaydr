@@ -15,8 +15,8 @@ so on the board.
 
 **Paste this to start an agent:**
 
-> You are Deuce (C), board label `cursor-deuce`. Read `AGENTS.md`, then run
-> `scripts/board read cursor-deuce` and `scripts/board backlog` before doing anything else.
+> You are Deuce (C), board label `codex-deuce`. Read `AGENTS.md`, then run
+> `scripts/board read codex-deuce` and `scripts/board backlog` before doing anything else.
 
 Swap the name and the label. The labels are in the table below.
 
@@ -29,19 +29,19 @@ Agents build RAAYDR, and they run in two tools. Each agent has a **lane** and tw
 per tool. **A lane never runs in both tools at once**, but different lanes run in both at the same
 time, so the board is the only place anybody finds out what anybody else did.
 
-| lane | Claude label | Cursor label | Ric calls it | what it owns |
+| lane | Claude label | Codex label | Ric calls it | what it owns |
 | --- | --- | --- | --- | --- |
-| backend | `claude-code` | `cursor-codey` | Codey | database, money, auth, permissions, outside services, send pipelines |
+| backend | `claude-code` | `codex-codey` | Codey | database, money, auth, permissions, outside services, send pipelines |
 | chat | `claude-chat` | *(stays in Claude)* | Riz | briefs, checking, talking to Ric |
-| front end | `claude-deuce` | `cursor-deuce` | Deuce | the web app and this website |
-| app | `claude-donny` | `cursor-donny` | Donny | iOS and Android, and the final technical call where web and app meet |
-| email | `claude-emma` | `cursor-emma` | Emma | every email RAAYDR sends |
-| security | `claude-raph` | `cursor-raph` | Raph | attacks what others built, never fixes it |
-| design | `claude-dez` | `cursor-dez` | Dez | design and artwork |
+| front end | `claude-deuce` | `codex-deuce` | Deuce | the web app and this website |
+| app | `claude-donny` | `codex-donny` | Donny | iOS and Android, and the final technical call where web and app meet |
+| email | `claude-emma` | `codex-emma` | Emma | every email RAAYDR sends |
+| security | `claude-raph` | `codex-raph` | Raph | attacks what others built, never fixes it |
+| design | `claude-dez` | `codex-dez` | Dez | design and artwork |
 | SEO | `claude-eve` | *(as briefed)* | Eve | raaydr.com and the Pulse pages |
-| *(as briefed)* | `claude-sonic` | `cursor-sonic` | Sonic | as briefed |
+| *(as briefed)* | `claude-sonic` | `codex-sonic` | Sonic | as briefed |
 
-**`claude-code` pairs with `cursor-codey`, not `cursor-codey`'s obvious opposite.** It is the one
+**`claude-code` pairs with `codex-codey`, not `codex-codey`'s obvious opposite.** It is the one
 pair whose two halves are different words, so never derive one label from the other by swapping
 the prefix. `scripts/board` lists the pairs for this reason.
 
@@ -60,8 +60,8 @@ scripts/board stamp <label> <id> [id ...]
 scripts/board backlog                     open work_items, highest priority first
 ```
 
-Credentials live in `.env.cursor` at the repository root. It is gitignored. **Secrets never go on
-the board and are never committed.** `.env.cursor.example` shows the shape.
+Credentials live in `.env.codex` at the repository root. It is gitignored. **Secrets never go on
+the board and are never committed.** `.env.codex.example` shows the shape.
 
 ### Everything you tell Ric goes on the board first
 
@@ -87,7 +87,7 @@ waiting**, so stamp only once you have actually read it. **Never stamp for anoth
 write both labels of *your own* lane, because those are one person in two tools; Ric ruled that,
 and it is not licence to stamp for anybody else. `read_at` is retired: nothing reads it.
 
-## 3. What a Cursor agent must not do
+## 3. What a Codex agent must not do
 
 - **Never apply a migration.** Database work is Codey's, on the Claude side.
 - **Never write to any database except the board and the backlog.** Your logins reach one table
