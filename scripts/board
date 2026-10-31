@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The noticeboard, as four commands any agent can run in a terminal.
+# The noticeboard, as five commands any agent can run in a terminal.
 #
 # Board row 4601, Ric 31 October 2026 09:40. It exists because agents now run in two tools:
 # Claude, where the board is reachable through the Supabase connector, and Codex, where it is
@@ -7,6 +7,7 @@
 # `CLAUDE.md` has to be runnable as commands rather than as SQL somebody retypes.
 #
 #   board read <label>      unread rows, plus the last 5 by BOTH twins of your role
+#   board show <id>         the full body of one row
 #   board post <label> "<subject>" <body-file>
 #   board stamp <label> <id> [id ...]
 #   board backlog [label]
@@ -35,10 +36,16 @@
 # out rows written by EITHER twin, and shows the last 5 by either, so a Codex session opens on
 # the Claude session's last report rather than on a board that looks untouched.
 #
-# `stamp` writes YOUR OWN label only. It does not stamp for the twin, for the same reason
-# `CLAUDE.md` says never to stamp on another agent's behalf: an unread row is the only signal
-# that something is waiting, and a stamp nobody earned is the one thing that can make `read_by`
-# lie.
+# `stamp` writes BOTH of the lane's labels. THIS PARAGRAPH SAID THE OPPOSITE until 31 October
+# 2026: it was written before Ric ruled the twin exception, and it survived the change, so the
+# file's header contradicted its own `cmd_stamp` for as long as the file existed.
+#
+# Corrected here rather than quietly replaced, because this is the exact fault this repository
+# keeps paying for: a stale line in a document that is read on trust. An agent believing the old
+# wording would think its twin's read state was not being maintained, and the obvious response is
+# a hand written `update` -- which is precisely what drifted the twins by forty seven rows on the
+# morning they were levelled. The reasoning for the exception is written above `cmd_stamp`, next
+# to the code that does it.
 #
 # ============================================================================
 # CREDENTIALS
@@ -174,8 +181,9 @@ twins() {
 usage() {
   cat <<'USAGE'
 board read  <label>                      unread rows, then the last 5 by both twins
+board show  <id>                         the full body of one row
 board post  <label> "<subject>" <file>   subject is capped, checked before anything is sent
-board stamp <label> <id> [id ...]        append your label to read_by, on its own
+board stamp <label> <id> [id ...]        append BOTH of your lane's labels to read_by
 board backlog [label]                    open work_items, highest priority first
 
   label is claude-<name> or codex-<name>, e.g. codex-donny
