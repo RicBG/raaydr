@@ -1,17 +1,11 @@
 import Link from "next/link";
 import FooterWordmark from "./FooterWordmark";
 import CookieSettingsLink from "./CookieSettingsLink";
-import { InstagramIcon, TikTokIcon } from "./SocialIcons";
+import { socialAccounts } from "@/lib/socials";
 import styles from "./Footer.module.css";
 
-const socials = [
-  {
-    label: "Instagram",
-    href: "https://instagram.com/raaydrmusic",
-    Icon: InstagramIcon,
-  },
-  { label: "TikTok", href: "https://tiktok.com/@raaydrmusic", Icon: TikTokIcon },
-];
+/* One list, shared with the header. See lib/socials.ts for why it is not two. */
+const socials = socialAccounts;
 
 const columns = [
   {
