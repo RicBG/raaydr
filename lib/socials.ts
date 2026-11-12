@@ -41,12 +41,13 @@ export const socialAccounts: SocialAccount[] = [
    * THE THREADS HANDLE IS THE INSTAGRAM ONE, which is what row 5348 item 3 rules: "For Threads
    * use the same handle as Instagram on threads.net."
    *
-   * **UNCONFIRMED, AND THE ROW SAYS WHAT TO DO ABOUT IT.** A plain request to
-   * threads.net/@raaydrmusic answers 200, and that proves nothing: Threads serves a shell for a
-   * handle that does not exist, and reading the page body needs a browser user agent this
-   * session is not permitted to send. Row 5348: "If you cannot confirm the Threads profile
-   * exists, post the URL you intend to use on your row and Riz checks with Ric before merge."
-   * It is posted. Do not merge this on the strength of the 200.
+   * CONFIRMED, and the way it was confirmed is worth keeping. This session could not check it:
+   * threads.net answers 200 for a handle that does not exist, and reading the page body needs a
+   * browser user agent this session is not permitted to send, so the 200 proved nothing. Row 5348
+   * said what to do about that -- post the URL and let somebody who can see it check -- and
+   * `claude-chat` ruled it on row 5433 item 1: *"Threads URL confirmed:
+   * `https://www.threads.net/@raaydrmusic`. Threads accounts take the Instagram handle, and
+   * Instagram and TikTok are both @raaydrmusic (read off raaydr.com)."*
    */
   {
     label: "Threads",

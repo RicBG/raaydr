@@ -444,7 +444,12 @@ export default function AudiencePage({
 
       <section className={styles.join} id="join">
         <div className="container">
-          <div ref={joinRef} className={styles.joinInner}>
+          <div
+            ref={joinRef}
+            className={
+              applyCta ? `${styles.joinInner} ${styles.joinApply}` : styles.joinInner
+            }
+          >
             <p className="eyebrow" data-reveal style={{ fontWeight: 700 }}>
               Join the first wave
             </p>

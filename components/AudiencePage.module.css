@@ -195,8 +195,36 @@
   justify-items: start;
 }
 
+/* THE APPLY BLOCK IS CENTRED ON A WIDE SCREEN, and only the apply one. Riz, board row 5433
+   item 2, reading the 1440 preview: "`#join` at 1440 has empty page to the right where the form
+   was. Centre the block (button plus two lines) in the section at desktop; nothing new added."
+
+   The waitlist form that used to sit here filled the column, so left alignment read as a column
+   of content. A button and one line do not fill anything, and left aligned they left about two
+   thirds of a 1440 page blank to their right.
+
+   It is a modifier rather than a change to `.joinInner` because `#join` still renders
+   `WaitlistForm` on every audience that has not moved to applying, and a centred form is a
+   different question nobody has asked. It is gated at 821px, the width `.heroGrid` and the rest
+   of this file already turn on, so the phone layout is untouched: centring two short lines on a
+   390 screen gains nothing and costs the left edge every other block on the page shares. */
+@media (min-width: 821px) {
+  .joinApply {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .joinApply .applyCta {
+    justify-items: center;
+  }
+
+  .joinApply .applyNote {
+    margin-inline: auto;
+  }
+}
+
 /* The line under the button. Capped by its MEASURE rather than by the column, which is the
-   repository's own rule for a reading surface, and it stays left aligned with the button. */
+   repository's own rule for a reading surface, and it stays aligned with the button. */
 .applyNote {
   max-width: 46ch;
   margin: 0;
