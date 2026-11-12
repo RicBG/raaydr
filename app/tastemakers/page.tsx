@@ -5,6 +5,7 @@ import TastemakerCalculator from "@/components/sections/TastemakerCalculator";
 import { faqData } from "@/lib/faqData";
 import { SPLIT } from "@/lib/raaydrRates";
 import { pageMetadata } from "@/lib/seo";
+import { applyUrl } from "@/lib/siteConfig";
 
 export const metadata: Metadata = pageMetadata({
   title: "RAAYDR for Tastemakers: Back music early. Earn for your taste.",
@@ -50,7 +51,9 @@ export default function TastemakersPage() {
       }}
       tintSections={[
         {
-          heading: "Only 25 seats in the first wave.",
+          /* Ric, board rows 5347 and the 30 October ruling: 100 Day One tastemaker places.
+             "Only 25 seats" was the figure before that and was still on the page. */
+          heading: "100 Day One tastemaker places.",
           body: [
             "Every seat we add divides the same fund, so we are not adding many.",
             { text: "Nothing comes back to us.", bold: true },
@@ -58,12 +61,25 @@ export default function TastemakersPage() {
           ],
           beforeCallout: true,
         },
-        {
-          heading: "RAAYDR+",
-          body: "The first 25 tastemakers get it free, forever. Everyone after pays £3.99 a month. Proof you broke it. Every artist you put in front of people, how many stayed, and what you delivered to that artist in pounds. A record of your taste that nobody can fake.",
-          dotPulse: true,
-        },
+        /*
+          THE RAAYDR+ SECTION IS GONE. Ric, board row 5347 item 4: delete "The first 25
+          tastemakers get RAAYDR+ free, forever" and anything else on this page promising
+          RAAYDR+ or pay. There is no free RAAYDR+ (his 6 November ruling, row 5215).
+
+          The whole section went rather than the one sentence, because every sentence in it was
+          either that promise or the £3.99 price beside it, and what remained -- the proof and
+          the track record -- this page already says under "Reputation that compounds".
+
+          THAT REMOVES A PUBLISHED PRICE FROM THIS PAGE, which is raised on the board rather
+          than decided here: if Ric wants the tastemaker RAAYDR+ price stated, it is new copy
+          from Riz, and it is not this file's to invent.
+        */
       ]}
+      applyCta={{
+        label: "Apply to join",
+        href: applyUrl.tastemaker,
+        note: "Tell us who you are, where you share music and what you're into. We read every application.",
+      }}
       pointsNote="Not follower counts. Not industry connections. Ears."
       pledgeNote="Everything we promise artists holds for you. Your share moves monthly, from real subscriptions, on the same rails."
       points={[

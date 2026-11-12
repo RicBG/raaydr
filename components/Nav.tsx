@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ctaCopy, platformLoginUrl } from "@/lib/siteConfig";
 import { isHomePath } from "@/lib/trackingPaths";
-import { InstagramIcon, TikTokIcon } from "./SocialIcons";
+import { socialAccounts } from "@/lib/socials";
 import styles from "./Nav.module.css";
 
 // The four audience routes are the primary row — these are the conversion
@@ -26,14 +26,8 @@ const secondaryLinks = [
 
 const allLinks = [...audienceLinks, ...secondaryLinks];
 
-const socials = [
-  {
-    label: "Instagram",
-    href: "https://instagram.com/raaydrmusic",
-    Icon: InstagramIcon,
-  },
-  { label: "TikTok", href: "https://tiktok.com/@raaydrmusic", Icon: TikTokIcon },
-];
+/* One list, shared with the footer. See lib/socials.ts for why it is not two. */
+const socials = socialAccounts;
 
 export default function Nav() {
   const [open, setOpen] = useState(false);

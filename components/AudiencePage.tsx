@@ -108,6 +108,26 @@ type AudiencePageProps = {
   /** FAQ items for this page's closing FAQ section, rendered after everything
    *  else and before the site footer. Omitted when absent. */
   faqItems?: FaqItem[];
+  /** An APPLICATION replaces the waitlist capture in the `#join` section.
+   *
+   *  Ric, 11 November 21:49, board row 5347: tastemakers **apply**, there is no tastemaker
+   *  waitlist, and the form on this page was still collecting one. Row 5369 extends the same
+   *  move to artists. **Listeners stay on the waitlist** until the app is in the stores
+   *  (29 October ruling), which is the whole reason this is a per page prop rather than a
+   *  site wide change: one audience still joins a list and two now apply.
+   *
+   *  When it is set, `#join` renders the button and its line INSTEAD of `WaitlistForm`, so
+   *  there is no path left on the page that writes a row nobody reads. The hero and header
+   *  calls to action already point at `#join`, so they land on the button without changing. */
+  applyCta?: {
+    /** The button label, e.g. "Apply to join". */
+    label: string;
+    /** The platform application URL, UTMs included — see `applyUrl` in lib/siteConfig. */
+    href: string;
+    /** The line under the button. Says what applying involves, so the button is not the
+     *  first time somebody learns they are about to be asked questions. */
+    note: string;
+  };
 };
 
 export default function AudiencePage({
@@ -130,6 +150,7 @@ export default function AudiencePage({
   tintMarquee,
   waitlistSource,
   faqItems,
+  applyCta,
 }: AudiencePageProps) {
   const headerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -427,13 +448,32 @@ export default function AudiencePage({
             <p className="eyebrow" data-reveal style={{ fontWeight: 700 }}>
               Join the first wave
             </p>
-            <div data-reveal>
-              <WaitlistForm
-                variant="closing"
-                defaultRole={role}
-                source={waitlistSource}
-              />
-            </div>
+            {applyCta ? (
+              /*
+                AN APPLICATION, NOT A LIST. Board row 5347. The form that was here captured a
+                waitlist signup for an audience that no longer has a waitlist, so it is replaced
+                rather than hidden: a hidden form is still a path somebody can reach.
+
+                A plain anchor rather than a client component. It leaves the site for the
+                platform, so there is nothing to submit, nothing to validate and no state to
+                hold, and `target` is deliberately absent: this is the end of the journey on
+                this page and a new tab would leave the marketing page sitting behind it.
+              */
+              <div data-reveal className={styles.applyCta}>
+                <a href={applyCta.href} className="btn">
+                  {applyCta.label}
+                </a>
+                <p className={styles.applyNote}>{applyCta.note}</p>
+              </div>
+            ) : (
+              <div data-reveal>
+                <WaitlistForm
+                  variant="closing"
+                  defaultRole={role}
+                  source={waitlistSource}
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>

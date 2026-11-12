@@ -185,11 +185,27 @@ export const faqData: Record<FaqPageKey, FaqItem[]> = {
       answer:
         "Playlist placement fees are usually a flat one off payment regardless of what happens after. RAAYDR pays you monthly and ongoing, tied to whether the fans you brought in keep listening.",
     },
-    {
-      question: "Is RAAYDR+ free for tastemakers?",
-      answer:
-        "The first 25 tastemakers to join get RAAYDR+ free forever, after that it's £3.99 a month for the full dashboard.",
-    },
+    /*
+      "IS RAAYDR+ FREE FOR TASTEMAKERS?" WAS HERE AND IS DELETED. Ric, board row 5347 item 4:
+      delete anything on the tastemakers page promising RAAYDR+ or pay. There is no free RAAYDR+
+      (his 6 November ruling, row 5215), and the answer also carried "the first 25 tastemakers",
+      the figure item 3 of the same row replaces with 100 Day One places.
+
+      It mattered more than the section above it for two reasons: an FAQ answer reads as a
+      commitment rather than as marketing, and `pageMetadata` publishes this list as FAQPage
+      structured data, so the promise was going out to search engines as a machine readable
+      claim about what we will give somebody.
+
+      NO REPLACEMENT ANSWER IS INVENTED HERE. What tastemakers get, and at what price, is Ric's
+      and Riz's to say; a question left unanswered is better than one answered wrongly, and it is
+      raised on the board rather than filled in.
+
+      THE SAME PROMISE SURVIVES ELSEWHERE IN THIS FILE, outside row 5347's scope, and is raised
+      rather than quietly changed: the general FAQ still says "The first 100 artists, 100
+      producers and songwriters, and 25 tastemakers get RAAYDR+ free forever", "What is RAAYDR+?"
+      still says "free forever for our Day One creators", and the producers and songwriters list
+      still promises the first 100 get it free. Those are other pages and other audiences.
+    */
     {
       question: "When do I get paid?",
       answer:
