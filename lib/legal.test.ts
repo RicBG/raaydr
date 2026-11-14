@@ -44,6 +44,24 @@ describe("legal pages", () => {
     expect(terms).not.toMatch(/reinstat|discretion|win.?back/i);
   });
 
+  it("carries the 14 November promo use clause in Ric's own words, as version 1.4", () => {
+    const terms = text("terms");
+    expect(terms).toContain("Version 1.4. Last updated 14 November 2026.");
+    /* Ric, 14 November 2026: the terms must plainly say RAAYDR may use artist profile images and songs in social
+       media promo, and that it is always to promote the artist and their work. The wording is his, as is. */
+    expect(terms).toContain("Promoting you.");
+    expect(terms).toContain("short clips of your songs (up to 60 seconds)");
+    expect(terms).toContain("We only ever use them to promote you and your work on RAAYDR.");
+    expect(terms).toContain("We'll credit you and tag you wherever we can.");
+    expect(terms).toContain("We won't sell them or license them to anyone else.");
+    expect(terms).toContain("email help@raaydr.com and we'll stop, and take down any posts we control within 7 days");
+    /* It sits in the uploading section, with the licence it explains, and before the section on how a licence ends. */
+    const body = readLegal("terms").blocks;
+    expect(body.length).toBeGreaterThan(0);
+    expect(terms.indexOf("Promoting you.")).toBeGreaterThan(terms.indexOf("What you let us do."));
+    expect(terms.indexOf("Promoting you.")).toBeLessThan(terms.indexOf("When it ends."));
+  });
+
   /*
    * Nothing internal appears in forward-facing copy: no approver names, approval
    * dates, rulings, board rows, agent names or "decided" notes. Those live in code
