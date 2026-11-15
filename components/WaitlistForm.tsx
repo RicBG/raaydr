@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { ctaCopy } from "@/lib/siteConfig";
+import { applicationUrlFor } from "@/lib/applyInstead";
 import { ROLE_LABEL_TO_SLUG, WAITLIST_ROLE_LABELS } from "@/lib/waitlistRoles";
 import {
   ARTIST_NAME_MAX_LENGTH,
@@ -117,6 +118,13 @@ export default function WaitlistForm({
   const isArtist = role !== null && ROLE_LABEL_TO_SLUG[role] === "artist";
 
   /*
+   * A ROLE THAT APPLIES INSTEAD OF JOINING A LIST (board row 6063). Tastemaker, on every form: the questions and the button are
+   * replaced by one link to the platform application, and `onSubmit` sends them there too, so Enter on the keyboard cannot write a row.
+   * The words are a proposal for Riz.
+   */
+  const applyElsewhere = role !== null ? applicationUrlFor(ROLE_LABEL_TO_SLUG[role]) : null;
+
+  /*
    * APPLYING, NOT JOINING A WAITLIST.
    *
    * Ruled by Ric on 14 September 2026 and briefed on board rows 976 and 1002:
@@ -189,6 +197,13 @@ export default function WaitlistForm({
     }
 
     const slug = ROLE_LABEL_TO_SLUG[role];
+
+    /* BEFORE ANYTHING IS POSTED OR VALIDATED: a tastemaker applies, they do not join a list (board row 6063). */
+    const applyAt = applicationUrlFor(slug);
+    if (applyAt) {
+      window.location.assign(applyAt);
+      return;
+    }
 
     /*
      * THE NAME IS REQUIRED ON EVERY PATH, and it is checked FIRST because it
@@ -547,6 +562,15 @@ export default function WaitlistForm({
         </p>
       )}
 
+      {applyElsewhere && (
+        <div className={styles.note}>
+          <p>Tastemakers get paid for putting people on. Apply and we&apos;ll take a look.</p>
+          <a href={applyElsewhere} className={`btn ${styles.submit}`}>
+            Apply to join
+          </a>
+        </div>
+      )}
+
       {/*
        * ONE CONTAINER FOR EVERY QUESTION, AND THE EMAIL NEVER LEAVES IT.
        *
@@ -574,7 +598,10 @@ export default function WaitlistForm({
        * The music link spans both, because it holds the longest value on the
        * form by some way.
        */}
-      <div className={`${styles.fields} ${styles.fieldsTwoUp}`}>
+      <div
+        className={`${styles.fields} ${styles.fieldsTwoUp}`}
+        style={applyElsewhere ? { display: "none" } : undefined}
+      >
         <div className={styles.field}>
           <label htmlFor={`${id}-real-name`} className={styles.fieldLabel}>
             Your name
@@ -687,7 +714,7 @@ export default function WaitlistForm({
       </div>
 
       {showOffer && (
-        <p className={styles.offer} aria-live="polite">
+        <p className={styles.offer} aria-live="polite" style={applyElsewhere ? { display: "none" } : undefined}>
           {offerFor(role)}
         </p>
       )}
@@ -707,6 +734,7 @@ export default function WaitlistForm({
         type="submit"
         className={`btn ${styles.submit}`}
         disabled={status === "submitting"}
+        style={applyElsewhere ? { display: "none" } : undefined}
       >
         {status === "submitting" ? "Joining\u2026" : applying ? "Apply to join" : label}
       </button>

@@ -1,3 +1,4 @@
+import { applicationUrlFor } from "@/lib/applyInstead";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { isWaitlistRoleSlug } from "@/lib/waitlistRoles";
@@ -179,6 +180,14 @@ export async function POST(request: Request) {
   if (!isWaitlistRoleSlug(role)) {
     return NextResponse.json(
       { error: "Pick the role that fits you." },
+      { status: 400 }
+    );
+  }
+  // A tastemaker applies, they never join a list (board rows 6063, 6092). The form already sends them to the
+  // application; this is the same rule at the door, so a hand-made POST cannot write a tastemaker row either.
+  if (applicationUrlFor(role)) {
+    return NextResponse.json(
+      { error: "Tastemakers apply instead of joining a list.", applyAt: applicationUrlFor(role) },
       { status: 400 }
     );
   }
