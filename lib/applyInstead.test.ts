@@ -35,3 +35,13 @@ describe("the shared form", () => {
     expect(form).toContain("Apply to join");
   });
 });
+
+describe("the waitlist route refuses a tastemaker at the door", () => {
+  it("returns 400 for role tastemaker before anything is written", () => {
+    const route = readFileSync(join(import.meta.dirname, "../app/api/waitlist/route.ts"), "utf8");
+    const refusal = route.indexOf("applicationUrlFor(role)");
+    expect(refusal).toBeGreaterThan(route.indexOf("isWaitlistRoleSlug(role)"));
+    expect(refusal).toBeLessThan(route.indexOf("p_role: role"));
+    expect(route).toContain("status: 400");
+  });
+});

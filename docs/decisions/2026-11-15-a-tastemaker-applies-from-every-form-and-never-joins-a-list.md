@@ -25,4 +25,9 @@ Unchanged, and on purpose. An artist on this form already files an application (
 
 - **`/api/waitlist` still accepts `role: tastemaker`.** A visitor's browser holding the old page can still post one for as long as it stays open, and rejecting the role server side would turn that into an error on a form the visitor saw working. Closing it is a one-line change once the form is live.
 - **Existing tastemaker waitlist rows are not touched** (18 of them; Riz is not asking for role changes on existing rows, row 6052).
-- The words "Tastemakers apply instead of joining a list." are a proposal. Where the copy and the layout differ from what Ric wants, Riz says.
+- The line is Ric's, signed off 15 November 2026 (platform board row 6092): "Tastemakers get paid for putting people on. Apply and we'll take a look." The button stays "Apply to join".
+
+## Update, 15 November, board row 6092
+
+- Ric signed off the line: "Tastemakers get paid for putting people on. Apply and we'll take a look." Button stays "Apply to join".
+- `/api/waitlist` now refuses `role: tastemaker` with a 400 that names the application URL, after the role is validated and before anything is written. The form already sends a tastemaker to the application; the route is the same rule at the door, so a hand-made POST cannot write a tastemaker row. Pinned by a source-order test in `lib/applyInstead.test.ts`.

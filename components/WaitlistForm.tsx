@@ -564,7 +564,7 @@ export default function WaitlistForm({
 
       {applyElsewhere && (
         <div className={styles.note}>
-          <p>Tastemakers apply instead of joining a list.</p>
+          <p>Tastemakers get paid for putting people on. Apply and we&apos;ll take a look.</p>
           <a href={applyElsewhere} className={`btn ${styles.submit}`}>
             Apply to join
           </a>
