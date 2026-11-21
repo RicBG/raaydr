@@ -1,6 +1,6 @@
 # Terms of service
 
-*Version 1.3. Last updated 29 October 2026.*
+*Version 1.4. Last updated 14 November 2026.*
 
 ## 1. Who we are and how these terms work
 
@@ -43,6 +43,8 @@ Prices include VAT once we are VAT registered. We will give you at least 30 days
 **Uploading is free and stays free.** You keep full ownership of your music, your recordings and your artwork. We claim none of it.
 
 **What you let us do.** When you upload, you give RAAYDR a non-exclusive, worldwide, royalty-free licence to store, convert, stream and display your music, artwork, credits and profile on RAAYDR, in the countries where we are licensed to play music, and to use short excerpts, your name and your artwork to promote you and your music on RAAYDR and on RAAYDR's own social channels. We can let the companies that run our hosting, storage and payments handle your files only to provide RAAYDR. We can't sell or license your music to anyone else.
+
+**Promoting you.** When you put your profile and music on RAAYDR, you let us use your artist name, profile pictures, artwork and short clips of your songs (up to 60 seconds) in RAAYDR's social media posts and marketing. We only ever use them to promote you and your work on RAAYDR. We'll credit you and tag you wherever we can. We won't sell them or license them to anyone else. If you'd rather we didn't feature you, email help@raaydr.com and we'll stop, and take down any posts we control within 7 days.
 
 **When it ends.** The licence ends for each track when you take it down, and ends for everything when your account closes. We keep records of plays and payments, because money depends on them, and copies may take up to 30 days to clear from backups.
 
