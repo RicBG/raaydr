@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { describe, expect, it } from "vitest";
+import { SPOTIFY } from "./raaydrRates";
 import {
   DEFAULT_SHARE_IMAGE,
   getAllSlugs,
@@ -138,6 +139,66 @@ describe("Pulse search titles", () => {
       const raw = fs.readFileSync(`content/pulse/${slug}.md`, "utf8");
       expect(raw, slug).toMatch(/\]\(\/pulse\/how-much-does-spotify-pay-per-stream\)/);
       expect(raw, slug).toMatch(/\]\(\/(artists|producers-songwriters|tools\/streaming-royalty-calculator)/);
+    }
+  });
+});
+
+// The November Wrapped post (board row 6688). Copy approved by Ric; the repo's
+// own rules still apply to how it is stored.
+describe("the Spotify Wrapped post (row 6688)", () => {
+  const slug = "spotify-wrapped-who-did-your-subscription-pay";
+  const post = getPost(slug);
+  const raw = fs.readFileSync(`content/pulse/${slug}.md`, "utf8");
+
+  it("loads with its five FAQ answers, read by the parser rather than skipped", () => {
+    expect(post).toBeTruthy();
+    expect(post?.faq.length).toBe(5);
+    expect(post?.faq.every((f) => f.answer.length > 20)).toBe(true);
+  });
+
+  it("is the newest post, so it leads /pulse", () => {
+    const newest = getAllSlugs()
+      .map((s) => getPost(s)?.datePublished ?? "")
+      .sort()
+      .reverse()[0];
+    expect(post?.datePublished).toBe(newest);
+  });
+
+  it("carries a credited hero that exists on disk", () => {
+    expect(post?.heroImage).toBe(`/pulse/images/${slug}.jpg`);
+    expect(fs.existsSync(`public${post?.heroImage}`)).toBe(true);
+    expect(post?.heroCredit).toBe("Ben Blennerhassett");
+    expect(post?.heroCreditUrl).toContain("LR5eS1C9IUU");
+    expect(post?.heroCreditUrl).toContain("utm_source=raaydr");
+  });
+
+  it("has no list markers, because the Pulse renderer has no lists and would run the items together", () => {
+    expect(raw).not.toMatch(/^[-*] /m);
+  });
+
+  it("uses no dashes and leaves no token unresolved", () => {
+    const text = JSON.stringify(post);
+    expect(text).not.toMatch(/[–—]/);
+    expect(text).not.toMatch(/\{\{/);
+  });
+
+  it("reads the Spotify price from the rates, not from the prose", () => {
+    expect(raw).not.toContain("£12.99");
+    expect(JSON.stringify(post)).toContain(`£${SPOTIFY.subscriptionPrice}`);
+  });
+
+  it("states the year's cost as twelve of those payments, so it cannot drift from the price", () => {
+    expect(JSON.stringify(post)).toContain("£155.88");
+    expect((SPOTIFY.subscriptionPrice * 12).toFixed(2)).toBe("155.88");
+  });
+
+  it("links to raaydr.com only with UTMs, and to the other posts only by path", () => {
+    for (const m of JSON.stringify(post).matchAll(/https:\/\/raaydr\.com[^\s")\\]*/g)) {
+      expect(m[0]).toMatch(/utm_source=pulse&utm_medium=blog&utm_campaign=/);
+    }
+    for (const m of raw.matchAll(/\]\(\/pulse\/([^)]+)\)/g)) {
+      expect(getAllSlugs(), m[1]).toContain(m[1]);
+      expect(m[0]).not.toContain("utm_");
     }
   });
 });
